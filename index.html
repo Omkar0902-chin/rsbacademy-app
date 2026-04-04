@@ -234,6 +234,10 @@ tr:last-child td{border-bottom:none;}
 .admin-mobile-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(8,9,12,0.96);backdrop-filter:blur(16px);border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:100;}
 .section-hdr{font-size:11px;font-weight:600;color:#fff;margin:12px 0 8px;text-transform:uppercase;letter-spacing:0.06em;}
 
+/* ── BACK BUTTON ── */
+#back-btn{display:none;position:fixed;top:12px;left:12px;z-index:200;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.1);border:0.5px solid var(--border);align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:#fff;backdrop-filter:blur(8px);}
+#back-btn.show{display:flex;}
+
 /* ── PWA INSTALL BANNER ── */
 #pwa-install-banner{display:none;position:fixed;bottom:70px;left:12px;right:12px;z-index:800;background:linear-gradient(135deg,#0f1a12,#0d1f15);border:1px solid rgba(29,185,84,0.35);border-radius:14px;padding:14px 16px;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
 #pwa-install-banner.show{display:flex;align-items:center;gap:12px;animation:slideUp 0.3s ease;}
@@ -337,6 +341,7 @@ tr:last-child td{border-bottom:none;}
 
 <!-- ══ APP ══ -->
 <div id="app">
+<button id="back-btn" onclick="goBack()">←</button>
 
   <!-- Admin top bar (shown for admin on larger screens, and always on mobile as a header) -->
   <div class="topbar" id="admin-topbar">
@@ -854,10 +859,35 @@ function buildNav() {
   }
 }
 
+const _pageHistory = [];
+
+window.goBack = function() {
+  if (_pageHistory.length > 1) {
+    _pageHistory.pop();
+    const prev = _pageHistory[_pageHistory.length - 1];
+    window.showPage(prev);
+  }
+};
+
 window.showPage = function(p) {
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   const pg = document.getElementById('page-'+p);
   if (pg) pg.classList.add('active');
+  // Track history
+  if (_pageHistory.length === 0 || _pageHistory[_pageHistory.length-1] !== p) {
+    _pageHistory.push(p);
+  }
+  // Show back button if not on first page
+  const backBtn = document.getElementById('back-btn');
+  if (backBtn) {
+    if (_pageHistory.length > 1) {
+      backBtn.classList.add('show');
+    } else {
+      backBtn.classList.remove('show');
+    }
+  }
+  // Prevent phone back button from exiting
+  history.pushState(null, '', location.href);
   // update nav highlights
   document.querySelectorAll('.admin-tab').forEach(b=>{
     b.classList.toggle('active', b.getAttribute('onclick')===`showPage('${p}')`);
@@ -1422,9 +1452,22 @@ if (!isInstalled) {
 
 
 // ══ BACK BUTTON HANDLER ══
-// ══ BACK BUTTON — prevent app exit ══
+// ══ BACK BUTTON — handle phone back button ══
 history.pushState(null, '', location.href);
 window.addEventListener('popstate', function() {
+  if (_pageHistory.length > 1) {
+    _pageHistory.pop();
+    const prev = _pageHistory[_pageHistory.length - 1];
+    // Show previous page
+    document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+    const pg = document.getElementById('page-'+prev);
+    if (pg) pg.classList.add('active');
+    // Update back button visibility
+    const backBtn = document.getElementById('back-btn');
+    if (backBtn) {
+      backBtn.classList.toggle('show', _pageHistory.length > 1);
+    }
+  }
   history.pushState(null, '', location.href);
 });
 
