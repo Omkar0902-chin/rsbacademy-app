@@ -754,40 +754,32 @@ function startListeners() {
 // ══════════════════════════════════════════
 let loginRole = 'admin';
 
-// switchRole moved to populateStudentSelect section above
-
 async function populateStudentSelect() {
   const sel = document.getElementById('student-select');
   if (!sel) return;
-  // If students not loaded yet, fetch directly from Firestore
-  if (students.length === 0 && db) {
-    try {
-      const snap = await getDocs(collection(db, 'students'));
-      students = snap.docs.map(d => ({id: d.id, ...d.data()}));
-    } catch(e) {}
+  sel.innerHTML = '<option value="">⏳ Loading names...</option>';
+  try {
+    const snap = await getDocs(collection(db, 'students'));
+    students = snap.docs.map(d => ({id: d.id, ...d.data()}));
+    if (students.length === 0) {
+      sel.innerHTML = '<option value="">No students added yet</option>';
+    } else {
+      sel.innerHTML = '<option value="">— Choose your name —</option>' +
+        students.map(s => `<option value="${s.id}">${esc(s.name)} (${s.cls})</option>`).join('');
+    }
+  } catch(e) {
+    sel.innerHTML = '<option value="">Error loading — retry</option>';
   }
-  sel.innerHTML = '<option value="">— Choose your name —</option>' +
-    students.map(s => `<option value="${s.id}">${esc(s.name)} (${s.cls})</option>`).join('');
 }
 
-// Re-populate whenever student tab is clicked
-window.switchRole = async function(r) {
+window.switchRole = function(r) {
   loginRole = r;
   document.getElementById('role-admin-btn').classList.toggle('active', r==='admin');
   document.getElementById('role-student-btn').classList.toggle('active', r==='student');
   document.getElementById('admin-login-form').style.display = r==='admin'?'block':'none';
   document.getElementById('student-login-form').style.display = r==='student'?'block':'none';
   document.getElementById('login-err').textContent = '';
-  if (r === 'student') {
-    // Always fetch fresh from Firestore when student tab is clicked
-    if (db) {
-      try {
-        const snap = await getDocs(collection(db, 'students'));
-        students = snap.docs.map(d => ({id: d.id, ...d.data()}));
-      } catch(e) {}
-    }
-    populateStudentSelect();
-  }
+  if (r === 'student') populateStudentSelect();
 };
 
 window.doLogin = async function() {
