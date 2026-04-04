@@ -6,7 +6,7 @@
 <title>Academy Manager</title>
 
 <!-- ══ PWA — Manifest & Theme ══ -->
-<link rel="manifest" href="manifest.json"/>
+<link rel="manifest" href="/rsbacademy-app/manifest.json"/>
 <meta name="theme-color" content="#1DB954"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="application-name" content="Academy Manager"/>
@@ -1345,7 +1345,7 @@ if(window.innerWidth>=700){
 // ══ SERVICE WORKER REGISTRATION ══
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {
+    navigator.serviceWorker.register('/rsbacademy-app/sw.js').catch(() => {
       // SW not critical — continue without it
     });
   });

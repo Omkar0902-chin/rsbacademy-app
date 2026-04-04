@@ -1,10 +1,10 @@
 // Academy Manager — Service Worker
-const CACHE_NAME = 'academy-manager-v1';
+const CACHE_NAME = 'academy-manager-v3';
 const STATIC_ASSETS = [
-  '/index.html',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
+  '/rsbacademy-app/index.html',
+  '/rsbacademy-app/manifest.json',
+  '/rsbacademy-app/icons/icon-192.png',
+  '/rsbacademy-app/icons/icon-512.png',
   'https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap'
 ];
 
@@ -57,7 +57,7 @@ self.addEventListener('fetch', event => {
       }).catch(() => {
         // Offline fallback for HTML
         if (event.request.destination === 'document') {
-          return caches.match('/index.html');
+          return caches.match('/rsbacademy-app/index.html');
         }
       });
     })
