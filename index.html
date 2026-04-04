@@ -627,8 +627,13 @@ function initFirebase(cfg) {
     const app = initializeApp(cfg);
     db = getFirestore(app);
     // Test connection by reading config doc
-    getDoc(doc(db, 'config', 'app')).then(() => {
+    getDoc(doc(db, 'config', 'app')).then(async () => {
       setSyncStatus('live');
+      // Pre-load students so login dropdown works immediately
+      try {
+        const snap = await getDocs(collection(db, 'students'));
+        students = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      } catch(e) {}
       document.getElementById('loading-screen').style.display = 'none';
       document.getElementById('login-screen').style.display = 'flex';
       populateStudentSelect();
@@ -766,14 +771,23 @@ async function populateStudentSelect() {
 }
 
 // Re-populate whenever student tab is clicked
-window.switchRole = function(r) {
+window.switchRole = async function(r) {
   loginRole = r;
   document.getElementById('role-admin-btn').classList.toggle('active', r==='admin');
   document.getElementById('role-student-btn').classList.toggle('active', r==='student');
   document.getElementById('admin-login-form').style.display = r==='admin'?'block':'none';
   document.getElementById('student-login-form').style.display = r==='student'?'block':'none';
   document.getElementById('login-err').textContent = '';
-  if (r === 'student') populateStudentSelect();
+  if (r === 'student') {
+    // Always fetch fresh from Firestore when student tab is clicked
+    if (db) {
+      try {
+        const snap = await getDocs(collection(db, 'students'));
+        students = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      } catch(e) {}
+    }
+    populateStudentSelect();
+  }
 };
 
 window.doLogin = async function() {
@@ -1354,11 +1368,10 @@ if(window.innerWidth>=700){
 
 <script>
 // ══ SERVICE WORKER REGISTRATION ══
+// Unregister any old service workers to prevent caching issues
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/rsbacademy-app/sw.js').catch(() => {
-      // SW not critical — continue without it
-    });
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    registrations.forEach(reg => reg.unregister());
   });
 }
 
@@ -1417,31 +1430,11 @@ if (!isInstalled) {
 
 
 // ══ BACK BUTTON HANDLER ══
-const pageHistory = [];
-
-const _origShowPage = window.showPage;
-window.showPage = function(p) {
-  if (pageHistory.length === 0 || pageHistory[pageHistory.length - 1] !== p) {
-    pageHistory.push(p);
-    history.pushState({page: p}, '', '');
-  }
-  _origShowPage(p);
-};
-
-window.addEventListener('popstate', function(e) {
-  if (pageHistory.length > 1) {
-    pageHistory.pop();
-    const prevPage = pageHistory[pageHistory.length - 1];
-    _origShowPage(prevPage);
-    history.pushState({page: prevPage}, '', '');
-  } else {
-    // At root - push state again to prevent exit
-    history.pushState({}, '', '');
-  }
+// ══ BACK BUTTON — prevent app exit ══
+history.pushState(null, '', location.href);
+window.addEventListener('popstate', function() {
+  history.pushState(null, '', location.href);
 });
-
-// Push initial state
-history.pushState({}, '', '');
 
 // Hide banner when app is installed
 window.addEventListener('appinstalled', () => {
