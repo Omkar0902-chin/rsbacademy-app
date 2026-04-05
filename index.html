@@ -2060,3 +2060,16 @@ window.addEventListener('popstate', function() {
     if (backBtn) {
       backBtn.classList.toggle('show', _pageHistory.length > 1);
     }
+  }
+  history.pushState(null, '', location.href);
+});
+
+// Hide banner when app is installed
+window.addEventListener('appinstalled', () => {
+  installBanner.classList.remove('show');
+  deferredPrompt = null;
+});
+</script>
+
+</body>
+</html>
