@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-<title>Academy Manager</title>
+<title>RSB Academy</title>
 
 <!-- ══ PWA — Manifest & Theme ══ -->
 <link rel="manifest" href="/rsbacademy-app/manifest.json"/>
 <meta name="theme-color" content="#1DB954"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<meta name="application-name" content="Academy Manager"/>
+<meta name="application-name" content="RSB Academy"/>
 
 <!-- ══ PWA — iOS / Apple Support ══ -->
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="Academy"/>
+<meta name="apple-mobile-web-app-title" content="RSB"/>
 <link rel="apple-touch-icon" href="icons/icon-192.png"/>
 <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png"/>
 <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png"/>
@@ -252,9 +252,211 @@ tr:last-child td{border-bottom:none;}
 #ios-install-hint{display:none;position:fixed;bottom:70px;left:12px;right:12px;z-index:800;background:#0f1a12;border:1px solid rgba(29,185,84,0.3);border-radius:14px;padding:14px 16px;font-size:12px;color:var(--text);line-height:1.7;}
 #ios-install-hint.show{display:block;}
 .ios-hint-close{float:right;background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;margin-top:-2px;}
+
+/* ── PUBLIC HOME PAGE ── */
+#public-home{position:fixed;inset:0;background:var(--dark);z-index:1800;display:flex;flex-direction:column;overflow-y:auto;background-image:radial-gradient(ellipse 80% 40% at 50% 0%,rgba(29,185,84,0.12) 0%,transparent 60%);}
+.pub-header{padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(8,9,12,0.95);backdrop-filter:blur(16px);z-index:10;border-bottom:0.5px solid var(--border);}
+.pub-logo{font-size:18px;font-weight:700;color:#fff;}
+.pub-logo span{color:var(--green);}
+.pub-login-btn{background:var(--green);color:#000;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+.pub-hero{padding:28px 16px 20px;text-align:center;}
+.pub-hero-icon{font-size:52px;margin-bottom:12px;}
+.pub-hero h1{font-size:26px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:8px;}
+.pub-hero p{font-size:13px;color:var(--muted);line-height:1.6;}
+.pub-section{padding:0 16px 20px;}
+.pub-section-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;}
+.pub-services{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:4px;}
+.pub-service{background:var(--card);border:0.5px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s;}
+.pub-service:active{transform:scale(0.97);}
+.pub-service-icon{font-size:28px;margin-bottom:6px;}
+.pub-service-name{font-size:12px;font-weight:600;color:#fff;margin-bottom:3px;}
+.pub-service-price{font-size:11px;color:var(--muted);}
+.pub-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:4px;}
+.pub-stat{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:12px;text-align:center;}
+.pub-stat-val{font-size:20px;font-weight:700;color:var(--green);}
+.pub-stat-lbl{font-size:10px;color:var(--muted);margin-top:2px;}
+.pub-contact{background:var(--card);border:0.5px solid var(--border);border-radius:14px;padding:16px;}
+.pub-contact-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:0.5px solid var(--border);}
+.pub-contact-row:last-child{border-bottom:none;padding-bottom:0;}
+.pub-contact-icon{width:36px;height:36px;border-radius:10px;background:rgba(29,185,84,0.1);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.pub-cta{display:flex;gap:10px;padding:0 16px 16px;}
+.pub-cta-btn{flex:1;padding:14px;border-radius:12px;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit;}
+.pub-hours{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.pub-hour-item{background:var(--card);border:0.5px solid var(--border);border-radius:10px;padding:10px;}
+.pub-hour-name{font-size:11px;font-weight:600;color:#fff;margin-bottom:3px;}
+.pub-hour-time{font-size:11px;color:var(--green);}
+
+/* ── BANNER SLIDER ── */
+.banner-slider{position:relative;overflow:hidden;border-radius:14px;margin-bottom:16px;min-height:120px;background:var(--card);}
+.banner-slide{display:none;width:100%;animation:fadeIn 0.4s ease;}
+.banner-slide.active{display:block;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.banner-img{width:100%;max-height:180px;object-fit:cover;border-radius:14px;}
+.banner-text-card{padding:18px;border-radius:14px;text-align:center;background:linear-gradient(135deg,rgba(29,185,84,0.15),rgba(29,185,84,0.05));border:1px solid rgba(29,185,84,0.2);}
+.banner-text-title{font-size:18px;font-weight:700;color:#fff;margin-bottom:6px;}
+.banner-text-sub{font-size:13px;color:var(--muted);}
+.banner-dots{display:flex;justify-content:center;gap:5px;padding:8px 0 4px;}
+.banner-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.2);cursor:pointer;transition:all 0.2s;}
+.banner-dot.active{background:var(--green);width:18px;border-radius:3px;}
+.banner-empty{padding:20px;text-align:center;color:var(--muted);font-size:13px;}
+
+/* ── BOOKING PAGE ── */
+#booking-page{display:none;position:fixed;inset:0;background:var(--dark);z-index:1900;overflow-y:auto;}
+.booking-header{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:rgba(8,9,12,0.96);backdrop-filter:blur(16px);z-index:10;}
+.booking-back{background:rgba(255,255,255,0.06);border:0.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;color:#fff;cursor:pointer;font-family:inherit;}
+.booking-title{font-size:16px;font-weight:700;color:#fff;}
+.slot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.slot-btn{padding:10px 6px;border-radius:10px;border:0.5px solid var(--border);background:var(--card);color:var(--text);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;text-align:center;transition:all 0.15s;}
+.slot-btn.selected{background:rgba(29,185,84,0.15);border-color:var(--green);color:var(--green);}
+.slot-btn.booked{background:rgba(240,82,82,0.08);border-color:rgba(240,82,82,0.2);color:var(--danger);cursor:not-allowed;opacity:0.6;}
+
+/* ── ADMIN BANNER MANAGEMENT ── */
+#page-banners .banner-manage-item{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;}
 </style>
 </head>
 <body>
+
+<!-- ══ PUBLIC HOME PAGE ══ -->
+<div id="public-home">
+  <div class="pub-header">
+    <div class="pub-logo">RSB <span>Academy</span></div>
+    <button class="pub-login-btn" onclick="showLoginScreen()">🔐 Login</button>
+  </div>
+  <div style="padding:16px 16px 0;">
+    <!-- Banner Slider -->
+    <div class="banner-slider" id="pub-banner-slider">
+      <div class="banner-slide active" id="default-banner">
+        <div class="banner-text-card">
+          <div style="font-size:40px;margin-bottom:8px;">🏆</div>
+          <div class="banner-text-title">Welcome to RSB Academy</div>
+          <div class="banner-text-sub">Yoga · Zumba · Dance · Cricket · Swimming<br/>Pimpri-Chinchwad, Pune</div>
+        </div>
+      </div>
+    </div>
+    <div class="banner-dots" id="pub-banner-dots"></div>
+  </div>
+  <div class="pub-hero" style="padding-top:12px;">
+    <div style="font-size:13px;color:var(--muted);line-height:1.7;">Pimpri's #1 Sports & Fitness Hub — 500+ happy members, world-class facilities, expert trainers</div>
+  </div>
+  <!-- Stats -->
+  <div class="pub-section">
+    <div class="pub-stats">
+      <div class="pub-stat"><div class="pub-stat-val">500+</div><div class="pub-stat-lbl">Members</div></div>
+      <div class="pub-stat"><div class="pub-stat-val">5★</div><div class="pub-stat-lbl">Rated</div></div>
+      <div class="pub-stat"><div class="pub-stat-val">7</div><div class="pub-stat-lbl">Days Open</div></div>
+    </div>
+  </div>
+  <!-- Book a Slot Services -->
+  <div class="pub-section">
+    <div class="pub-section-title">📅 Book a Slot</div>
+    <div class="pub-services">
+      <div class="pub-service" style="border-color:rgba(255,165,0,0.3);" onclick="openBooking('cricket')">
+        <div class="pub-service-icon">🏏</div>
+        <div class="pub-service-name">Cricket Turf</div>
+        <div class="pub-service-price">₹500/hr</div>
+      </div>
+      <div class="pub-service" style="border-color:rgba(29,185,84,0.3);" onclick="openBooking('yoga')">
+        <div class="pub-service-icon">🧘</div>
+        <div class="pub-service-name">Yoga Space</div>
+        <div class="pub-service-price">₹300/session</div>
+      </div>
+      <div class="pub-service" style="border-color:rgba(77,166,255,0.3);" onclick="openBooking('swimming')">
+        <div class="pub-service-icon">🏊</div>
+        <div class="pub-service-name">Swimming</div>
+        <div class="pub-service-price">₹400/hr</div>
+      </div>
+    </div>
+  </div>
+  <!-- Academy Classes -->
+  <div class="pub-section">
+    <div class="pub-section-title">🎓 Academy Classes</div>
+    <div class="pub-services" style="grid-template-columns:1fr 1fr 1fr;">
+      <div class="pub-service" style="border-color:rgba(29,185,84,0.2);">
+        <div class="pub-service-icon">🧘</div>
+        <div class="pub-service-name">Yoga</div>
+        <div class="pub-service-price">6AM & 7PM</div>
+      </div>
+      <div class="pub-service" style="border-color:rgba(255,96,150,0.2);">
+        <div class="pub-service-icon">💃</div>
+        <div class="pub-service-name">Zumba</div>
+        <div class="pub-service-price">7AM & 6PM</div>
+      </div>
+      <div class="pub-service" style="border-color:rgba(160,144,255,0.2);">
+        <div class="pub-service-icon">🎵</div>
+        <div class="pub-service-name">Dance</div>
+        <div class="pub-service-price">5PM & 8PM</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px;">Login as student to manage your classes</div>
+  </div>
+  <!-- Hours -->
+  <div class="pub-section">
+    <div class="pub-section-title">🕐 Facility Hours</div>
+    <div class="pub-hours">
+      <div class="pub-hour-item"><div class="pub-hour-name">🏏 Cricket</div><div class="pub-hour-time">6AM – 11PM</div></div>
+      <div class="pub-hour-item"><div class="pub-hour-name">🧘 Yoga</div><div class="pub-hour-time">6AM – 9PM</div></div>
+      <div class="pub-hour-item"><div class="pub-hour-name">🏊 Swimming</div><div class="pub-hour-time">6AM – 8PM</div></div>
+      <div class="pub-hour-item"><div class="pub-hour-name">📅 Open</div><div class="pub-hour-time">Mon – Sun</div></div>
+    </div>
+  </div>
+  <!-- Contact -->
+  <div class="pub-section">
+    <div class="pub-section-title">📞 Contact Us</div>
+    <div class="pub-contact">
+      <div class="pub-contact-row">
+        <div class="pub-contact-icon">📍</div>
+        <div><div style="font-size:13px;font-weight:500;color:#fff;">RSB Sports Solution</div><div style="font-size:11px;color:var(--muted);">Pimpri-Chinchwad, Maharashtra</div></div>
+      </div>
+      <div class="pub-contact-row" onclick="window.open('tel:+917391926006')">
+        <div class="pub-contact-icon">📞</div>
+        <div><div style="font-size:13px;font-weight:500;color:#fff;">+91 73919 26006</div><div style="font-size:11px;color:var(--muted);">Tap to call</div></div>
+      </div>
+      <div class="pub-contact-row" onclick="window.open('mailto:rsbsportssolution@gmail.com')">
+        <div class="pub-contact-icon">✉️</div>
+        <div><div style="font-size:13px;font-weight:500;color:#fff;">rsbsportssolution@gmail.com</div><div style="font-size:11px;color:var(--muted);">Tap to email</div></div>
+      </div>
+      <div class="pub-contact-row" onclick="window.open('https://instagram.com/rsbsportssolution')">
+        <div class="pub-contact-icon">📸</div>
+        <div><div style="font-size:13px;font-weight:500;color:#fff;">@rsbsportssolution</div><div style="font-size:11px;color:var(--muted);">Follow on Instagram</div></div>
+      </div>
+    </div>
+  </div>
+  <!-- CTA Buttons -->
+  <div class="pub-cta">
+    <button class="pub-cta-btn" style="background:rgba(37,211,102,0.1);color:#25D366;border:0.5px solid rgba(37,211,102,0.3);" onclick="window.open('https://wa.me/917391926006?text=Hi RSB Academy, I want to book a slot!')">💬 WhatsApp</button>
+    <button class="pub-cta-btn" style="background:var(--green);color:#000;" onclick="window.open('tel:+917391926006')">📞 Call Now</button>
+  </div>
+  <div style="height:20px;"></div>
+</div>
+
+<!-- ══ BOOKING PAGE ══ -->
+<div id="booking-page">
+  <div class="booking-header">
+    <button class="booking-back" onclick="closeBooking()">← Back</button>
+    <div class="booking-title" id="booking-title">Book a Slot</div>
+  </div>
+  <div style="padding:16px;">
+    <div id="booking-service-info" style="background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px;text-align:center;"></div>
+    <div class="form-group"><label>Your Name *</label><input type="text" id="book-name" placeholder="Enter your full name"/></div>
+    <div class="form-group"><label>Phone Number *</label><input type="tel" id="book-phone" placeholder="+91 98765 43210"/></div>
+    <div class="form-group"><label>Date *</label><input type="date" id="book-date"/></div>
+    <div class="form-group"><label>Number of People</label>
+      <select id="book-people">
+        <option value="1">1 Person</option>
+        <option value="2">2 People</option>
+        <option value="3">3 People</option>
+        <option value="4">4 People</option>
+        <option value="5">5+ People</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Select Time Slot *</label>
+      <div class="slot-grid" id="slot-grid"></div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;padding:14px;font-size:14px;border-radius:12px;" onclick="confirmPublicBooking()">Confirm Booking →</button>
+    <div style="height:20px;"></div>
+  </div>
+</div>
 
 <!-- ══ FIREBASE SETUP SCREEN ══ -->
 <div id="setup-screen">
@@ -312,9 +514,9 @@ tr:last-child td{border-bottom:none;}
 <div id="login-screen">
 <div class="login-wrap">
   <div class="login-brand">
-    <div class="login-icon">🧘</div>
-    <h1>Academy Manager</h1>
-    <p>Yoga · Zumba · Dance</p>
+    <div class="login-icon">🏆</div>
+    <h1>RSB Academy</h1>
+    <p>Yoga · Zumba · Dance · Cricket · Swimming</p>
   </div>
   <div class="role-switcher">
     <button class="role-btn active" id="role-admin-btn" onclick="switchRole('admin')">👑 Admin</button>
@@ -323,7 +525,7 @@ tr:last-child td{border-bottom:none;}
   <div class="login-card">
     <div id="admin-login-form">
       <div class="lfg"><label>Password</label><input type="password" id="admin-pass" placeholder="Admin password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-      <div class="login-hint">Default: <b>admin123</b></div>
+      <div class="login-hint">Default: <b>admin8283</b></div>
     </div>
     <div id="student-login-form" style="display:none">
       <div class="lfg"><label>Your name</label><select id="student-select"><option value="">— Choose your name —</option></select></div>
@@ -345,7 +547,7 @@ tr:last-child td{border-bottom:none;}
 
   <!-- Admin top bar (shown for admin on larger screens, and always on mobile as a header) -->
   <div class="topbar" id="admin-topbar">
-    <div class="logo">Academy <span>Manager</span></div>
+    <div class="logo">RSB <span>Academy</span></div>
     <div class="admin-tabs" id="admin-tabs"></div>
     <div class="topbar-right">
       <div class="sync-indicator"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Live</span></div>
@@ -355,7 +557,7 @@ tr:last-child td{border-bottom:none;}
 
   <!-- Student mobile header -->
   <div class="admin-mobile-header" id="student-header" style="display:none;">
-    <div class="logo">Academy <span>Manager</span></div>
+    <div class="logo">RSB <span>Academy</span></div>
     <div style="display:flex;align-items:center;gap:8px;">
       <div class="sync-indicator"><div class="sync-dot" id="sync-dot-s"></div></div>
       <button class="btn btn-sm btn-logout" onclick="logout()">Sign out</button>
@@ -446,10 +648,23 @@ tr:last-child td{border-bottom:none;}
       </div>
     </div>
 
+    <!-- Admin Banners -->
+    <div class="page" id="page-banners">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🖼️ Manage Banners</div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('addBannerModal')">+ Add Banner</button>
+        </div>
+        <div class="info-banner" style="margin-bottom:12px;">Banners appear on the public home page and student home page. Add offers, announcements or photos.</div>
+        <div id="banners-list"></div>
+      </div>
+    </div>
+
     <!-- ══ STUDENT PAGES ══ -->
 
     <!-- Student Home -->
     <div class="page" id="page-student-home">
+      <div id="student-banner-container" style="display:none;"></div>
       <div class="student-hero" id="s-hero"></div>
       <div class="student-grid" id="s-action-cards"></div>
       <div class="card"><div class="card-header"><div class="card-title">🔔 Reminders</div></div><div id="s-reminders"></div></div>
@@ -639,6 +854,34 @@ tr:last-child td{border-bottom:none;}
   <div class="modal-actions"><button class="btn btn-sm" onclick="closeModal('payNotifyModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="submitPayNotify()">Notify admin</button></div>
 </div></div>
 
+<!-- Add Banner Modal -->
+<div class="overlay" id="addBannerModal"><div class="modal">
+  <div class="modal-title">🖼️ Add Banner</div>
+  <input type="hidden" id="banner-edit-id"/>
+  <div class="form-group"><label>Banner Title *</label><input type="text" id="banner-title" placeholder="e.g. Special Offer this Month!"/></div>
+  <div class="form-group"><label>Subtitle / Description</label><input type="text" id="banner-subtitle" placeholder="e.g. Join now and get first week free"/></div>
+  <div class="form-group"><label>Photo URL (optional)</label><input type="text" id="banner-image" placeholder="https://... (paste image link)"/></div>
+  <div class="form-group"><label>Background Color</label>
+    <select id="banner-color">
+      <option value="green">Green (Default)</option>
+      <option value="blue">Blue</option>
+      <option value="purple">Purple</option>
+      <option value="orange">Orange</option>
+      <option value="pink">Pink</option>
+    </select>
+  </div>
+  <div class="form-group"><label>Status</label>
+    <select id="banner-active">
+      <option value="true">Active (visible to all)</option>
+      <option value="false">Inactive (hidden)</option>
+    </select>
+  </div>
+  <div class="modal-actions">
+    <button class="btn btn-sm" onclick="closeModal('addBannerModal')">Cancel</button>
+    <button class="btn btn-primary btn-sm" onclick="saveBanner()">Save Banner</button>
+  </div>
+</div></div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -699,6 +942,7 @@ function initFirebase(cfg) {
       document.getElementById('loading-screen').style.display = 'none';
       document.getElementById('login-screen').style.display = 'flex';
       populateStudentSelect();
+      loadPublicBanners();
     }).catch(err => {
       document.getElementById('loading-screen').style.display = 'none';
       document.getElementById('setup-screen').style.display = 'flex';
@@ -725,7 +969,10 @@ function setSyncStatus(status) {
 const savedCfg = localStorage.getItem('fb_cfg');
 if (savedCfg) {
   document.getElementById('setup-screen').style.display = 'none';
+  showPublicHome();
   initFirebase(JSON.parse(savedCfg));
+} else {
+  showPublicHome();
 }
 
 // ══════════════════════════════════════════
@@ -754,7 +1001,7 @@ window.closeModal = function(id) { document.getElementById(id).classList.remove(
 //  IN-MEMORY CACHE (synced from Firestore)
 // ══════════════════════════════════════════
 let students = [], attendance = {}, fees = [], requests = [], messages = [];
-let appCfg = { adminPass: 'admin123', upiId: 'academy@upi' };
+let appCfg = { adminPass: 'admin8283', upiId: 'academy@upi' };
 let currentRole = null, currentStudentId = null, activeAdminMsgStudent = null;
 let studentFilter = 'All', attFilter = 'All', feeFilter = 'All', reqFilter = 'All';
 
@@ -807,7 +1054,7 @@ function startListeners() {
 
   // App config (UPI, admin password)
   unsubscribers.push(onSnapshot(doc(db,'config','app'), snap => {
-    if (snap.exists()) appCfg = { adminPass: 'admin123', upiId: 'academy@upi', ...snap.data() };
+    if (snap.exists()) appCfg = { adminPass: 'admin8283', upiId: 'academy@upi', ...snap.data() };
   }));
 }
 
@@ -867,6 +1114,8 @@ window.doLogin = async function() {
 window.logout = function() {
   currentRole = null; currentStudentId = null;
   document.getElementById('app').style.display = 'none';
+  document.getElementById('public-home').style.display = 'flex';
+  loadPublicBanners();
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('admin-pass').value = '';
   document.getElementById('student-pin').value = '';
@@ -877,6 +1126,7 @@ window.logout = function() {
 // ══════════════════════════════════════════
 function startApp() {
   document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('public-home').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   startListeners();
   buildNav();
@@ -906,6 +1156,7 @@ function buildNav() {
       {id:'fees',label:'💰 Fees'},
       {id:'requests',label:'📥 Requests'+(pendingReqs>0?` (${pendingReqs})`:'')},
       {id:'messages',label:'💬 Messages'+(unreadMsgs>0?` (${unreadMsgs})`:'')},
+      {id:'banners',label:'🖼️ Banners'},
     ].map(t=>`<button class="admin-tab${document.getElementById('page-'+t.id)?.classList.contains('active')?' active':''}" onclick="showPage('${t.id}')">${t.label}</button>`).join('');
   } else {
     // Update notification dots on bottom nav
@@ -1260,6 +1511,7 @@ function getMe(){return students.find(x=>x.id===currentStudentId);}
 
 function renderStudentHome(){
   const s=getMe();if(!s)return;
+  renderStudentBanners();
   const st=subStatus(s);
   const pendingFee=fees.find(f=>f.studentId===s.id&&!f.paid);
   const unread=messages.filter(m=>m.studentId===s.id&&m.from==='admin'&&!m.read).length;
@@ -1415,6 +1667,281 @@ window.studentSendMsg=async function(){
   await setDoc(doc(db,'requests',(Date.now()+1).toString()),{type:'message',studentId:currentStudentId,status:'pending',data:{text},ts:serverTimestamp()});
   setSyncStatus('live'); inp.value=''; renderStudentMessages();
 };
+
+
+// ══════════════════════════════════════════
+//  PUBLIC HOME PAGE
+// ══════════════════════════════════════════
+let banners = [];
+let bannerInterval = null;
+let currentBannerIndex = 0;
+let currentBookingService = null;
+
+// Show public home on load (before firebase setup)
+function showPublicHome() {
+  document.getElementById('public-home').style.display = 'flex';
+  loadPublicBanners();
+}
+
+function showLoginScreen() {
+  document.getElementById('public-home').style.display = 'none';
+  // Show setup or login depending on firebase config
+  const savedCfg = localStorage.getItem('fb_cfg');
+  if (savedCfg) {
+    document.getElementById('login-screen').style.display = 'flex';
+    populateStudentSelect();
+  } else {
+    document.getElementById('setup-screen').style.display = 'flex';
+  }
+}
+
+// Load banners from Firestore for public page
+async function loadPublicBanners() {
+  if (!db) return;
+  try {
+    const snap = await getDocs(collection(db, 'banners'));
+    banners = snap.docs.map(d => ({id: d.id, ...d.data()})).filter(b => b.active);
+    renderPublicBanners();
+  } catch(e) {}
+}
+
+function renderPublicBanners() {
+  const slider = document.getElementById('pub-banner-slider');
+  const dots = document.getElementById('pub-banner-dots');
+  if (!slider) return;
+  const activeBanners = banners.filter(b => b.active !== false);
+  if (activeBanners.length === 0) {
+    // Show default banner
+    document.getElementById('default-banner').style.display = 'block';
+    return;
+  }
+  // Build slides
+  const colorMap = {
+    green: 'linear-gradient(135deg,rgba(29,185,84,0.15),rgba(29,185,84,0.05))',
+    blue: 'linear-gradient(135deg,rgba(77,166,255,0.15),rgba(77,166,255,0.05))',
+    purple: 'linear-gradient(135deg,rgba(160,144,255,0.15),rgba(160,144,255,0.05))',
+    orange: 'linear-gradient(135deg,rgba(232,160,32,0.15),rgba(232,160,32,0.05))',
+    pink: 'linear-gradient(135deg,rgba(255,96,150,0.15),rgba(255,96,150,0.05))'
+  };
+  const borderMap = {
+    green: 'rgba(29,185,84,0.3)', blue: 'rgba(77,166,255,0.3)',
+    purple: 'rgba(160,144,255,0.3)', orange: 'rgba(232,160,32,0.3)', pink: 'rgba(255,96,150,0.3)'
+  };
+  slider.innerHTML = activeBanners.map((b, i) => `
+    <div class="banner-slide ${i===0?'active':''}" id="slide-${i}">
+      ${b.image ? `<img src="${b.image}" class="banner-img" onerror="this.style.display='none'"/>` : ''}
+      <div class="banner-text-card" style="background:${colorMap[b.color||'green']};border-color:${borderMap[b.color||'green']};">
+        <div class="banner-text-title">${b.title||''}</div>
+        ${b.subtitle ? `<div class="banner-text-sub">${b.subtitle}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+  // Dots
+  dots.innerHTML = activeBanners.map((_, i) => `<div class="banner-dot ${i===0?'active':''}" onclick="goToSlide(${i})"></div>`).join('');
+  // Auto slide
+  if (bannerInterval) clearInterval(bannerInterval);
+  if (activeBanners.length > 1) {
+    bannerInterval = setInterval(() => {
+      currentBannerIndex = (currentBannerIndex + 1) % activeBanners.length;
+      goToSlide(currentBannerIndex);
+    }, 4000);
+  }
+}
+
+// Also render banners on student home page
+function renderStudentBanners() {
+  const container = document.getElementById('student-banner-container');
+  if (!container) return;
+  const activeBanners = banners.filter(b => b.active !== false);
+  if (activeBanners.length === 0) { container.style.display = 'none'; return; }
+  container.style.display = 'block';
+  const colorMap = {
+    green: 'linear-gradient(135deg,rgba(29,185,84,0.15),rgba(29,185,84,0.05))',
+    blue: 'linear-gradient(135deg,rgba(77,166,255,0.15),rgba(77,166,255,0.05))',
+    purple: 'linear-gradient(135deg,rgba(160,144,255,0.15),rgba(160,144,255,0.05))',
+    orange: 'linear-gradient(135deg,rgba(232,160,32,0.15),rgba(232,160,32,0.05))',
+    pink: 'linear-gradient(135deg,rgba(255,96,150,0.15),rgba(255,96,150,0.05))'
+  };
+  const b = activeBanners[0];
+  container.innerHTML = `<div class="banner-text-card" style="background:${colorMap[b.color||'green']};margin-bottom:14px;">
+    <div class="banner-text-title" style="font-size:15px;">${b.title||''}</div>
+    ${b.subtitle ? `<div class="banner-text-sub">${b.subtitle}</div>` : ''}
+  </div>`;
+}
+
+window.goToSlide = function(index) {
+  const slides = document.querySelectorAll('.banner-slide');
+  const dots = document.querySelectorAll('.banner-dot');
+  slides.forEach((s, i) => s.classList.toggle('active', i === index));
+  dots.forEach((d, i) => d.classList.toggle('active', i === index));
+  currentBannerIndex = index;
+};
+
+// ══ BOOKING SYSTEM ══
+const serviceSlots = {
+  cricket: { name: 'Cricket Turf', icon: '🏏', price: '₹500/hour', slots: ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM','8:00 PM','9:00 PM','10:00 PM'] },
+  yoga: { name: 'Yoga Space', icon: '🧘', price: '₹300/session', slots: ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','5:00 PM','6:00 PM','7:00 PM','8:00 PM'] },
+  swimming: { name: 'Swimming Pool', icon: '🏊', price: '₹400/hour', slots: ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM'] }
+};
+
+window.openBooking = function(service) {
+  currentBookingService = service;
+  const s = serviceSlots[service];
+  document.getElementById('booking-title').textContent = s.name;
+  document.getElementById('booking-service-info').innerHTML = `
+    <div style="font-size:32px;margin-bottom:6px;">${s.icon}</div>
+    <div style="font-size:16px;font-weight:700;color:#fff;">${s.name}</div>
+    <div style="font-size:13px;color:var(--green);margin-top:4px;">${s.price}</div>
+  `;
+  // Set today as default date
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('book-date').value = today;
+  renderSlots(service, today);
+  document.getElementById('booking-page').style.display = 'block';
+  document.getElementById('book-date').addEventListener('change', function() {
+    renderSlots(currentBookingService, this.value);
+  });
+};
+
+function renderSlots(service, date) {
+  const grid = document.getElementById('slot-grid');
+  const slots = serviceSlots[service].slots;
+  grid.innerHTML = slots.map(slot => `
+    <button class="slot-btn" onclick="selectSlot(this, '${slot}')">${slot}</button>
+  `).join('');
+}
+
+let selectedSlot = null;
+window.selectSlot = function(btn, slot) {
+  document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedSlot = slot;
+};
+
+window.closeBooking = function() {
+  document.getElementById('booking-page').style.display = 'none';
+  selectedSlot = null;
+};
+
+window.confirmPublicBooking = async function() {
+  const name = document.getElementById('book-name').value.trim();
+  const phone = document.getElementById('book-phone').value.trim();
+  const date = document.getElementById('book-date').value;
+  const people = document.getElementById('book-people').value;
+  if (!name) { toast('Please enter your name', '#f05252'); return; }
+  if (!phone) { toast('Please enter your phone number', '#f05252'); return; }
+  if (!date) { toast('Please select a date', '#f05252'); return; }
+  if (!selectedSlot) { toast('Please select a time slot', '#f05252'); return; }
+  const s = serviceSlots[currentBookingService];
+  if (db) {
+    try {
+      await setDoc(doc(db, 'public_bookings', Date.now().toString()), {
+        service: currentBookingService, serviceName: s.name,
+        name, phone, date, slot: selectedSlot, people,
+        status: 'pending', ts: serverTimestamp()
+      });
+    } catch(e) {}
+  }
+  closeBooking();
+  toast(`Booking confirmed! ${s.icon} We'll contact you on WhatsApp!`);
+  // Open WhatsApp confirmation
+  const msg = `Hi RSB Academy! I've booked ${s.name} on ${date} at ${selectedSlot} for ${people} person(s). Name: ${name}, Phone: ${phone}`;
+  setTimeout(() => window.open(`https://wa.me/917391926006?text=${encodeURIComponent(msg)}`), 1000);
+};
+
+// ══ ADMIN BANNERS MANAGEMENT ══
+async function renderBanners() {
+  if (!db) return;
+  try {
+    const snap = await getDocs(collection(db, 'banners'));
+    banners = snap.docs.map(d => ({id: d.id, ...d.data()}));
+  } catch(e) {}
+  const container = document.getElementById('banners-list');
+  if (!container) return;
+  if (banners.length === 0) {
+    container.innerHTML = '<div class="empty">No banners yet. Add your first banner! 🖼️</div>';
+    return;
+  }
+  const colorNames = { green:'🟢 Green', blue:'🔵 Blue', purple:'🟣 Purple', orange:'🟠 Orange', pink:'🩷 Pink' };
+  container.innerHTML = banners.map(b => `
+    <div class="banner-manage-item">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-size:14px;font-weight:600;color:#fff;">${b.title||'Untitled'}</div>
+        <span class="badge badge-${b.active!==false?'active':'expired'}">${b.active!==false?'Active':'Inactive'}</span>
+      </div>
+      ${b.subtitle?`<div style="font-size:12px;color:var(--muted);margin-bottom:6px;">${b.subtitle}</div>`:''}
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">${colorNames[b.color||'green']}</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-sm" onclick="editBanner('${b.id}')">✏️ Edit</button>
+        <button class="btn btn-sm btn-${b.active!==false?'danger':'success'}" onclick="toggleBanner('${b.id}',${b.active!==false})">${b.active!==false?'Hide':'Show'}</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteBanner('${b.id}')">🗑️ Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+window.saveBanner = async function() {
+  const id = document.getElementById('banner-edit-id').value;
+  const data = {
+    title: document.getElementById('banner-title').value.trim(),
+    subtitle: document.getElementById('banner-subtitle').value.trim(),
+    image: document.getElementById('banner-image').value.trim(),
+    color: document.getElementById('banner-color').value,
+    active: document.getElementById('banner-active').value === 'true',
+  };
+  if (!data.title) { toast('Please enter a title', '#f05252'); return; }
+  setSyncStatus('syncing');
+  const docId = id || Date.now().toString();
+  await setDoc(doc(db, 'banners', docId), data);
+  setSyncStatus('live');
+  closeModal('addBannerModal');
+  document.getElementById('banner-edit-id').value = '';
+  ['banner-title','banner-subtitle','banner-image'].forEach(i => document.getElementById(i).value = '');
+  toast('Banner saved! 🖼️');
+  renderBanners();
+  loadPublicBanners();
+};
+
+window.editBanner = function(id) {
+  const b = banners.find(x => x.id === id); if (!b) return;
+  document.getElementById('banner-edit-id').value = id;
+  document.getElementById('banner-title').value = b.title || '';
+  document.getElementById('banner-subtitle').value = b.subtitle || '';
+  document.getElementById('banner-image').value = b.image || '';
+  document.getElementById('banner-color').value = b.color || 'green';
+  document.getElementById('banner-active').value = String(b.active !== false);
+  openModal('addBannerModal');
+};
+
+window.toggleBanner = async function(id, currentActive) {
+  await updateDoc(doc(db, 'banners', id), { active: !currentActive });
+  toast(currentActive ? 'Banner hidden' : 'Banner activated! ✅');
+  renderBanners(); loadPublicBanners();
+};
+
+window.deleteBanner = async function(id) {
+  if (!confirm('Delete this banner?')) return;
+  await deleteDoc(doc(db, 'banners', id));
+  toast('Banner deleted');
+  renderBanners(); loadPublicBanners();
+};
+
+// Override showPage to handle banners
+const _origRenders = {
+  dashboard: typeof renderDashboard !== 'undefined' ? renderDashboard : null,
+};
+
+const _origShowPageFn = window.showPage;
+const _extendedShowPage = function(p) {
+  _origShowPageFn(p);
+  if (p === 'banners') renderBanners();
+};
+window.showPage = _extendedShowPage;
+
+// Public home shown via auto-load logic above
+
+// Also load banners into Firebase listeners
+const _origStartListeners = startListeners;
 
 // Responsive: on desktop admin gets 2-col dashboard
 if(window.innerWidth>=700){
