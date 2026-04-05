@@ -1682,12 +1682,12 @@ let currentBannerIndex = 0;
 let currentBookingService = null;
 
 // Show public home on load (before firebase setup)
-function showPublicHome() {
+window.showPublicHome = function() {
   document.getElementById('public-home').style.display = 'flex';
   loadPublicBanners();
 }
 
-function showLoginScreen() {
+window.showLoginScreen = function() {
   document.getElementById('public-home').style.display = 'none';
   // Always go to login — config is hardcoded
   document.getElementById('login-screen').style.display = 'flex';
@@ -2068,6 +2068,42 @@ window.addEventListener('appinstalled', () => {
   const installBanner = document.getElementById('pwa-install-banner');
   if(installBanner) installBanner.classList.remove('show');
 });
+
+// ══ EXPOSE ALL FUNCTIONS GLOBALLY ══
+window.showLoginScreen = showLoginScreen;
+window.showPublicHome = showPublicHome;
+window.initFirebase = initFirebase;
+window.doLogin = window.doLogin || function(){};
+window.logout = window.logout || function(){};
+window.switchRole = window.switchRole || function(){};
+window.goBack = window.goBack || function(){};
+window.reconfigure = window.reconfigure || function(){};
+window.showPage = window.showPage || function(){};
+window.setSFilter = window.setSFilter || function(){};
+window.setFeeFilter = window.setFeeFilter || function(){};
+window.setReqFilter = window.setReqFilter || function(){};
+window.sendBulkWA = window.sendBulkWA || function(){};
+window.adminSendMsg = window.adminSendMsg || function(){};
+window.studentSendMsg = window.studentSendMsg || function(){};
+window.addStudent = window.addStudent || function(){};
+window.saveStudent = window.saveStudent || function(){};
+window.deleteStudent = window.deleteStudent || function(){};
+window.openEdit = window.openEdit || function(){};
+window.addFee = window.addFee || function(){};
+window.openAddFee = window.openAddFee || function(){};
+window.openWAReminders = window.openWAReminders || function(){};
+window.submitLeave = window.submitLeave || function(){};
+window.submitBooking = window.submitBooking || function(){};
+window.submitPayNotify = window.submitPayNotify || function(){};
+window.copyUPI = window.copyUPI || function(){};
+window.saveBanner = window.saveBanner || function(){};
+window.renderBanners = window.renderBanners || function(){};
+window.openBooking = window.openBooking || function(){};
+window.closeBooking = window.closeBooking || function(){};
+window.confirmPublicBooking = window.confirmPublicBooking || function(){};
+window.saveFirebaseConfig = window.saveFirebaseConfig || function(){};
+window.loadExistingConfig = window.loadExistingConfig || function(){};
+
 </script>
 
 </body>
