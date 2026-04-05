@@ -1689,13 +1689,18 @@ function showPublicHome() {
 
 function showLoginScreen() {
   document.getElementById('public-home').style.display = 'none';
-  // Show setup or login depending on firebase config
-  const savedCfg = localStorage.getItem('fb_cfg');
-  if (savedCfg) {
-    document.getElementById('login-screen').style.display = 'flex';
-    populateStudentSelect();
-  } else {
-    document.getElementById('setup-screen').style.display = 'flex';
+  // Always go to login — config is hardcoded
+  document.getElementById('login-screen').style.display = 'flex';
+  populateStudentSelect();
+  // If db not ready yet, wait for it
+  if (!db) {
+    const checkDb = setInterval(() => {
+      if (db) {
+        clearInterval(checkDb);
+        populateStudentSelect();
+      }
+    }, 300);
+    setTimeout(() => clearInterval(checkDb), 8000);
   }
 }
 
