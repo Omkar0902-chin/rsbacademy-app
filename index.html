@@ -1206,6 +1206,7 @@ window.showPage = function(p) {
   const renders = {
     dashboard:renderDashboard, students:renderStudents, attendance:renderAttendance,
     fees:renderFees, requests:renderRequests, messages:renderAdminMessages,
+    banners:renderBanners,
     'student-home':renderStudentHome, 'student-attendance':renderStudentAttendance,
     'student-fees':renderStudentFees, 'student-book':renderStudentBook, 'student-messages':renderStudentMessages
   };
@@ -1927,21 +1928,7 @@ window.deleteBanner = async function(id) {
 };
 
 // Override showPage to handle banners
-const _origRenders = {
-  dashboard: typeof renderDashboard !== 'undefined' ? renderDashboard : null,
-};
-
-const _origShowPageFn = window.showPage;
-const _extendedShowPage = function(p) {
-  _origShowPageFn(p);
-  if (p === 'banners') renderBanners();
-};
-window.showPage = _extendedShowPage;
-
 // Public home shown via auto-load logic above
-
-// Also load banners into Firebase listeners
-const _origStartListeners = startListeners;
 
 // Responsive: on desktop admin gets 2-col dashboard
 if(window.innerWidth>=700){
