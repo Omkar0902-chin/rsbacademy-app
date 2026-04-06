@@ -1197,7 +1197,7 @@ window.closeModal = function(id) { document.getElementById(id).classList.remove(
 // ══════════════════════════════════════════
 let students = [], attendance = {}, fees = [], requests = [], messages = [];
 let publicBookings = [];
-let appCfg = { adminPass: '', upiId: 'snehalnikam.15-1@okhdfcbank' };
+let appCfg = { adminpass: '', upiId: 'snehalnikam.15-1@okhdfcbank' };
 let currentRole = null, currentStudentId = null, activeAdminMsgStudent = null;
 let studentFilter = 'All', attFilter = 'All', feeFilter = 'All', reqFilter = 'All';
 
@@ -1298,7 +1298,7 @@ window.doLogin = async function() {
   err.textContent = '';
   if (loginRole === 'admin') {
     const pass = document.getElementById('admin-pass').value;
-    if (pass !== appCfg.adminPass) { err.textContent = 'Incorrect password.'; return; }
+    if (pass !== appCfg.adminpass) { err.textContent = 'Incorrect password.'; return; }
     currentRole = 'admin'; currentStudentId = null;
     startApp();
   } else {
