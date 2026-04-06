@@ -379,7 +379,7 @@ tr:last-child td{border-bottom:none;}
       <div class="banner-slide active" id="default-banner">
         <div class="banner-text-card">
           <img src="https://omkar0902-chin.github.io/rsbacademy-app/icons/rsb%20logo.jpeg" style="width:90px;height:90px;border-radius:16px;object-fit:cover;margin-bottom:10px;border:2px solid rgba(29,185,84,0.3);" onerror="this.outerHTML='<div style=&quot;font-size:48px;margin-bottom:10px;&quot;>🏆</div>'"/>
-          <div class="banner-text-title">Welcome to RSB Academy</div>
+          <div class="banner-text-title">Welcome to RSB Sports Academy</div>
           <div class="banner-text-sub">Yoga · Zumba · Dance · Cricket · Swimming</div>
         </div>
       </div>
@@ -413,7 +413,7 @@ tr:last-child td{border-bottom:none;}
       <div class="pub-service" style="border-color:rgba(77,166,255,0.3);" onclick="openBooking('swimming')">
         <div class="pub-service-icon">🏊</div>
         <div class="pub-service-name">Swimming</div>
-        <div class="pub-service-price">₹400/hr</div>
+        <div class="pub-service-price">₹100/hr</div>
       </div>
     </div>
   </div>
@@ -422,24 +422,24 @@ tr:last-child td{border-bottom:none;}
   <div class="pub-section">
     <div class="pub-section-title">🎓 Academy Classes</div>
     <div class="pub-services">
-      <div class="pub-service" style="border-color:rgba(29,185,84,0.2);">
-        <div class="pub-service-icon">🧘</div><div class="pub-service-name">Yoga</div><div class="pub-service-price">6AM & 7PM</div>
+      <div class="pub-service" style="border-color:rgba(29,185,84,0.2);cursor:pointer;" onclick="openBooking('yoga')">
+        <div class="pub-service-icon">🧘</div><div class="pub-service-name">Yoga</div><div class="pub-service-price">4PM – 5PM</div>
       </div>
-      <div class="pub-service" style="border-color:rgba(255,96,150,0.2);">
-        <div class="pub-service-icon">💃</div><div class="pub-service-name">Zumba</div><div class="pub-service-price">7AM & 6PM</div>
+      <div class="pub-service" style="border-color:rgba(255,96,150,0.2);cursor:pointer;" onclick="openBooking('zumba')">
+        <div class="pub-service-icon">💃</div><div class="pub-service-name">Zumba</div><div class="pub-service-price">5:15PM – 6:15PM</div>
       </div>
-      <div class="pub-service" style="border-color:rgba(160,144,255,0.2);">
+      <div class="pub-service" style="border-color:rgba(160,144,255,0.2);cursor:pointer;" onclick="openBooking('dance')">
         <div class="pub-service-icon">🎵</div><div class="pub-service-name">Dance</div><div class="pub-service-price">5PM & 8PM</div>
       </div>
     </div>
-    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:6px;">Login as student to manage your classes</div>
+    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:6px;">Tap a class to book a slot</div>
   </div>
 
   <!-- Photos & Events -->
   <div class="pub-section">
     <div class="pub-section-title">📸 Photos & Events</div>
     <div class="gallery-grid" id="pub-gallery-grid">
-      <div class="gallery-wide"><span>🏆</span><div class="gallery-overlay"><div class="gallery-overlay-title">RSB Academy</div><div class="gallery-overlay-date">Your Ultimate Fitness Destination</div></div></div>
+      <div class="gallery-wide"><span>🏆</span><div class="gallery-overlay"><div class="gallery-overlay-title">RSB Sports Academy</div><div class="gallery-overlay-date">Your Ultimate Fitness Destination</div></div></div>
     </div>
     <div id="pub-events-list">
       <div class="event-pub-card" style="justify-content:center;color:var(--muted);font-size:12px;">No upcoming events</div>
@@ -1013,6 +1013,7 @@ tr:last-child td{border-bottom:none;}
   <div class="form-group"><label>Event Name *</label><input type="text" id="event-name" placeholder="e.g. Summer Cricket Camp"/></div>
   <div class="form-group"><label>Date *</label><input type="date" id="event-date"/></div>
   <div class="form-group"><label>Description</label><input type="text" id="event-desc" placeholder="e.g. Open for all ages · Register now"/></div>
+  <div class="form-group"><label>Photo URL (optional)</label><input type="text" id="event-photo" placeholder="https://... paste image link"/></div>
   <div class="form-group"><label>Show on Homepage</label>
     <select id="event-active"><option value="true">Yes — visible to all</option><option value="false">No — hidden</option></select>
   </div>
@@ -1957,8 +1958,10 @@ window.goToSlide = function(index) {
 // ══ BOOKING SYSTEM ══
 const serviceSlots = {
   cricket: { name: 'Cricket Turf', icon: '🏏', price: '₹800-900/hour', slots: ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM','8:00 PM','9:00 PM','10:00 PM'] },
-  yoga: { name: 'Yoga Space', icon: '🧘', price: '₹100/session', slots: ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','5:00 PM','6:00 PM','7:00 PM','8:00 PM'] },
-  swimming: { name: 'Swimming Pool', icon: '🏊', price: '₹400/hour', slots: ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM'] }
+  yoga: { name: 'Yoga Class', icon: '🧘', price: '₹100/session', slots: ['4:00 PM','4:15 PM','4:30 PM','4:45 PM','5:00 PM'] },
+  zumba: { name: 'Zumba Class', icon: '💃', price: '₹100/session', slots: ['5:15 PM','5:30 PM','5:45 PM','6:00 PM','6:15 PM'] },
+  dance: { name: 'Dance Class', icon: '🎵', price: '₹100/session', slots: ['5:00 PM','6:00 PM','7:00 PM','8:00 PM'] },
+  swimming: { name: 'Swimming Pool', icon: '🏊', price: '₹100/hour', slots: ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM'] }
 };
 
 window.openBooking = function(service) {
@@ -2322,10 +2325,10 @@ function renderEvents() {
   if(!events2.length){el.innerHTML='<div class="empty">No events yet. Add your first event!</div>';return;}
   el.innerHTML = events2.map(e=>`
     <div style="display:flex;gap:10px;align-items:center;padding:11px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);">
-      <div style="background:rgba(29,185,84,0.12);border:1px solid rgba(29,185,84,0.25);border-radius:8px;padding:6px 10px;text-align:center;flex-shrink:0;min-width:44px;">
+      ${e.photo ? `<img src="${esc(e.photo)}" style="width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'"/>` : `<div style="background:rgba(29,185,84,0.12);border:1px solid rgba(29,185,84,0.25);border-radius:8px;padding:6px 10px;text-align:center;flex-shrink:0;min-width:44px;">
         <div style="font-size:16px;font-weight:700;color:#1DB954;">${e.date?new Date(e.date+'T00:00:00').getDate():''}</div>
         <div style="font-size:9px;color:#1DB954;text-transform:uppercase;">${e.date?new Date(e.date+'T00:00:00').toLocaleString('en',{month:'short'}):''}</div>
-      </div>
+      </div>`}
       <div style="flex:1;">
         <div style="font-size:13px;font-weight:600;color:#fff;">${esc(e.name)}</div>
         <div style="font-size:11px;color:var(--muted);">${esc(e.desc||'')}</div>
@@ -2361,10 +2364,10 @@ function renderPublicEvents() {
   if(!active.length){el.innerHTML='<div class="event-pub-card" style="justify-content:center;color:var(--muted);font-size:12px;">No upcoming events</div>';return;}
   el.innerHTML = active.map(e=>`
     <div class="event-pub-card" onclick="openFullViewer('event','${e.id}')" style="cursor:pointer;">
-      <div class="event-pub-date">
+      ${e.photo ? `<img src="${esc(e.photo)}" style="width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'"/>` : `<div class="event-pub-date">
         <div class="event-pub-day">${e.date?new Date(e.date+'T00:00:00').getDate():''}</div>
         <div class="event-pub-mon">${e.date?new Date(e.date+'T00:00:00').toLocaleString('en',{month:'short'}):''}</div>
-      </div>
+      </div>`}
       <div>
         <div class="event-pub-title">${esc(e.name)}</div>
         <div class="event-pub-desc">${esc(e.desc||'')}</div>
@@ -2415,6 +2418,7 @@ window.saveEvent = async function() {
     name: document.getElementById('event-name').value.trim(),
     date: document.getElementById('event-date').value,
     desc: document.getElementById('event-desc').value.trim(),
+    photo: document.getElementById('event-photo').value.trim(),
     active: document.getElementById('event-active').value === 'true',
     updatedAt: serverTimestamp()
   };
@@ -2434,6 +2438,7 @@ window.editEvent = function(id) {
   document.getElementById('event-name').value = e.name||'';
   document.getElementById('event-date').value = e.date||'';
   document.getElementById('event-desc').value = e.desc||'';
+  document.getElementById('event-photo').value = e.photo||'';
   document.getElementById('event-active').value = e.active===false?'false':'true';
   openModal('addEventModal');
 };
@@ -2470,7 +2475,7 @@ window.openFullViewer = function(type, id) {
     if (!e) return;
     const dateStr = e.date ? new Date(e.date+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}) : '';
     content.innerHTML = `
-      <div style="font-size:64px;margin-bottom:16px;">🗓️</div>
+      ${e.photo ? `<img src="${esc(e.photo)}" class="fullpage-img" onerror="this.style.display='none'"/>` : `<div style="font-size:64px;margin-bottom:16px;">🗓️</div>`}
       <div class="fullpage-badge">📅 Upcoming Event</div>
       <div class="fullpage-title">${esc(e.name)}</div>
       ${dateStr ? `<div class="fullpage-sub" style="color:#1DB954;font-weight:600;font-size:14px;margin-bottom:6px;">${dateStr}</div>` : ''}
