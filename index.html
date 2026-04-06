@@ -369,7 +369,7 @@ tr:last-child td{border-bottom:none;}
     <div class="banner-slider" id="pub-banner-slider">
       <div class="banner-slide active" id="default-banner">
         <div class="banner-text-card">
-          <img src="https://omkar0902-chin.github.io/rsbacademy-app/icons/rsb%20logo.jpeg" style="width:90px;height:90px;border-radius:16px;object-fit:cover;margin-bottom:10px;border:2px solid rgba(29,185,84,0.3);" onerror="this.outerHTML='<div style=&quot;font-size:48px;margin-bottom:10px;&quot;>🏆</div>'"/>
+          <img src="https://omkar0902-chin.github.io/rsbacademy-app/icons/rsb_logo.jpeg" style="width:90px;height:90px;border-radius:16px;object-fit:cover;margin-bottom:10px;border:2px solid rgba(29,185,84,0.3);" onerror="this.outerHTML='<div style=&quot;font-size:48px;margin-bottom:10px;&quot;>🏆</div>'"/>
           <div class="banner-text-title">Welcome to RSB Academy</div>
           <div class="banner-text-sub">Yoga · Zumba · Dance · Cricket · Swimming</div>
         </div>
@@ -454,7 +454,7 @@ tr:last-child td{border-bottom:none;}
     <div class="pub-contact">
       <div class="pub-contact-row"><div class="pub-contact-icon">📍</div><div><div style="font-size:13px;font-weight:500;color:#fff;">RSB Sports Academy</div><div style="font-size:11px;color:var(--muted);">Ganesh Society, Chincholi, Dehuroad, Pune</div></div></div>
       <div class="pub-contact-row" onclick="window.open('tel:+917391926006')"><div class="pub-contact-icon">📞</div><div><div style="font-size:13px;font-weight:500;color:#fff;">+91 73919 26006</div><div style="font-size:11px;color:var(--muted);">Tap to call</div></div></div>
-      <div class="pub-contact-row" onclick="window.open('mailto:rsbsports.15@gmail.com')"><div class="pub-contact-icon">✉️</div><div><div style="font-size:13px;font-weight:500;color:#fff;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b191809181b04191f18455a5e2b0c060a020745080406">[email&#160;protected]</a></div><div style="font-size:11px;color:var(--muted);">Tap to email</div></div></div>
+      <div class="pub-contact-row" onclick="window.open('mailto:rsbsports.15@gmail.com')"><div class="pub-contact-icon">✉️</div><div><div style="font-size:13px;font-weight:500;color:#fff;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4537362736352a3731366b7470052228242c296b262a28">[email&#160;protected]</a></div><div style="font-size:11px;color:var(--muted);">Tap to email</div></div></div>
       <div class="pub-contact-row" onclick="window.open('https://instagram.com/rsbsportsacademy')"><div class="pub-contact-icon">📸</div><div><div style="font-size:13px;font-weight:500;color:#fff;">@rsbsportsacademy</div><div style="font-size:11px;color:var(--muted);">Follow on Instagram</div></div></div>
     </div>
   </div>
@@ -863,7 +863,7 @@ tr:last-child td{border-bottom:none;}
 
   <!-- Student bottom nav -->
   <nav class="bottom-nav" id="bottom-nav">
-    <button class="bn-item active" onclick="showPage('student-home')" id="bn-home"><div class="bn-icon">🏠</div><span>Home</span></button>
+    <button class="bn-item active" onclick="showPage('student-home');setTimeout(()=>renderStudentHome(),100);" id="bn-home"><div class="bn-icon">🏠</div><span>Home</span></button>
     <button class="bn-item" onclick="showPage('student-attendance')" id="bn-att"><div class="bn-icon">📊</div><span>Attendance</span></button>
     <button class="bn-item" onclick="showPage('student-fees')" id="bn-fees"><div class="bn-icon">💳</div><span>Fees</span></button>
     <button class="bn-item" onclick="showPage('student-book')" id="bn-book"><div class="bn-icon">📅</div><span>Book</span></button>
@@ -1249,11 +1249,13 @@ window.logout = function() {
 //  APP INIT
 // ══════════════════════════════════════════
 function startApp() {
+  // Completely hide all other screens
+  const pubHome = document.getElementById('public-home');
+  if(pubHome){ pubHome.style.display='none'; pubHome.style.zIndex='-999'; }
   document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('public-home').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   startListeners();
-  startPhotosListener();
+  if(typeof startPhotosListener === 'function') startPhotosListener();
   buildNav();
   if (currentRole === 'admin') {
     document.getElementById('admin-topbar').style.display = 'flex';
@@ -1261,12 +1263,14 @@ function startApp() {
     document.getElementById('student-header').style.display = 'none';
     document.getElementById('main-content').classList.add('admin-content');
     showPage('dashboard');
+    setTimeout(() => renderDashboard(), 1000);
   } else {
     document.getElementById('admin-topbar').style.display = 'none';
     document.getElementById('bottom-nav').style.display = 'flex';
     document.getElementById('student-header').style.display = 'flex';
     document.getElementById('main-content').classList.remove('admin-content');
     showPage('student-home');
+    setTimeout(() => renderStudentHome(), 1000);
   }
 }
 
