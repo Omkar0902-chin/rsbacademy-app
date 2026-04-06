@@ -2047,10 +2047,10 @@ window.confirmPublicBooking = async function() {
       });
     } catch(e) {}
   }
+  // Build WhatsApp message BEFORE closeBooking() clears selectedSlot
+  const msg = `Hi RSB Sports Academy! 🙏\nI've booked *${s.name}* on *${date}* at *${selectedSlot}* for *${duration}* for *${people} person(s)*.\nName: ${name}\nPhone: ${phone}`;
   closeBooking();
   toast(`Booking confirmed! ${s.icon} We'll contact you on WhatsApp!`);
-  // Open WhatsApp confirmation with time slot and duration
-  const msg = `Hi RSB Sports Academy! 🙏\nI've booked *${s.name}* on *${date}* at *${selectedSlot}* for *${duration}* for *${people} person(s)*.\nName: ${name}\nPhone: ${phone}`;
   setTimeout(() => window.open(`https://wa.me/917391926006?text=${encodeURIComponent(msg)}`), 1000);
 };
 
