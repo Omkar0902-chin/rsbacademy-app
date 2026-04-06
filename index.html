@@ -527,7 +527,7 @@ tr:last-child td{border-bottom:none;}
         <div id="cricket-upi-qr"></div>
         <div style="font-size:11px;color:#333;margin-top:6px;">Scan to pay advance</div>
       </div>
-      <div class="upi-id-pill" id="cricket-upi-id-pill">rsbsports@upi</div>
+      <div class="upi-id-pill" id="cricket-upi-id-pill">snehalnikam.15-1@okhdfcbank</div>
       <button class="btn btn-upi btn-sm" style="width:100%;margin-top:8px;" onclick="navigator.clipboard.writeText(document.getElementById('cricket-upi-id-pill').textContent).then(()=>toast('UPI ID copied! 📋'))">📋 Copy UPI ID</button>
     </div>
     <button class="btn btn-primary" style="width:100%;padding:14px;font-size:14px;border-radius:12px;" onclick="confirmPublicBooking()">Confirm Booking →</button>
@@ -605,12 +605,12 @@ tr:last-child td{border-bottom:none;}
   <div class="login-card">
     <div id="admin-login-form">
       <div class="lfg"><label>Password</label><input type="password" id="admin-pass" placeholder="Admin password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-      <div class="login-hint">Default: <b>admin8283</b></div>
+      <!-- Admin password hint removed for security -->
     </div>
     <div id="student-login-form" style="display:none">
       <div class="lfg"><label>Your name</label><select id="student-select"><option value="">— Choose your name —</option></select></div>
       <div class="lfg"><label>PIN</label><input type="password" id="student-pin" placeholder="4-digit PIN" maxlength="4" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-      <div class="login-hint">Default PIN: <b>1234</b></div>
+      
     </div>
     <button class="btn-login" onclick="doLogin()">Sign in →</button>
     <div class="login-err" id="login-err"></div>
@@ -758,6 +758,33 @@ tr:last-child td{border-bottom:none;}
   </div>
 </div>
 
+<!-- ══ ADMIN BOOKINGS PAGE ══ -->
+<div class="page" id="page-bookings">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📅 Slot Bookings</div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <div class="sync-indicator"><div class="sync-dot" id="bookings-sync-dot"></div><span style="font-size:11px;color:var(--muted)">Live</span></div>
+      </div>
+    </div>
+    <div class="filter-row" id="bookings-filter-row">
+      <button class="filter-btn active" onclick="setBookingFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setBookingFilter('pending',this)">Pending</button>
+      <button class="filter-btn" onclick="setBookingFilter('confirmed',this)">Confirmed</button>
+      <button class="filter-btn" onclick="setBookingFilter('cancelled',this)">Cancelled</button>
+    </div>
+    <div class="filter-row" style="margin-top:-4px;">
+      <button class="filter-btn active" onclick="setBookingServiceFilter('all',this)">All Services</button>
+      <button class="filter-btn" onclick="setBookingServiceFilter('cricket',this)">🏏 Cricket</button>
+      <button class="filter-btn" onclick="setBookingServiceFilter('yoga',this)">🧘 Yoga</button>
+      <button class="filter-btn" onclick="setBookingServiceFilter('zumba',this)">💃 Zumba</button>
+      <button class="filter-btn" onclick="setBookingServiceFilter('dance',this)">🎵 Dance</button>
+      <button class="filter-btn" onclick="setBookingServiceFilter('swimming',this)">🏊 Swimming</button>
+    </div>
+    <div id="bookings-list"><div class="empty">Loading bookings…</div></div>
+  </div>
+</div>
+
 <!-- ══ STUDENT PAGES ══ -->
 
     <!-- Student Home -->
@@ -809,10 +836,12 @@ tr:last-child td{border-bottom:none;}
         </div>
 
         <div class="upi-qr-box" id="academy-qr-box">
-          <div id="academy-upi-qr"></div>
+          <div id="academy-upi-qr">
+            <img id="academy-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi%3A%2F%2Fpay%3Fpa%3Dsnehalnikam.15-1%40okhdfcbank%26pn%3DRSB%2BSports%2BAcademy%26tn%3DAcademy%2BFee" style="width:180px;height:180px;" onerror="this.outerHTML='<div style=\'font-size:12px;color:#555;\'>UPI: snehalnikam.15-1@okhdfcbank</div>'"/>
+          </div>
           <div style="font-size:11px;color:#333;margin-top:6px;">Academy payment QR — scan to pay</div>
         </div>
-        <div class="upi-id-pill" id="s-upi-id">academy@upi</div>
+        <div class="upi-id-pill" id="s-upi-id">snehalnikam.15-1@okhdfcbank</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
           <button class="btn btn-upi btn-sm" onclick="copyUPI()">📋 Copy UPI ID</button>
           <button class="btn btn-primary btn-sm" onclick="openModal('payNotifyModal')">✅ I've paid — notify admin</button>
@@ -1167,7 +1196,8 @@ window.closeModal = function(id) { document.getElementById(id).classList.remove(
 //  IN-MEMORY CACHE (synced from Firestore)
 // ══════════════════════════════════════════
 let students = [], attendance = {}, fees = [], requests = [], messages = [];
-let appCfg = { adminPass: 'admin8283', upiId: 'academy@upi' };
+let publicBookings = [];
+let appCfg = { adminPass: '', upiId: 'snehalnikam.15-1@okhdfcbank' };
 let currentRole = null, currentStudentId = null, activeAdminMsgStudent = null;
 let studentFilter = 'All', attFilter = 'All', feeFilter = 'All', reqFilter = 'All';
 
@@ -1220,7 +1250,13 @@ function startListeners() {
 
   // App config (UPI, admin password)
   unsubscribers.push(onSnapshot(doc(db,'config','app'), snap => {
-    if (snap.exists()) appCfg = { adminPass: 'admin8283', upiId: 'academy@upi', ...snap.data() };
+    if (snap.exists()) { appCfg = { upiId: 'snehalnikam.15-1@okhdfcbank', ...snap.data() }; }
+  }));
+
+  // Public bookings (slot bookings from customers)
+  unsubscribers.push(onSnapshot(collection(db,'public_bookings'), snap => {
+    publicBookings = snap.docs.map(d => ({id: d.id, ...d.data()}));
+    if (currentRole === 'admin') { renderAdminBookings(); buildNav(); }
   }));
 }
 
@@ -1280,9 +1316,11 @@ window.doLogin = async function() {
 window.logout = function() {
   currentRole = null; currentStudentId = null;
   document.getElementById('app').style.display = 'none';
-  document.getElementById('public-home').style.display = 'flex';
+  document.getElementById('login-screen').style.display = 'none';
+  const pubHome = document.getElementById('public-home');
+  pubHome.style.display = 'flex';
+  pubHome.style.zIndex = '2500';
   loadPublicBanners();
-  document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('admin-pass').value = '';
   document.getElementById('student-pin').value = '';
 };
@@ -1328,6 +1366,7 @@ function buildNav() {
       {id:'requests',label:'📥 Requests'+(pendingReqs>0?` (${pendingReqs})`:'')},
       {id:'messages',label:'💬 Messages'+(unreadMsgs>0?` (${unreadMsgs})`:'')},
       {id:'banners',label:'🖼️ Banners'},{id:'photos',label:'📸 Photos & Events'},
+      {id:'bookings',label:'📅 Bookings'+(publicBookings.filter(b=>b.status==='pending').length>0?` (${publicBookings.filter(b=>b.status==='pending').length})`:'')},
     ].map(t=>`<button class="admin-tab${document.getElementById('page-'+t.id)?.classList.contains('active')?' active':''}" onclick="showPage('${t.id}')">${t.label}</button>`).join('');
   } else {
     // Update notification dots on bottom nav
@@ -1378,7 +1417,8 @@ window.showPage = function(p) {
     dashboard:renderDashboard, students:renderStudents, attendance:renderAttendance,
     fees:renderFees, requests:renderRequests, messages:renderAdminMessages,
     'student-home':renderStudentHome, 'student-attendance':renderStudentAttendance,
-    'student-fees':renderStudentFees, 'student-book':renderStudentBook, 'student-messages':renderStudentMessages
+    'student-fees':renderStudentFees, 'student-book':renderStudentBook, 'student-messages':renderStudentMessages,
+    bookings: renderAdminBookings
   };
   if (renders[p]) renders[p]();
 };
@@ -1769,13 +1809,16 @@ function renderStudentFees(){
     <div class="metric"><div class="metric-val" style="color:var(--green)">₹${paid.toLocaleString('en-IN')}</div><div class="metric-lbl">Total paid</div></div>
     <div class="metric"><div class="metric-val" style="color:${pending?'var(--warning)':'var(--green)'}">₹${pending.toLocaleString('en-IN')}</div><div class="metric-lbl">Pending</div></div>
   `;
-  document.getElementById('s-upi-id').textContent=appCfg.upiId||'academy@upi';
+  const upiId=appCfg.upiId||'snehalnikam.15-1@okhdfcbank';
+  document.getElementById('s-upi-id').textContent=upiId;
+  const qrImg=document.getElementById('academy-qr-img');
+  if(qrImg) qrImg.src='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='+encodeURIComponent('upi://pay?pa='+upiId+'&pn=RSB+Sports+Academy&tn=Academy+Fee');
   document.getElementById('pay-date').value=todayStr;
   document.getElementById('s-fee-list').innerHTML=myFees.length===0?'<div class="empty">No fee records yet</div>':myFees.slice().reverse().map(f=>`<div class="fee-item"><div><div style="font-size:13px;font-weight:500">₹${(f.amount||0).toLocaleString('en-IN')}</div><div style="font-size:11px;color:var(--muted)">${fmt(f.date)} · ${esc(f.notes)||'—'}</div></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;color:var(--muted)">Due ${fmt(f.due)}</span><span class="badge badge-${feeStatus(f)}">${feeStatus(f)==='paid'?'Paid':feeStatus(f)==='overdue'?'Overdue':'Due'}</span></div></div>`).join('');
 }
 
 window.copyUPI=function(){
-  navigator.clipboard.writeText(appCfg.upiId||'academy@upi').then(()=>toast('UPI ID copied! 📋')).catch(()=>toast('UPI: '+(appCfg.upiId||'academy@upi')));
+  navigator.clipboard.writeText(appCfg.upiId||'snehalnikam.15-1@okhdfcbank').then(()=>toast('UPI ID copied! 📋')).catch(()=>toast('UPI: '+(appCfg.upiId||'snehalnikam.15-1@okhdfcbank')));
 };
 
 window.submitPayNotify=async function(){
@@ -1839,6 +1882,113 @@ window.studentSendMsg=async function(){
   setSyncStatus('live'); inp.value=''; renderStudentMessages();
 };
 
+
+// ══════════════════════════════════════════
+//  ADMIN — PUBLIC BOOKINGS
+// ══════════════════════════════════════════
+let bookingStatusFilter = 'all';
+let bookingServiceFilter = 'all';
+
+window.setBookingFilter = function(f, btn) {
+  bookingStatusFilter = f;
+  document.querySelectorAll('#bookings-filter-row .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAdminBookings();
+};
+
+window.setBookingServiceFilter = function(f, btn) {
+  bookingServiceFilter = f;
+  document.querySelectorAll('#page-bookings .filter-row:nth-child(3) .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAdminBookings();
+};
+
+function renderAdminBookings() {
+  const el = document.getElementById('bookings-list');
+  if (!el) return;
+
+  let list = publicBookings.slice();
+
+  // Filter by status
+  if (bookingStatusFilter !== 'all') {
+    list = list.filter(b => b.status === bookingStatusFilter);
+  }
+
+  // Filter by service
+  if (bookingServiceFilter !== 'all') {
+    list = list.filter(b => b.service === bookingServiceFilter);
+  }
+
+  // Sort: today first, then upcoming, then past
+  const todayStr2 = new Date().toISOString().split('T')[0];
+  list.sort((a, b) => {
+    // pending first, then by date
+    if (a.status === 'pending' && b.status !== 'pending') return -1;
+    if (b.status === 'pending' && a.status !== 'pending') return 1;
+    return (a.date || '').localeCompare(b.date || '');
+  });
+
+  if (list.length === 0) {
+    el.innerHTML = '<div class="empty">No bookings found</div>';
+    return;
+  }
+
+  el.innerHTML = list.map(b => {
+    const isToday = b.date === todayStr2;
+    const isPast = b.date < todayStr2;
+    const statusColor = b.status === 'confirmed' ? 'var(--success)' : b.status === 'cancelled' ? 'var(--danger)' : 'var(--warning)';
+    const statusBadge = b.status === 'confirmed' ? 'badge-approved' : b.status === 'cancelled' ? 'badge-rejected' : 'badge-pending';
+    const serviceIcon = {cricket:'🏏',yoga:'🧘',zumba:'💃',dance:'🎵',swimming:'🏊'}[b.service] || '📅';
+    const dateLabel = isToday ? '📍 Today' : isPast ? fmt(b.date) : fmt(b.date);
+
+    return `
+    <div class="req-item" style="${isToday && b.status==='pending' ? 'border-color:rgba(29,185,84,0.35);background:rgba(29,185,84,0.03);' : ''}">
+      <div class="req-item-header">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:#fff;">${serviceIcon} ${esc(b.serviceName||b.service)}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">
+            ${isToday ? '<span style="color:#1DB954;font-weight:600;">📍 Today</span>' : dateLabel}
+            · <b style="color:#fff;">${esc(b.slot||'—')}</b>
+            · ${esc(b.duration||'—')}
+            · ${esc(b.people||'1')} person(s)
+          </div>
+        </div>
+        <span class="badge ${statusBadge}">${b.status}</span>
+      </div>
+      <div class="req-item-body">
+        👤 <b>${esc(b.name||'—')}</b> &nbsp;|&nbsp; 📞 ${esc(b.phone||'—')}
+        ${b.ts ? `<br/><span style="font-size:10px;color:var(--muted);">Booked: ${fmtTs(b.ts)}</span>` : ''}
+      </div>
+      <div class="req-actions" style="flex-wrap:wrap;gap:6px;">
+        ${b.status === 'pending' ? `
+          <button class="btn btn-sm btn-success" onclick="updatePublicBooking('${b.id}','confirmed')">✓ Confirm</button>
+          <button class="btn btn-sm btn-danger" onclick="updatePublicBooking('${b.id}','cancelled')">✗ Cancel</button>
+        ` : ''}
+        ${b.status === 'confirmed' ? `
+          <button class="btn btn-sm btn-danger" onclick="updatePublicBooking('${b.id}','cancelled')">✗ Cancel</button>
+        ` : ''}
+        ${b.status === 'cancelled' ? `
+          <button class="btn btn-sm btn-success" onclick="updatePublicBooking('${b.id}','pending')">↩ Restore</button>
+        ` : ''}
+        <button class="btn btn-sm btn-wa" onclick="window.open('https://wa.me/91${b.phone ? b.phone.replace(/\D/g,'') : ''}?text=${encodeURIComponent('Hi '+( b.name||'there')+'! Your booking for '+(b.serviceName||b.service)+' on '+(b.date||'')+' at '+(b.slot||'')+' has been confirmed. See you at RSB Sports Academy! 🏆')}')">💬 WhatsApp</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.updatePublicBooking = async function(id, status) {
+  if (!db) return;
+  try {
+    setSyncStatus('syncing');
+    await updateDoc(doc(db, 'public_bookings', id), { status });
+    setSyncStatus('live');
+    const label = status === 'confirmed' ? 'Booking confirmed ✅' : status === 'cancelled' ? 'Booking cancelled' : 'Booking restored';
+    toast(label, status === 'confirmed' ? '#1DB954' : status === 'cancelled' ? '#f05252' : undefined);
+  } catch(e) {
+    setSyncStatus('live');
+    toast('Error: ' + e.message, '#f05252');
+  }
+};
 
 // ══════════════════════════════════════════
 //  PUBLIC HOME PAGE
@@ -1981,7 +2131,7 @@ window.openBooking = function(service) {
   const cricketUpi = document.getElementById('cricket-upi-section');
   if (service === 'cricket') {
     cricketUpi.style.display = 'block';
-    const upiId = (typeof appCfg !== 'undefined' && appCfg.upiId) ? appCfg.upiId : 'rsbsports@upi';
+    const upiId = (typeof appCfg !== 'undefined' && appCfg.upiId) ? appCfg.upiId : 'snehalnikam.15-1@okhdfcbank';
     document.getElementById('cricket-upi-id-pill').textContent = upiId;
     // Generate QR using free API
     const qrBox = document.getElementById('cricket-upi-qr');
@@ -1990,10 +2140,12 @@ window.openBooking = function(service) {
     cricketUpi.style.display = 'none';
   }
   document.getElementById('booking-page').style.display = 'block';
-  document.getElementById('book-date').addEventListener('change', function() {
-    renderSlots(currentBookingService, this.value);
-  });
 };
+
+// Date change listener registered once only (outside openBooking to avoid stacking)
+document.getElementById('book-date').addEventListener('change', function() {
+  if (currentBookingService) renderSlots(currentBookingService, this.value);
+});
 
 function renderSlots(service, date) {
   const grid = document.getElementById('slot-grid');
@@ -2025,6 +2177,12 @@ window.selectSlot = function(btn, slot) {
 window.closeBooking = function() {
   document.getElementById('booking-page').style.display = 'none';
   selectedSlot = null;
+  // Clear form fields so next customer starts fresh
+  document.getElementById('book-name').value = '';
+  document.getElementById('book-phone').value = '';
+  document.getElementById('book-people').value = '1';
+  document.getElementById('book-duration').value = '1 hour';
+  document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
 };
 
 window.confirmPublicBooking = async function() {
