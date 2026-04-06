@@ -2137,6 +2137,7 @@ if (!isInstalled) {
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
+    window.deferredPrompt = e;
     // Show banner after 3 seconds (let app load first)
     setTimeout(() => {
       if (!localStorage.getItem('pwa_dismissed')) {
@@ -2368,15 +2369,29 @@ window.addEventListener('appinstalled', () => {
   if(btn) btn.textContent = '✅ App Installed!';
 });
 
-window.installApp = function() {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then((result) => {
-      if (result.outcome === 'accepted') {
-        const btn = document.getElementById('home-install-btn');
-        if(btn) btn.textContent = '✅ App Installed!';
-      }
-      deferredPrompt = null;
-    });
+window.installApp = async function() {
+  const dp = window.deferredPrompt || deferredPrompt;
+  if (dp) {
+    dp.prompt();
+    const result = await dp.userChoice;
+    if (result.outcome === 'accepted') {
+      const btn = document.getElementById('home-install-btn');
+      if(btn) btn.style.display = 'none';
+      toast('App installed successfully! 🎉');
+    }
+    window.deferredPrompt = null;
+    deferredPrompt = null;
   } else {
-    // Show 
+    // iOS or prompt not available - show instructions
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    if (isIOS) {
+      toast('On iPhone: tap Share → Add to Home Screen ✅');
+    } else {
+      toast('To install: tap ⋮ menu in Chrome → Add to Home screen ✅');
+    }
+  }
+};
+
+</script>
+</body>
+</html>
