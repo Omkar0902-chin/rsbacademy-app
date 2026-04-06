@@ -1815,6 +1815,18 @@ function showPublicHome() {
   loadPublicBanners();
 }
 
+function goBackToHome() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('setup-screen').style.display = 'none';
+  const pubHome = document.getElementById('public-home');
+  if(pubHome){
+    pubHome.style.display = 'flex';
+    pubHome.style.zIndex = '2500';
+  }
+  if(typeof loadPublicBanners === 'function') loadPublicBanners();
+}
+window.goBackToHome = goBackToHome;
+
 function showLoginScreen() {
   document.getElementById('public-home').style.display = 'none';
   document.getElementById('setup-screen').style.display = 'none';
