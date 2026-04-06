@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-<title>RSB Academy</title>
+<title>RSB Sports Academy</title>
 
 <!-- ══ PWA — Manifest & Theme ══ -->
 <link rel="manifest" href="/rsbacademy-app/manifest.json"/>
@@ -14,7 +14,7 @@
 <!-- ══ PWA — iOS / Apple Support ══ -->
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="RSB"/>
+<meta name="apple-mobile-web-app-title" content="RSB Sports"/>
 <link rel="apple-touch-icon" href="icons/icon-192.png"/>
 <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png"/>
 <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png"/>
@@ -341,6 +341,15 @@ tr:last-child td{border-bottom:none;}
 
 /* ── ADMIN BANNER MANAGEMENT ── */
 #page-banners .banner-manage-item{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;}
+
+/* ── FULL-PAGE VIEWER ── */
+#fullpage-viewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.96);z-index:3000;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+#fullpage-viewer.open{display:flex;}
+.fullpage-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.1);border:0.5px solid rgba(255,255,255,0.2);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.fullpage-img{max-width:100%;max-height:60vh;border-radius:14px;object-fit:contain;margin-bottom:16px;}
+.fullpage-title{font-size:20px;font-weight:700;color:#fff;text-align:center;margin-bottom:6px;}
+.fullpage-sub{font-size:13px;color:var(--muted);text-align:center;line-height:1.6;}
+.fullpage-badge{display:inline-block;background:rgba(29,185,84,0.15);color:#1DB954;border:1px solid rgba(29,185,84,0.3);border-radius:20px;padding:4px 14px;font-size:11px;font-weight:600;margin-bottom:12px;}
 </style>
 </head>
 <body>
@@ -404,7 +413,7 @@ tr:last-child td{border-bottom:none;}
       <div class="pub-service" style="border-color:rgba(77,166,255,0.3);" onclick="openBooking('swimming')">
         <div class="pub-service-icon">🏊</div>
         <div class="pub-service-name">Swimming</div>
-        <div class="pub-service-price">₹100/hr</div>
+        <div class="pub-service-price">₹400/hr</div>
       </div>
     </div>
   </div>
@@ -491,12 +500,35 @@ tr:last-child td{border-bottom:none;}
         <option value="2">2 People</option>
         <option value="3">3 People</option>
         <option value="4">4 People</option>
-        <option value="5">5+ People</option>
+        <option value="5">5 People</option>
+        <option value="6">6 People</option>
+        <option value="7">7 People</option>
+        <option value="8">8 People</option>
+        <option value="9">9 People</option>
+        <option value="10+">10+ People</option>
       </select>
     </div>
-    <div class="form-group">
-      <label>Select Time Slot *</label>
+    <div class="form-group"><label>Duration</label>
+      <select id="book-duration">
+        <option value="1 hour">1 Hour</option>
+        <option value="2 hours">2 Hours</option>
+        <option value="3 hours">3 Hours</option>
+        <option value="4 hours">4 Hours</option>
+        <option value="5 hours">5 Hours</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Select Time Slot *</label>
       <div class="slot-grid" id="slot-grid"></div>
+    </div>
+    <div id="cricket-upi-section" style="display:none;background:rgba(255,165,0,0.06);border:1px solid rgba(255,165,0,0.25);border-radius:12px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:8px;">💳 Advance Payment (Cricket Turf)</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Pay ₹200 advance to confirm your cricket slot. Scan QR or use UPI ID below.</div>
+      <div class="upi-qr-box" style="margin:0 0 10px;">
+        <div id="cricket-upi-qr"></div>
+        <div style="font-size:11px;color:#333;margin-top:6px;">Scan to pay advance</div>
+      </div>
+      <div class="upi-id-pill" id="cricket-upi-id-pill">rsbsports@upi</div>
+      <button class="btn btn-upi btn-sm" style="width:100%;margin-top:8px;" onclick="navigator.clipboard.writeText(document.getElementById('cricket-upi-id-pill').textContent).then(()=>toast('UPI ID copied! 📋'))">📋 Copy UPI ID</button>
     </div>
     <button class="btn btn-primary" style="width:100%;padding:14px;font-size:14px;border-radius:12px;" onclick="confirmPublicBooking()">Confirm Booking →</button>
     <div style="height:20px;"></div>
@@ -989,6 +1021,12 @@ tr:last-child td{border-bottom:none;}
     <button class="btn btn-primary btn-sm" onclick="saveEvent()">Save Event</button>
   </div>
 </div></div>
+
+<!-- ══ FULL-PAGE VIEWER ══ -->
+<div id="fullpage-viewer">
+  <button class="fullpage-close" onclick="closeFullViewer()">✕</button>
+  <div id="fullpage-content" style="max-width:500px;width:100%;text-align:center;"></div>
+</div>
 
 <div class="toast" id="toast"></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -1867,7 +1905,7 @@ function renderPublicBanners() {
     purple: 'rgba(160,144,255,0.3)', orange: 'rgba(232,160,32,0.3)', pink: 'rgba(255,96,150,0.3)'
   };
   slider.innerHTML = activeBanners.map((b, i) => `
-    <div class="banner-slide ${i===0?'active':''}" id="slide-${i}">
+    <div class="banner-slide ${i===0?'active':''}" id="slide-${i}" onclick="openBannerViewer(${i})" style="cursor:pointer;">
       ${b.image ? `<img src="${b.image}" class="banner-img" onerror="this.style.display='none'"/>` : ''}
       <div class="banner-text-card" style="background:${colorMap[b.color||'green']};border-color:${borderMap[b.color||'green']};">
         <div class="banner-text-title">${b.title||''}</div>
@@ -1918,7 +1956,7 @@ window.goToSlide = function(index) {
 
 // ══ BOOKING SYSTEM ══
 const serviceSlots = {
-  cricket: { name: 'Cricket Turf', icon: '🏏', price: '₹500/hour', slots: ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM','8:00 PM','9:00 PM','10:00 PM'] },
+  cricket: { name: 'Cricket Turf', icon: '🏏', price: '₹800-900/hour', slots: ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM','8:00 PM','9:00 PM','10:00 PM'] },
   yoga: { name: 'Yoga Space', icon: '🧘', price: '₹100/session', slots: ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','5:00 PM','6:00 PM','7:00 PM','8:00 PM'] },
   swimming: { name: 'Swimming Pool', icon: '🏊', price: '₹400/hour', slots: ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM'] }
 };
@@ -1936,6 +1974,18 @@ window.openBooking = function(service) {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('book-date').value = today;
   renderSlots(service, today);
+  // Show/hide cricket advance UPI payment section
+  const cricketUpi = document.getElementById('cricket-upi-section');
+  if (service === 'cricket') {
+    cricketUpi.style.display = 'block';
+    const upiId = (typeof appCfg !== 'undefined' && appCfg.upiId) ? appCfg.upiId : 'rsbsports@upi';
+    document.getElementById('cricket-upi-id-pill').textContent = upiId;
+    // Generate QR using free API
+    const qrBox = document.getElementById('cricket-upi-qr');
+    qrBox.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('upi://pay?pa='+upiId+'&pn=RSB+Sports+Academy&am=200&tn=Cricket+Turf+Advance')}" style="width:150px;height:150px;" onerror="this.outerHTML='<div style=\'font-size:12px;color:#555;\'>UPI: '+upiId+'</div>'"/>`;
+  } else {
+    cricketUpi.style.display = 'none';
+  }
   document.getElementById('booking-page').style.display = 'block';
   document.getElementById('book-date').addEventListener('change', function() {
     renderSlots(currentBookingService, this.value);
@@ -1945,9 +1995,21 @@ window.openBooking = function(service) {
 function renderSlots(service, date) {
   const grid = document.getElementById('slot-grid');
   const slots = serviceSlots[service].slots;
-  grid.innerHTML = slots.map(slot => `
-    <button class="slot-btn" onclick="selectSlot(this, '${slot}')">${slot}</button>
-  `).join('');
+  grid.innerHTML = slots.map(slot => `<button class="slot-btn" onclick="selectSlot(this,'${slot}')">${slot}</button>`).join('');
+  // Mark booked slots from Firestore
+  if (db) {
+    getDocs(collection(db, 'public_bookings')).then(snap => {
+      const booked = snap.docs.map(d => d.data()).filter(b => b.service === service && b.date === date && b.status !== 'cancelled');
+      grid.querySelectorAll('.slot-btn').forEach(btn => {
+        const slotText = btn.textContent.trim();
+        if (booked.some(b => b.slot === slotText)) {
+          btn.classList.add('booked');
+          btn.disabled = true;
+          btn.textContent = slotText + ' ✗';
+        }
+      });
+    }).catch(() => {});
+  }
 }
 
 let selectedSlot = null;
@@ -1967,6 +2029,7 @@ window.confirmPublicBooking = async function() {
   const phone = document.getElementById('book-phone').value.trim();
   const date = document.getElementById('book-date').value;
   const people = document.getElementById('book-people').value;
+  const duration = document.getElementById('book-duration').value;
   if (!name) { toast('Please enter your name', '#f05252'); return; }
   if (!phone) { toast('Please enter your phone number', '#f05252'); return; }
   if (!date) { toast('Please select a date', '#f05252'); return; }
@@ -1976,15 +2039,15 @@ window.confirmPublicBooking = async function() {
     try {
       await setDoc(doc(db, 'public_bookings', Date.now().toString()), {
         service: currentBookingService, serviceName: s.name,
-        name, phone, date, slot: selectedSlot, people,
+        name, phone, date, slot: selectedSlot, people, duration,
         status: 'pending', ts: serverTimestamp()
       });
     } catch(e) {}
   }
   closeBooking();
   toast(`Booking confirmed! ${s.icon} We'll contact you on WhatsApp!`);
-  // Open WhatsApp confirmation
-  const msg = `Hi RSB Academy! I've booked ${s.name} on ${date} at ${selectedSlot} for ${people} person(s). Name: ${name}, Phone: ${phone}`;
+  // Open WhatsApp confirmation with time slot and duration
+  const msg = `Hi RSB Sports Academy! 🙏\nI've booked *${s.name}* on *${date}* at *${selectedSlot}* for *${duration}* for *${people} person(s)*.\nName: ${name}\nPhone: ${phone}`;
   setTimeout(() => window.open(`https://wa.me/917391926006?text=${encodeURIComponent(msg)}`), 1000);
 };
 
@@ -2093,7 +2156,7 @@ if(window.innerWidth>=700){
 <div id="pwa-install-banner">
   <div class="pwa-banner-icon">🏫</div>
   <div class="pwa-banner-text">
-    <div class="pwa-banner-title">Install Academy Manager</div>
+    <div class="pwa-banner-title">Install RSB Sports Academy</div>
     <div class="pwa-banner-sub">Add to home screen — works like a real app!</div>
   </div>
   <div class="pwa-banner-actions">
@@ -2112,11 +2175,30 @@ if(window.innerWidth>=700){
 </div>
 
 <script>
-// ══ SERVICE WORKER REGISTRATION ══
-// Unregister any old service workers to prevent caching issues
+// ══ SERVICE WORKER REGISTRATION (Inline SW for PWA) ══
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(registrations => {
-    registrations.forEach(reg => reg.unregister());
+  // Build inline service worker as blob
+  const swCode = `
+    const CACHE_NAME = 'rsb-cache-v1';
+    const urlsToCache = ['/rsbacademy-app/', '/rsbacademy-app/index.html'];
+    self.addEventListener('install', event => {
+      event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache).catch(()=>{})));
+      self.skipWaiting();
+    });
+    self.addEventListener('activate', event => {
+      event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));
+      self.clients.claim();
+    });
+    self.addEventListener('fetch', event => {
+      event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    });
+  `;
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).then(reg => {
+    console.log('RSB SW registered', reg.scope);
+  }).catch(err => {
+    console.log('SW registration failed:', err);
   });
 }
 
@@ -2262,7 +2344,7 @@ function renderPublicGallery() {
   if(!active.length) return;
   const catIcon = c => c==='Cricket'?'🏏':c==='Yoga'?'🧘':c==='Zumba'?'💃':c==='Dance'?'🎵':c==='Swimming'?'🏊':'🎉';
   el.innerHTML = active.map((p,i)=>`
-    <div class="${i===0?'gallery-wide':'gallery-item2'}">
+    <div class="${i===0?'gallery-wide':'gallery-item2'}" onclick="openFullViewer('photo','${p.id}')" style="cursor:pointer;">
       ${p.url?`<img src="${esc(p.url)}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" onerror="this.style.display='none'"/>`:''}
       <span>${catIcon(p.category)}</span>
       <div class="gallery-overlay">
@@ -2278,7 +2360,7 @@ function renderPublicEvents() {
   const active = events2.filter(e=>e.active!==false);
   if(!active.length){el.innerHTML='<div class="event-pub-card" style="justify-content:center;color:var(--muted);font-size:12px;">No upcoming events</div>';return;}
   el.innerHTML = active.map(e=>`
-    <div class="event-pub-card">
+    <div class="event-pub-card" onclick="openFullViewer('event','${e.id}')" style="cursor:pointer;">
       <div class="event-pub-date">
         <div class="event-pub-day">${e.date?new Date(e.date+'T00:00:00').getDate():''}</div>
         <div class="event-pub-mon">${e.date?new Date(e.date+'T00:00:00').toLocaleString('en',{month:'short'}):''}</div>
@@ -2368,6 +2450,57 @@ window.addEventListener('appinstalled', () => {
   const btn = document.getElementById('home-install-btn');
   if(btn) btn.textContent = '✅ App Installed!';
 });
+
+// ══ FULL-PAGE VIEWER ══
+window.openFullViewer = function(type, id) {
+  const viewer = document.getElementById('fullpage-viewer');
+  const content = document.getElementById('fullpage-content');
+  if (type === 'photo') {
+    const p = photos.find(x => x.id === id);
+    if (!p) return;
+    const catIcon = c => c==='Cricket'?'🏏':c==='Yoga'?'🧘':c==='Zumba'?'💃':c==='Dance'?'🎵':c==='Swimming'?'🏊':'🎉';
+    content.innerHTML = `
+      <div class="fullpage-badge">${catIcon(p.category)} ${esc(p.category||'Photo')}</div>
+      ${p.url ? `<img src="${esc(p.url)}" class="fullpage-img" onerror="this.style.display='none'"/>` : `<div style="font-size:64px;margin-bottom:16px;">${catIcon(p.category)}</div>`}
+      <div class="fullpage-title">${esc(p.title)}</div>
+      ${p.date ? `<div class="fullpage-sub">${p.date}</div>` : ''}
+    `;
+  } else if (type === 'event') {
+    const e = events2.find(x => x.id === id);
+    if (!e) return;
+    const dateStr = e.date ? new Date(e.date+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}) : '';
+    content.innerHTML = `
+      <div style="font-size:64px;margin-bottom:16px;">🗓️</div>
+      <div class="fullpage-badge">📅 Upcoming Event</div>
+      <div class="fullpage-title">${esc(e.name)}</div>
+      ${dateStr ? `<div class="fullpage-sub" style="color:#1DB954;font-weight:600;font-size:14px;margin-bottom:6px;">${dateStr}</div>` : ''}
+      ${e.desc ? `<div class="fullpage-sub">${esc(e.desc)}</div>` : ''}
+      <button class="btn btn-primary" style="margin-top:16px;padding:12px 24px;" onclick="window.open('https://wa.me/917391926006?text=Hi RSB Sports Academy, I want to register for the event: ${encodeURIComponent(e.name||'')}')">💬 Register via WhatsApp</button>
+    `;
+  }
+  viewer.classList.add('open');
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeFullViewer = function() {
+  document.getElementById('fullpage-viewer').classList.remove('open');
+  document.body.style.overflow = '';
+};
+
+window.openBannerViewer = function(index) {
+  const b = banners.filter(x => x.active !== false)[index];
+  if (!b) return;
+  const viewer = document.getElementById('fullpage-viewer');
+  const content = document.getElementById('fullpage-content');
+  content.innerHTML = `
+    ${b.image ? `<img src="${esc(b.image)}" class="fullpage-img" onerror="this.style.display='none'"/>` : `<div style="font-size:64px;margin-bottom:16px;">🏫</div>`}
+    <div class="fullpage-title">${esc(b.title||'')}</div>
+    ${b.subtitle ? `<div class="fullpage-sub" style="margin-top:8px;">${esc(b.subtitle)}</div>` : ''}
+    <button class="btn btn-primary" style="margin-top:16px;padding:12px 24px;" onclick="window.open('https://wa.me/917391926006?text=Hi RSB Sports Academy!')">💬 Enquire on WhatsApp</button>
+  `;
+  viewer.classList.add('open');
+  document.body.style.overflow = 'hidden';
+};
 
 window.installApp = async function() {
   const dp = window.deferredPrompt || deferredPrompt;
