@@ -426,6 +426,15 @@ tr:last-child td{border-bottom:none;}
     <button class="pub-cta-btn" style="background:rgba(37,211,102,0.1);color:#25D366;border:0.5px solid rgba(37,211,102,0.3);" onclick="window.open('https://wa.me/917391926006?text=Hi RSB Academy, I want to book a slot!')">💬 WhatsApp</button>
     <button class="pub-cta-btn" style="background:var(--green);color:#000;" onclick="window.open('tel:+917391926006')">📞 Call Now</button>
   </div>
+  <div style="padding:0 16px 20px;">
+    <button id="home-install-btn" onclick="installApp()" style="width:100%;padding:14px;border-radius:12px;font-size:14px;font-weight:700;border:1px solid rgba(29,185,84,0.4);background:rgba(29,185,84,0.08);color:#1DB954;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+      📲 Install App on Your Phone
+    </button>
+    <div id="ios-install-hint" style="display:none;margin-top:10px;background:rgba(29,185,84,0.06);border:1px solid rgba(29,185,84,0.2);border-radius:12px;padding:14px;font-size:12px;color:#d8dde6;line-height:1.8;text-align:center;">
+      📱 <b>iPhone:</b> Tap the Share button ⎋ at the bottom → <b>"Add to Home Screen"</b> → Add ✅<br/>
+      🤖 <b>Android:</b> Tap the 3-dot menu → <b>"Add to Home Screen"</b> → Install ✅
+    </div>
+  </div>
   <div style="height:20px;"></div>
 </div>
 
@@ -2072,7 +2081,26 @@ window.addEventListener('popstate', function() {
 window.addEventListener('appinstalled', () => {
   const el = document.getElementById('pwa-install-banner');
   if(el) el.classList.remove('show');
+  const btn = document.getElementById('home-install-btn');
+  if(btn) btn.textContent = '✅ App Installed!';
 });
+
+window.installApp = function() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((result) => {
+      if (result.outcome === 'accepted') {
+        const btn = document.getElementById('home-install-btn');
+        if(btn) btn.textContent = '✅ App Installed!';
+      }
+      deferredPrompt = null;
+    });
+  } else {
+    // Show manual instructions for iOS or if prompt not available
+    const hint = document.getElementById('ios-install-hint');
+    if(hint) hint.style.display = hint.style.display === 'none' ? 'block' : 'none';
+  }
+};
 </script>
 </body>
 </html>
