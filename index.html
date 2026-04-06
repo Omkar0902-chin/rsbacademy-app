@@ -369,7 +369,7 @@ tr:last-child td{border-bottom:none;}
     <div class="banner-slider" id="pub-banner-slider">
       <div class="banner-slide active" id="default-banner">
         <div class="banner-text-card">
-          <img src="icons/rsb_logo.jpeg" style="width:70px;height:70px;border-radius:12px;object-fit:cover;margin-bottom:8px;"/>
+          <img src="icons/rsb_logo.jpeg" style="width:90px;height:90px;border-radius:16px;object-fit:cover;margin-bottom:10px;border:2px solid rgba(29,185,84,0.3);" onerror="this.outerHTML='<div style=&quot;font-size:48px;margin-bottom:10px;&quot;>🏆</div>'"/>
           <div class="banner-text-title">Welcome to RSB Academy</div>
           <div class="banner-text-sub">Yoga · Zumba · Dance · Cricket · Swimming</div>
         </div>
@@ -394,17 +394,17 @@ tr:last-child td{border-bottom:none;}
       <div class="pub-service" style="border-color:rgba(255,165,0,0.3);" onclick="openBooking('cricket')">
         <div class="pub-service-icon">🏏</div>
         <div class="pub-service-name">Cricket Turf</div>
-        <div class="pub-service-price">₹500/hr</div>
+        <div class="pub-service-price">₹800-900/hr</div>
       </div>
       <div class="pub-service" style="border-color:rgba(29,185,84,0.3);" onclick="openBooking('yoga')">
         <div class="pub-service-icon">🧘</div>
         <div class="pub-service-name">Yoga Space</div>
-        <div class="pub-service-price">₹300/session</div>
+        <div class="pub-service-price">₹100/session</div>
       </div>
       <div class="pub-service" style="border-color:rgba(77,166,255,0.3);" onclick="openBooking('swimming')">
         <div class="pub-service-icon">🏊</div>
         <div class="pub-service-name">Swimming</div>
-        <div class="pub-service-price">₹400/hr</div>
+        <div class="pub-service-price">₹100/hr</div>
       </div>
     </div>
   </div>
@@ -1900,7 +1900,7 @@ window.goToSlide = function(index) {
 // ══ BOOKING SYSTEM ══
 const serviceSlots = {
   cricket: { name: 'Cricket Turf', icon: '🏏', price: '₹500/hour', slots: ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM','8:00 PM','9:00 PM','10:00 PM'] },
-  yoga: { name: 'Yoga Space', icon: '🧘', price: '₹300/session', slots: ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','5:00 PM','6:00 PM','7:00 PM','8:00 PM'] },
+  yoga: { name: 'Yoga Space', icon: '🧘', price: '₹100/session', slots: ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','5:00 PM','6:00 PM','7:00 PM','8:00 PM'] },
   swimming: { name: 'Swimming Pool', icon: '🏊', price: '₹400/hour', slots: ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM'] }
 };
 
