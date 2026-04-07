@@ -653,12 +653,12 @@ tr:last-child td{border-bottom:none;}
   <div class="login-card">
     <div id="admin-login-form">
       <div class="lfg"><label>Password</label><input type="password" id="admin-pass" placeholder="Admin password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-      <!-- Admin password hint removed for security -->
+      <div class="login-hint" id="admin-login-hint" style="display:none;color:var(--blue);">First time? Enter any password to set it.</div>
     </div>
     <div id="student-login-form" style="display:none">
       <div class="lfg"><label>Your name</label><select id="student-select"><option value="">— Choose your name —</option></select></div>
       <div class="lfg"><label>PIN</label><input type="password" id="student-pin" placeholder="4-digit PIN" maxlength="4" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-      <div class="login-hint">Default PIN: <b>1234</b></div>
+      <div class="login-hint">Enter your 4-digit PIN</div>
     </div>
     <button class="btn-login" onclick="doLogin()">Sign in →</button>
     <div class="login-err" id="login-err"></div>
@@ -947,7 +947,8 @@ tr:last-child td{border-bottom:none;}
     <div class="more-drawer-item" id="drawer-bookings" onclick="adminNavTo('bookings');closeAdminMore()"><span style="font-size:20px;">📅</span> Bookings</div>
     <div class="more-drawer-item" id="drawer-banners" onclick="adminNavTo('banners');closeAdminMore()"><span style="font-size:20px;">🖼️</span> Banners</div>
     <div class="more-drawer-item" id="drawer-photos" onclick="adminNavTo('photos');closeAdminMore()"><span style="font-size:20px;">📸</span> Photos & Events</div>
-    <div style="margin-top:12px;padding-top:12px;border-top:0.5px solid rgba(255,255,255,0.07);">
+    <div style="margin-top:12px;padding-top:12px;border-top:0.5px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:8px;">
+      <button class="btn" style="width:100%;padding:11px;" onclick="openModal('changePassModal');closeAdminMore()">🔑 Change Admin Password</button>
       <button class="btn btn-danger" style="width:100%;padding:11px;" onclick="logout()">Sign out</button>
     </div>
   </div>
@@ -1076,6 +1077,18 @@ tr:last-child td{border-bottom:none;}
   <div id="fullpage-content" style="max-width:500px;width:100%;text-align:center;"></div>
 </div>
 
+<div class="overlay" id="changePassModal"><div class="modal">
+  <div class="modal-title">🔑 Change Admin Password</div>
+  <div class="form-group"><label>Current Password</label><input type="password" id="cp-current" placeholder="Enter current password"/></div>
+  <div class="form-group"><label>New Password</label><input type="password" id="cp-new" placeholder="Min 6 characters"/></div>
+  <div class="form-group"><label>Confirm New Password</label><input type="password" id="cp-confirm" placeholder="Repeat new password"/></div>
+  <div style="color:var(--danger);font-size:12px;min-height:16px;margin-bottom:8px;" id="cp-err"></div>
+  <div class="modal-actions">
+    <button class="btn btn-sm" onclick="closeModal('changePassModal')">Cancel</button>
+    <button class="btn btn-primary btn-sm" onclick="changeAdminPass()">Save Password</button>
+  </div>
+</div></div>
+
 <div class="toast" id="toast"></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -1174,19 +1187,22 @@ function setSyncStatus(status) {
   if (lbl) lbl.textContent = status === 'live' ? 'Live' : status === 'syncing' ? 'Syncing…' : 'Offline';
 }
 
-// Auto-load if config exists
-const HARDCODED_CFG = {
-  apiKey: "AIzaSyClcDX6xqSkgneRmTNoq_nljwUycGgXsyM",
-  authDomain: "rsbacademy-manager.firebaseapp.com",
-  projectId: "rsbacademy-manager",
-  storageBucket: "rsbacademy-manager.firebasestorage.app",
-  messagingSenderId: "904399049513",
-  appId: "1:904399049513:web:39be796d53fb1d3ffddd38"
-};
-localStorage.setItem('fb_cfg', JSON.stringify(HARDCODED_CFG));
-document.getElementById('setup-screen').style.display = 'none';
-showPublicHome();
-initFirebase(HARDCODED_CFG);
+// Auto-load saved config if it exists
+(function() {
+  const saved = localStorage.getItem('fb_cfg');
+  if (saved) {
+    try {
+      document.getElementById('setup-screen').style.display = 'none';
+      showPublicHome();
+      initFirebase(JSON.parse(saved));
+    } catch(e) {
+      localStorage.removeItem('fb_cfg');
+      showPublicHome();
+    }
+  } else {
+    showPublicHome();
+  }
+})();
 
 // ══════════════════════════════════════════
 //  HELPERS
@@ -1215,7 +1231,7 @@ window.closeModal = function(id) { document.getElementById(id).classList.remove(
 // ══════════════════════════════════════════
 let students = [], attendance = {}, fees = [], requests = [], messages = [];
 let publicBookings = [];
-let appCfg = { adminPass: 'admin8283', upiId: 'snehalnikam.15-1@okhdfcbank' };
+let appCfg = { adminPass: '', upiId: 'snehalnikam.15-1@okhdfcbank' };
 let currentRole = null, currentStudentId = null, activeAdminMsgStudent = null;
 let studentFilter = 'All', attFilter = 'All', feeFilter = 'All', reqFilter = 'All';
 
@@ -1268,7 +1284,7 @@ function startListeners() {
 
   // App config (UPI, admin password)
   unsubscribers.push(onSnapshot(doc(db,'config','app'), snap => {
-    if (snap.exists()) appCfg = { adminPass: 'admin8283', upiId: 'snehalnikam.15-1@okhdfcbank', ...snap.data() };
+    if (snap.exists()) { appCfg = { adminPass: '', upiId: 'snehalnikam.15-1@okhdfcbank', ...snap.data() }; }
   }));
 
   // Public bookings (slot bookings from customers)
@@ -1282,6 +1298,12 @@ function startListeners() {
 //  LOGIN
 // ══════════════════════════════════════════
 let loginRole = 'admin';
+
+// Show first-time setup hint if no admin password saved
+function updateAdminHint() {
+  const hint = document.getElementById('admin-login-hint');
+  if (hint) hint.style.display = !appCfg.adminPass ? 'block' : 'none';
+}
 
 async function populateStudentSelect() {
   const sel = document.getElementById('student-select');
@@ -1302,6 +1324,7 @@ async function populateStudentSelect() {
 }
 
 window.switchRole = function(r) {
+  updateAdminHint();
   loginRole = r;
   document.getElementById('role-admin-btn').classList.toggle('active', r==='admin');
   document.getElementById('role-student-btn').classList.toggle('active', r==='student');
@@ -1316,7 +1339,14 @@ window.doLogin = async function() {
   err.textContent = '';
   if (loginRole === 'admin') {
     const pass = document.getElementById('admin-pass').value;
-    if (pass !== appCfg.adminPass && pass !== 'admin8283') { err.textContent = 'Incorrect password.'; return; }
+    if (!appCfg.adminPass) { 
+      // First time setup: save this as the admin password
+      if (pass.length < 4) { err.textContent = 'Set a password (min 4 chars) for first login.'; return; }
+      try {
+        await setDoc(doc(db,'config','app'), { adminPass: pass, upiId: appCfg.upiId||'snehalnikam.15-1@okhdfcbank' }, { merge: true });
+        appCfg.adminPass = pass;
+      } catch(e) {}
+    } else if (pass !== appCfg.adminPass) { err.textContent = 'Incorrect password.'; return; }
     currentRole = 'admin'; currentStudentId = null;
     startApp();
   } else {
@@ -2721,6 +2751,31 @@ window.deleteEvent = async function(id) {
   if(!confirm('Delete this event?')) return;
   await deleteDoc(doc(db,'events',id));
   toast('Event deleted!');
+};
+
+// ══ CHANGE ADMIN PASSWORD ══
+window.changeAdminPass = async function() {
+  const current = document.getElementById('cp-current').value;
+  const newPass = document.getElementById('cp-new').value;
+  const confirm = document.getElementById('cp-confirm').value;
+  const errEl = document.getElementById('cp-err');
+  errEl.textContent = '';
+  if (!current) { errEl.textContent = 'Please enter current password.'; return; }
+  if (current !== appCfg.adminPass) { errEl.textContent = 'Current password is incorrect.'; return; }
+  if (newPass.length < 6) { errEl.textContent = 'New password must be at least 6 characters.'; return; }
+  if (newPass !== confirm) { errEl.textContent = 'Passwords do not match.'; return; }
+  try {
+    setSyncStatus('syncing');
+    await setDoc(doc(db,'config','app'), { adminPass: newPass, upiId: appCfg.upiId||'' }, { merge: true });
+    appCfg.adminPass = newPass;
+    setSyncStatus('live');
+    closeModal('changePassModal');
+    ['cp-current','cp-new','cp-confirm'].forEach(id => document.getElementById(id).value = '');
+    toast('Password changed successfully! 🔐');
+  } catch(e) {
+    errEl.textContent = 'Error saving: ' + e.message;
+    setSyncStatus('live');
+  }
 };
 
 window.addEventListener('appinstalled', () => {
