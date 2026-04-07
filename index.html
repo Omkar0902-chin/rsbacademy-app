@@ -570,14 +570,23 @@ tr:last-child td{border-bottom:none;}
       <div class="slot-grid" id="slot-grid"></div>
     </div>
     <div id="cricket-upi-section" style="display:none;background:rgba(255,165,0,0.06);border:1px solid rgba(255,165,0,0.25);border-radius:12px;padding:14px;margin-bottom:16px;">
-      <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:8px;">💳 Advance Payment (Cricket Turf)</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Pay ₹200 advance to confirm your cricket slot. Scan QR or use UPI ID below.</div>
+      <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:4px;">💳 Advance Payment Required</div>
+      <div style="background:rgba(255,165,0,0.12);border-radius:8px;padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:12px;color:var(--muted);">Advance amount</div>
+        <div id="advance-amount-display" style="font-size:20px;font-weight:700;color:#ffa500;">₹200</div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">₹200 per hour · Amount updates when you change duration · Pay before confirming booking.</div>
       <div class="upi-qr-box" style="margin:0 0 10px;">
         <div id="cricket-upi-qr"></div>
         <div style="font-size:11px;color:#333;margin-top:6px;">Scan to pay advance</div>
       </div>
       <div class="upi-id-pill" id="cricket-upi-id-pill">rsbsports@upi</div>
       <button class="btn btn-upi btn-sm" style="width:100%;margin-top:8px;" onclick="navigator.clipboard.writeText(document.getElementById('cricket-upi-id-pill').textContent).then(()=>toast('UPI ID copied! 📋'))">📋 Copy UPI ID</button>
+      <div style="margin-top:12px;">
+        <label style="display:block;font-size:10px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.07em;">UTR / Transaction ID <span style="color:#ffa500;">*</span></label>
+        <input type="text" id="book-utr" placeholder="Enter 12-digit UTR after payment" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,165,0,0.35);border-radius:8px;padding:10px 14px;color:#fff;font-size:13px;font-family:inherit;outline:none;" oninput="validateUTR(this)"/>
+        <div id="utr-hint" style="font-size:11px;color:var(--muted);margin-top:4px;">You'll find this in your UPI app under payment history.</div>
+      </div>
     </div>
     <button class="btn btn-primary" style="width:100%;padding:14px;font-size:14px;border-radius:12px;" onclick="confirmPublicBooking()">Confirm Booking →</button>
     <div style="height:20px;"></div>
@@ -2030,6 +2039,7 @@ function renderAdminBookings() {
       </div>
       <div class="req-item-body">
         👤 <b>${esc(b.name||'—')}</b> &nbsp;|&nbsp; 📞 ${esc(b.phone||'—')}
+        ${b.advancePaid ? `<br/><span style="font-size:11px;color:#1DB954;">💳 Advance paid: ₹${b.advanceAmount||200} &nbsp;|&nbsp; UTR: <b>${esc(b.utr||'—')}</b></span>` : ''}
         ${b.ts ? `<br/><span style="font-size:10px;color:var(--muted);">Booked: ${fmtTs(b.ts)}</span>` : ''}
       </div>
       <div class="req-actions" style="flex-wrap:wrap;gap:6px;">
@@ -2249,11 +2259,9 @@ window.openBooking = function(service) {
   const cricketUpi = document.getElementById('cricket-upi-section');
   if (service === 'cricket') {
     cricketUpi.style.display = 'block';
-    const upiId = (typeof appCfg !== 'undefined' && appCfg.upiId) ? appCfg.upiId : 'rsbsports@upi';
-    document.getElementById('cricket-upi-id-pill').textContent = upiId;
-    // Generate QR using free API
-    const qrBox = document.getElementById('cricket-upi-qr');
-    qrBox.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('upi://pay?pa='+upiId+'&pn=RSB+Sports+Academy&am=200&tn=Cricket+Turf+Advance')}" style="width:150px;height:150px;" onerror="this.outerHTML='<div style=\'font-size:12px;color:#555;\'>UPI: '+upiId+'</div>'"/>`;
+    document.getElementById('book-utr').value = '';
+    document.getElementById('utr-hint').style.color = 'var(--muted)';
+    updateCricketAdvance();
   } else {
     cricketUpi.style.display = 'none';
   }
@@ -2264,6 +2272,46 @@ window.openBooking = function(service) {
 document.getElementById('book-date').addEventListener('change', function() {
   if (currentBookingService) renderSlots(currentBookingService, this.value);
 });
+
+// Duration change → update advance amount + QR for cricket
+document.getElementById('book-duration').addEventListener('change', function() {
+  if (currentBookingService === 'cricket') updateCricketAdvance();
+});
+
+function getAdvanceAmount() {
+  const dur = document.getElementById('book-duration').value || '1 hour';
+  const hours = parseInt(dur) || 1;
+  return hours * 200;
+}
+
+function updateCricketAdvance() {
+  const upiId = (typeof appCfg !== 'undefined' && appCfg.upiId) ? appCfg.upiId : 'rsbsports@upi';
+  document.getElementById('cricket-upi-id-pill').textContent = upiId;
+  const amount = getAdvanceAmount();
+  document.getElementById('advance-amount-display').textContent = '₹' + amount;
+  const qrBox = document.getElementById('cricket-upi-qr');
+  const dur = document.getElementById('book-duration').value || '1 hour';
+  const note = 'Cricket+Turf+Advance+' + dur.replace(/ /g,'+');
+  qrBox.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('upi://pay?pa='+upiId+'&pn=RSB+Sports+Academy&am='+amount+'&tn='+note)}" style="width:150px;height:150px;" onerror="this.outerHTML='<div style=\'font-size:12px;color:var(--muted);\'>UPI: '+upiId+'</div>'"/>`;
+}
+
+window.validateUTR = function(input) {
+  const val = input.value.trim();
+  const hint = document.getElementById('utr-hint');
+  if (val.length === 0) {
+    input.style.borderColor = 'rgba(255,165,0,0.35)';
+    hint.style.color = 'var(--muted)';
+    hint.textContent = "You'll find this in your UPI app under payment history.";
+  } else if (val.length < 6) {
+    input.style.borderColor = 'rgba(240,82,82,0.6)';
+    hint.style.color = 'var(--danger)';
+    hint.textContent = 'UTR is too short — check your UPI app.';
+  } else {
+    input.style.borderColor = 'rgba(29,185,84,0.5)';
+    hint.style.color = 'var(--success)';
+    hint.textContent = '✅ UTR looks good!';
+  }
+};
 
 function renderSlots(service, date) {
   const grid = document.getElementById('slot-grid');
@@ -2300,6 +2348,7 @@ window.closeBooking = function() {
   document.getElementById('book-phone').value = '';
   document.getElementById('book-people').value = '1';
   document.getElementById('book-duration').value = '1 hour';
+  document.getElementById('book-utr').value = '';
   document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
 };
 
@@ -2313,18 +2362,41 @@ window.confirmPublicBooking = async function() {
   if (!phone) { toast('Please enter your phone number', '#f05252'); return; }
   if (!date) { toast('Please select a date', '#f05252'); return; }
   if (!selectedSlot) { toast('Please select a time slot', '#f05252'); return; }
+
+  // Cricket: require UTR before booking
+  let advanceAmount = 0;
+  let utr = '';
+  if (currentBookingService === 'cricket') {
+    utr = document.getElementById('book-utr').value.trim();
+    if (!utr || utr.length < 6) {
+      toast('Please enter your UTR / Transaction ID after paying advance', '#f05252');
+      document.getElementById('book-utr').focus();
+      return;
+    }
+    advanceAmount = getAdvanceAmount();
+  }
+
   const s = serviceSlots[currentBookingService];
   if (db) {
     try {
-      await setDoc(doc(db, 'public_bookings', Date.now().toString()), {
+      const bookingData = {
         service: currentBookingService, serviceName: s.name,
         name, phone, date, slot: selectedSlot, people, duration,
         status: 'pending', ts: serverTimestamp()
-      });
+      };
+      if (currentBookingService === 'cricket') {
+        bookingData.advanceAmount = advanceAmount;
+        bookingData.utr = utr;
+        bookingData.advancePaid = true;
+      }
+      await setDoc(doc(db, 'public_bookings', Date.now().toString()), bookingData);
     } catch(e) {}
   }
   // Build WhatsApp message BEFORE closeBooking() clears selectedSlot
-  const msg = `Hi RSB Sports Academy! 🙏\nI've booked *${s.name}* on *${date}* at *${selectedSlot}* for *${duration}* for *${people} person(s)*.\nName: ${name}\nPhone: ${phone}`;
+  let msg = `Hi RSB Sports Academy! 🙏\nI've booked *${s.name}* on *${date}* at *${selectedSlot}* for *${duration}* for *${people} person(s)*.\nName: ${name}\nPhone: ${phone}`;
+  if (currentBookingService === 'cricket') {
+    msg += `\n💳 Advance Paid: ₹${advanceAmount}\nUTR: ${utr}`;
+  }
   closeBooking();
   toast(`Booking confirmed! ${s.icon} We'll contact you on WhatsApp!`);
   setTimeout(() => window.open(`https://wa.me/917391926006?text=${encodeURIComponent(msg)}`), 1000);
