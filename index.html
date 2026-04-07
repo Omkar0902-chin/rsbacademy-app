@@ -350,6 +350,22 @@ tr:last-child td{border-bottom:none;}
 .banner-dot.active{background:var(--green);width:18px;border-radius:3px;}
 .banner-empty{padding:20px;text-align:center;color:var(--muted);font-size:13px;}
 
+/* ── TICKER STRIP ── */
+.ticker-strip{background:#1DB954;padding:8px 14px;display:flex;align-items:center;gap:8px;overflow:hidden;position:sticky;top:0;z-index:20;flex-shrink:0;}
+.ticker-label{background:#006633;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;letter-spacing:0.04em;}
+.ticker-track{overflow:hidden;flex:1;}
+.ticker-text{color:#003d1f;font-size:11px;font-weight:600;white-space:nowrap;display:inline-block;animation:tickerScroll 18s linear infinite;}
+@keyframes tickerScroll{0%{transform:translateX(100%)}100%{transform:translateX(-400%)}}
+
+/* ── EVENT HIGHLIGHT CARD ── */
+.event-highlight-card{margin:0 12px 14px;background:rgba(232,160,32,0.07);border:1px solid rgba(232,160,32,0.28);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s;}
+.event-highlight-card:active{transform:scale(0.98);}
+.event-hl-icon{width:42px;height:42px;border-radius:10px;background:rgba(232,160,32,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.event-hl-info{flex:1;}
+.event-hl-name{color:#fff;font-size:13px;font-weight:700;margin-bottom:2px;}
+.event-hl-meta{color:#e8a020;font-size:11px;font-weight:500;}
+.event-hl-badge{background:#e8a020;color:#412402;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+
 /* ── BOOKING PAGE ── */
 #booking-page{display:none;position:fixed;inset:0;background:var(--dark);z-index:1900;overflow-y:auto;}
 .booking-header{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:rgba(8,9,12,0.96);backdrop-filter:blur(16px);z-index:10;}
@@ -380,6 +396,14 @@ tr:last-child td{border-bottom:none;}
   <div class="pub-header">
     <div class="pub-logo">RSB <span>Academy</span></div>
     <button class="pub-login-btn" onclick="showLoginScreen()">🔐 Login</button>
+  </div>
+
+  <!-- Ticker Strip -->
+  <div class="ticker-strip" id="pub-ticker" style="display:none;">
+    <div class="ticker-label">LIVE</div>
+    <div class="ticker-track">
+      <span class="ticker-text" id="pub-ticker-text"></span>
+    </div>
   </div>
 
   <!-- Hero Section -->
@@ -416,6 +440,9 @@ tr:last-child td{border-bottom:none;}
       <div class="pub-stat-card"><div class="pub-stat-val2">7</div><div class="pub-stat-lbl2">Days Open</div></div>
     </div>
   </div>
+
+  <!-- Event Highlight Card -->
+  <div id="pub-event-highlight" style="display:none;"></div>
 
   <!-- Book a Slot -->
   <div class="pub-section">
@@ -2070,7 +2097,27 @@ async function loadPublicBanners() {
     const snap = await getDocs(collection(db, 'banners'));
     banners = snap.docs.map(d => ({id: d.id, ...d.data()})).filter(b => b.active);
     renderPublicBanners();
+    renderTicker();
   } catch(e) {}
+}
+
+function renderTicker() {
+  const ticker = document.getElementById('pub-ticker');
+  const tickerText = document.getElementById('pub-ticker-text');
+  if (!ticker || !tickerText) return;
+  // Collect ticker messages: banners with subtitles + upcoming events
+  const msgs = [];
+  banners.filter(b => b.active !== false && b.subtitle).forEach(b => {
+    msgs.push((b.title || '') + (b.subtitle ? ' — ' + b.subtitle : ''));
+  });
+  const todayStr2 = new Date().toISOString().split('T')[0];
+  events2.filter(e => e.active !== false && e.date >= todayStr2).forEach(e => {
+    const diffDays = Math.ceil((new Date(e.date+'T00:00:00') - new Date()) / (1000*60*60*24));
+    msgs.push('🗓️ ' + e.name + (diffDays <= 7 ? ' — ' + (diffDays === 0 ? 'Today!' : diffDays === 1 ? 'Tomorrow!' : 'In ' + diffDays + ' days!') : ''));
+  });
+  if (!msgs.length) { ticker.style.display = 'none'; return; }
+  ticker.style.display = 'flex';
+  tickerText.textContent = msgs.join('   •   ');
 }
 
 function renderPublicBanners() {
@@ -2492,6 +2539,7 @@ function startPhotosListener() {
   });
   const unsub2 = onSnapshot(query(collection(db,'events'), orderBy('date','asc')), snap => {
     events2 = snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(typeof renderTicker === 'function') renderTicker();
     renderEvents();
     renderPublicEvents();
   });
@@ -2559,18 +2607,46 @@ function renderPublicEvents() {
   const el = document.getElementById('pub-events-list');
   if(!el) return;
   const active = events2.filter(e=>e.active!==false);
-  if(!active.length){el.innerHTML='<div class="event-pub-card" style="justify-content:center;color:var(--muted);font-size:12px;">No upcoming events</div>';return;}
-  el.innerHTML = active.map(e=>`
-    <div class="event-pub-card" onclick="openFullViewer('event','${e.id}')" style="cursor:pointer;">
-      ${e.photo ? `<img src="${esc(e.photo)}" style="width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'"/>` : `<div class="event-pub-date">
-        <div class="event-pub-day">${e.date?new Date(e.date+'T00:00:00').getDate():''}</div>
-        <div class="event-pub-mon">${e.date?new Date(e.date+'T00:00:00').toLocaleString('en',{month:'short'}):''}</div>
-      </div>`}
-      <div>
-        <div class="event-pub-title">${esc(e.name)}</div>
-        <div class="event-pub-desc">${esc(e.desc||'')}</div>
+  if(!active.length){el.innerHTML='<div class="event-pub-card" style="justify-content:center;color:var(--muted);font-size:12px;">No upcoming events</div>';}
+  else {
+    el.innerHTML = active.map(e=>`
+      <div class="event-pub-card" onclick="openFullViewer('event','${e.id}')" style="cursor:pointer;">
+        ${e.photo ? `<img src="${esc(e.photo)}" style="width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'"/>` : `<div class="event-pub-date">
+          <div class="event-pub-day">${e.date?new Date(e.date+'T00:00:00').getDate():''}</div>
+          <div class="event-pub-mon">${e.date?new Date(e.date+'T00:00:00').toLocaleString('en',{month:'short'}):''}</div>
+        </div>`}
+        <div>
+          <div class="event-pub-title">${esc(e.name)}</div>
+          <div class="event-pub-desc">${esc(e.desc||'')}</div>
+        </div>
+      </div>`).join('');
+  }
+  // Update event highlight card with nearest upcoming event
+  renderEventHighlight(active);
+}
+
+function renderEventHighlight(activeEvents) {
+  const card = document.getElementById('pub-event-highlight');
+  if (!card) return;
+  const todayStr2 = new Date().toISOString().split('T')[0];
+  const upcoming = activeEvents.filter(e => e.date >= todayStr2).sort((a,b) => a.date.localeCompare(b.date));
+  if (!upcoming.length) { card.style.display = 'none'; return; }
+  const e = upcoming[0];
+  const eventDate = new Date(e.date + 'T00:00:00');
+  const diffMs = eventDate - new Date();
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  const countdownText = diffDays === 0 ? 'Today!' : diffDays === 1 ? 'Tomorrow!' : `In ${diffDays} days`;
+  const dateLabel = eventDate.toLocaleDateString('en-IN', {day:'numeric', month:'short'});
+  card.style.display = 'block';
+  card.innerHTML = `
+    <div class="event-highlight-card" onclick="openFullViewer('event','${e.id}')">
+      <div class="event-hl-icon">🗓️</div>
+      <div class="event-hl-info">
+        <div class="event-hl-name">${esc(e.name)}</div>
+        <div class="event-hl-meta">${countdownText} · ${dateLabel}</div>
       </div>
-    </div>`).join('');
+      <div class="event-hl-badge">Register →</div>
+    </div>`;
 }
 
 window.savePhoto = async function() {
