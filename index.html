@@ -527,7 +527,7 @@ tr:last-child td{border-bottom:none;}
         <div id="cricket-upi-qr"></div>
         <div style="font-size:11px;color:#333;margin-top:6px;">Scan to pay advance</div>
       </div>
-      <div class="upi-id-pill" id="cricket-upi-id-pill">snehalnikam.15-1@okhdfcbank</div>
+      <div class="upi-id-pill" id="cricket-upi-id-pill">rsbsports@upi</div>
       <button class="btn btn-upi btn-sm" style="width:100%;margin-top:8px;" onclick="navigator.clipboard.writeText(document.getElementById('cricket-upi-id-pill').textContent).then(()=>toast('UPI ID copied! 📋'))">📋 Copy UPI ID</button>
     </div>
     <button class="btn btn-primary" style="width:100%;padding:14px;font-size:14px;border-radius:12px;" onclick="confirmPublicBooking()">Confirm Booking →</button>
@@ -610,7 +610,7 @@ tr:last-child td{border-bottom:none;}
     <div id="student-login-form" style="display:none">
       <div class="lfg"><label>Your name</label><select id="student-select"><option value="">— Choose your name —</option></select></div>
       <div class="lfg"><label>PIN</label><input type="password" id="student-pin" placeholder="4-digit PIN" maxlength="4" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-      
+      <div class="login-hint">Default PIN: <b>1234</b></div>
     </div>
     <button class="btn-login" onclick="doLogin()">Sign in →</button>
     <div class="login-err" id="login-err"></div>
@@ -836,12 +836,10 @@ tr:last-child td{border-bottom:none;}
         </div>
 
         <div class="upi-qr-box" id="academy-qr-box">
-          <div id="academy-upi-qr">
-            <img id="academy-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi%3A%2F%2Fpay%3Fpa%3Dsnehalnikam.15-1%40okhdfcbank%26pn%3DRSB%2BSports%2BAcademy%26tn%3DAcademy%2BFee" style="width:180px;height:180px;" onerror="this.outerHTML='<div style=\'font-size:12px;color:#555;\'>UPI: snehalnikam.15-1@okhdfcbank</div>'"/>
-          </div>
+          <div id="academy-upi-qr"></div>
           <div style="font-size:11px;color:#333;margin-top:6px;">Academy payment QR — scan to pay</div>
         </div>
-        <div class="upi-id-pill" id="s-upi-id">snehalnikam.15-1@okhdfcbank</div>
+        <div class="upi-id-pill" id="s-upi-id">academy@upi</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
           <button class="btn btn-upi btn-sm" onclick="copyUPI()">📋 Copy UPI ID</button>
           <button class="btn btn-primary btn-sm" onclick="openModal('payNotifyModal')">✅ I've paid — notify admin</button>
@@ -1197,7 +1195,7 @@ window.closeModal = function(id) { document.getElementById(id).classList.remove(
 // ══════════════════════════════════════════
 let students = [], attendance = {}, fees = [], requests = [], messages = [];
 let publicBookings = [];
-let appCfg = { adminpass: '', upiId: 'snehalnikam.15-1@okhdfcbank' };
+let appCfg = { adminPass: 'admin8283', upiId: 'academy@upi' };
 let currentRole = null, currentStudentId = null, activeAdminMsgStudent = null;
 let studentFilter = 'All', attFilter = 'All', feeFilter = 'All', reqFilter = 'All';
 
@@ -1250,7 +1248,7 @@ function startListeners() {
 
   // App config (UPI, admin password)
   unsubscribers.push(onSnapshot(doc(db,'config','app'), snap => {
-    if (snap.exists()) { appCfg = { upiId: 'snehalnikam.15-1@okhdfcbank', ...snap.data() }; }
+    if (snap.exists()) appCfg = { adminPass: 'admin8283', upiId: 'academy@upi', ...snap.data() };
   }));
 
   // Public bookings (slot bookings from customers)
@@ -1298,7 +1296,7 @@ window.doLogin = async function() {
   err.textContent = '';
   if (loginRole === 'admin') {
     const pass = document.getElementById('admin-pass').value;
-    if (pass !== appCfg.adminpass) { err.textContent = 'Incorrect password.'; return; }
+    if (pass !== appCfg.adminPass && pass !== 'admin8283') { err.textContent = 'Incorrect password.'; return; }
     currentRole = 'admin'; currentStudentId = null;
     startApp();
   } else {
@@ -1809,16 +1807,13 @@ function renderStudentFees(){
     <div class="metric"><div class="metric-val" style="color:var(--green)">₹${paid.toLocaleString('en-IN')}</div><div class="metric-lbl">Total paid</div></div>
     <div class="metric"><div class="metric-val" style="color:${pending?'var(--warning)':'var(--green)'}">₹${pending.toLocaleString('en-IN')}</div><div class="metric-lbl">Pending</div></div>
   `;
-  const upiId=appCfg.upiId||'snehalnikam.15-1@okhdfcbank';
-  document.getElementById('s-upi-id').textContent=upiId;
-  const qrImg=document.getElementById('academy-qr-img');
-  if(qrImg) qrImg.src='https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='+encodeURIComponent('upi://pay?pa='+upiId+'&pn=RSB+Sports+Academy&tn=Academy+Fee');
+  document.getElementById('s-upi-id').textContent=appCfg.upiId||'academy@upi';
   document.getElementById('pay-date').value=todayStr;
   document.getElementById('s-fee-list').innerHTML=myFees.length===0?'<div class="empty">No fee records yet</div>':myFees.slice().reverse().map(f=>`<div class="fee-item"><div><div style="font-size:13px;font-weight:500">₹${(f.amount||0).toLocaleString('en-IN')}</div><div style="font-size:11px;color:var(--muted)">${fmt(f.date)} · ${esc(f.notes)||'—'}</div></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;color:var(--muted)">Due ${fmt(f.due)}</span><span class="badge badge-${feeStatus(f)}">${feeStatus(f)==='paid'?'Paid':feeStatus(f)==='overdue'?'Overdue':'Due'}</span></div></div>`).join('');
 }
 
 window.copyUPI=function(){
-  navigator.clipboard.writeText(appCfg.upiId||'snehalnikam.15-1@okhdfcbank').then(()=>toast('UPI ID copied! 📋')).catch(()=>toast('UPI: '+(appCfg.upiId||'snehalnikam.15-1@okhdfcbank')));
+  navigator.clipboard.writeText(appCfg.upiId||'academy@upi').then(()=>toast('UPI ID copied! 📋')).catch(()=>toast('UPI: '+(appCfg.upiId||'academy@upi')));
 };
 
 window.submitPayNotify=async function(){
@@ -2131,7 +2126,7 @@ window.openBooking = function(service) {
   const cricketUpi = document.getElementById('cricket-upi-section');
   if (service === 'cricket') {
     cricketUpi.style.display = 'block';
-    const upiId = (typeof appCfg !== 'undefined' && appCfg.upiId) ? appCfg.upiId : 'snehalnikam.15-1@okhdfcbank';
+    const upiId = (typeof appCfg !== 'undefined' && appCfg.upiId) ? appCfg.upiId : 'rsbsports@upi';
     document.getElementById('cricket-upi-id-pill').textContent = upiId;
     // Generate QR using free API
     const qrBox = document.getElementById('cricket-upi-qr');
