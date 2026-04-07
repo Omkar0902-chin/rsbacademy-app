@@ -2265,10 +2265,11 @@ window.openBooking = function(service) {
       confirmNonCricketBooking();
     };
   }
-  // Reset public-home z-index so it never overlaps the booking page
+  // Hide public-home completely so it doesn't intercept taps
   const pubHome = document.getElementById('public-home');
-  if (pubHome) pubHome.style.zIndex = '1800';
+  if (pubHome) { pubHome.style.display = 'none'; }
   document.getElementById('booking-page').style.display = 'block';
+  document.getElementById('booking-page').scrollTop = 0;
 };
 
 // Date change listener registered once only (outside openBooking to avoid stacking)
@@ -2323,6 +2324,9 @@ window.selectSlot = function(btn, slot) {
 
 window.closeBooking = function() {
   document.getElementById('booking-page').style.display = 'none';
+  // Restore public home
+  const pubHome = document.getElementById('public-home');
+  if (pubHome) { pubHome.style.display = 'flex'; pubHome.style.zIndex = '1800'; }
   selectedSlot = null;
   // Clear form fields so next customer starts fresh
   document.getElementById('book-name').value = '';
