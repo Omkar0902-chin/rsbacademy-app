@@ -541,22 +541,45 @@ tr:last-child td{border-bottom:none;}
     <div class="form-group"><label>Select Time Slot *</label>
       <div class="slot-grid" id="slot-grid"></div>
     </div>
-    <div id="cricket-upi-section" style="display:none;background:rgba(255,165,0,0.06);border:1px solid rgba(255,165,0,0.25);border-radius:12px;padding:14px;margin-bottom:16px;">
-      <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:8px;">💳 Advance Payment (Cricket Turf)</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:6px;" id="cricket-advance-text">Pay ₹200 advance to confirm your cricket slot. Scan QR or use UPI ID below.</div>
-      <div style="font-size:20px;font-weight:700;color:#ffa500;margin-bottom:10px;">Advance: ₹<span id="cricket-advance-amount">200</span></div>
+    <!-- STEP 1 BUTTON: shown first -->
+    <button id="proceed-to-pay-btn" class="btn btn-primary" style="width:100%;padding:14px;font-size:14px;border-radius:12px;" onclick="proceedToPayment()">💳 Proceed to Pay Advance →</button>
+
+    <!-- STEP 2: Payment section — hidden until Step 1 is clicked -->
+    <div id="cricket-upi-section" style="display:none;">
+
+      <!-- Advance amount banner -->
+      <div style="background:rgba(255,165,0,0.08);border:1px solid rgba(255,165,0,0.3);border-radius:12px;padding:14px;margin-bottom:12px;text-align:center;">
+        <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:4px;">💳 Pay Advance to Confirm Slot</div>
+        <div style="font-size:26px;font-weight:700;color:#ffa500;">₹<span id="cricket-advance-amount">200</span></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;" id="cricket-advance-text">Advance for cricket turf · remaining payable at venue</div>
+      </div>
+
+      <!-- QR Code -->
       <div class="upi-qr-box" style="margin:0 0 10px;">
         <div id="cricket-upi-qr"></div>
         <div style="font-size:11px;color:#333;margin-top:6px;">Scan to pay advance</div>
       </div>
+
+      <!-- UPI ID copy -->
       <div class="upi-id-pill" id="cricket-upi-id-pill">rsbsports@upi</div>
       <button class="btn btn-upi btn-sm" style="width:100%;margin-top:8px;" onclick="navigator.clipboard.writeText(document.getElementById('cricket-upi-id-pill').textContent).then(()=>toast('UPI ID copied! 📋'))">📋 Copy UPI ID</button>
-      <div style="margin-top:14px;background:rgba(29,185,84,0.07);border:1px solid rgba(29,185,84,0.2);border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;">
-        <input type="checkbox" id="advance-paid-check" style="width:18px;height:18px;accent-color:#1DB954;cursor:pointer;flex-shrink:0;"/>
-        <label for="advance-paid-check" style="font-size:13px;color:#fff;cursor:pointer;">I have paid the advance of ₹<span id="cricket-advance-amount-2">200</span></label>
+
+      <!-- UTR input — required -->
+      <div style="margin-top:14px;">
+        <label style="display:block;font-size:10px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.07em;">UTR / UPI Reference Number *</label>
+        <input type="text" id="book-utr" placeholder="Enter 12-digit UTR from your UPI app"
+          style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,165,0,0.3);border-radius:8px;padding:11px 14px;color:#fff;font-size:13px;font-family:inherit;outline:none;"/>
+        <div style="font-size:11px;color:var(--muted);margin-top:5px;">📱 Open any UPI app → Transaction History → Copy the UTR/Ref number</div>
+      </div>
+
+      <!-- Submit booking button -->
+      <button class="btn btn-primary" style="width:100%;padding:14px;font-size:14px;border-radius:12px;margin-top:14px;background:#ffa500;border-color:#ffa500;color:#000;" onclick="confirmPublicBooking()">✅ I've Paid — Submit Booking</button>
+
+      <!-- Back link -->
+      <div style="text-align:center;margin-top:10px;">
+        <button onclick="backToBookingForm()" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:inherit;">← Back to form</button>
       </div>
     </div>
-    <button class="btn btn-primary" style="width:100%;padding:14px;font-size:14px;border-radius:12px;" onclick="confirmPublicBooking()">Confirm Booking →</button>
     <div style="height:20px;"></div>
   </div>
 </div>
@@ -1358,7 +1381,7 @@ function buildNav() {
   if (currentRole === 'admin') {
     const pendingReqs = requests.filter(r=>r.status==='pending').length;
     const unreadMsgs = messages.filter(m=>m.from==='student'&&!m.read).length;
-    const pendingBookings = publicBookings.filter(b=>b.status==='pending').length;
+    const pendingBookings = publicBookings.filter(b=>b.status==='pending'||b.status==='payment_pending').length;
     // Update badges on bottom nav
     const reqBtn = document.getElementById('abn-requests');
     if(reqBtn){
@@ -1954,9 +1977,13 @@ function renderAdminBookings() {
 
   let list = publicBookings.slice();
 
-  // Filter by status
+  // Filter by status — treat payment_pending as a sub-type of pending filter
   if (bookingStatusFilter !== 'all') {
-    list = list.filter(b => b.status === bookingStatusFilter);
+    if (bookingStatusFilter === 'pending') {
+      list = list.filter(b => b.status === 'pending' || b.status === 'payment_pending');
+    } else {
+      list = list.filter(b => b.status === bookingStatusFilter);
+    }
   }
 
   // Filter by service
@@ -1981,13 +2008,15 @@ function renderAdminBookings() {
   el.innerHTML = list.map(b => {
     const isToday = b.date === todayStr2;
     const isPast = b.date < todayStr2;
-    const statusColor = b.status === 'confirmed' ? 'var(--success)' : b.status === 'cancelled' ? 'var(--danger)' : 'var(--warning)';
+    const isPaymentPending = b.status === 'payment_pending';
+    const statusColor = b.status === 'confirmed' ? 'var(--success)' : b.status === 'cancelled' ? 'var(--danger)' : isPaymentPending ? '#a070ff' : 'var(--warning)';
     const statusBadge = b.status === 'confirmed' ? 'badge-approved' : b.status === 'cancelled' ? 'badge-rejected' : 'badge-pending';
+    const statusLabel = b.status === 'confirmed' ? '✅ Confirmed' : b.status === 'cancelled' ? '✗ Cancelled' : isPaymentPending ? '💳 Verify Payment' : 'Pending';
     const serviceIcon = {cricket:'🏏',yoga:'🧘',zumba:'💃',dance:'🎵',swimming:'🏊'}[b.service] || '📅';
-    const dateLabel = isToday ? '📍 Today' : isPast ? fmt(b.date) : fmt(b.date);
+    const dateLabel = isToday ? '📍 Today' : fmt(b.date);
 
     return `
-    <div class="req-item" style="${isToday && b.status==='pending' ? 'border-color:rgba(29,185,84,0.35);background:rgba(29,185,84,0.03);' : ''}">
+    <div class="req-item" style="${isPaymentPending ? 'border-color:rgba(160,112,255,0.4);background:rgba(160,112,255,0.04);' : isToday && b.status==='pending' ? 'border-color:rgba(29,185,84,0.35);background:rgba(29,185,84,0.03);' : ''}">
       <div class="req-item-header">
         <div>
           <div style="font-size:13px;font-weight:600;color:#fff;">${serviceIcon} ${esc(b.serviceName||b.service)}</div>
@@ -1998,13 +2027,19 @@ function renderAdminBookings() {
             · ${esc(b.people||'1')} person(s)
           </div>
         </div>
-        <span class="badge ${statusBadge}">${b.status}</span>
+        <span class="badge ${statusBadge}" style="${isPaymentPending?'background:rgba(160,112,255,0.15);color:#a070ff;':''}">${statusLabel}</span>
       </div>
       <div class="req-item-body">
         👤 <b>${esc(b.name||'—')}</b> &nbsp;|&nbsp; 📞 ${esc(b.phone||'—')}
+        ${b.advance ? `<br/><span style="font-size:11px;color:#ffa500;">💰 Advance: ₹${b.advance}</span>` : ''}
+        ${b.utr ? `<br/><span style="font-size:11px;color:var(--muted);">UTR / Ref: </span><span style="font-size:12px;font-weight:600;color:#b090ff;font-family:monospace;">${esc(b.utr)}</span>` : ''}
         ${b.ts ? `<br/><span style="font-size:10px;color:var(--muted);">Booked: ${fmtTs(b.ts)}</span>` : ''}
       </div>
       <div class="req-actions" style="flex-wrap:wrap;gap:6px;">
+        ${isPaymentPending ? `
+          <button class="btn btn-sm btn-success" onclick="confirmBookingPayment('${b.id}','${esc(b.name||'')}','${esc(b.phone||'')}','${esc(b.serviceName||b.service||'')}','${esc(b.date||'')}','${esc(b.slot||'')}')">✅ Confirm Payment</button>
+          <button class="btn btn-sm btn-danger" onclick="rejectBookingPayment('${b.id}')">✗ Reject</button>
+        ` : ''}
         ${b.status === 'pending' ? `
           <button class="btn btn-sm btn-success" onclick="updatePublicBooking('${b.id}','confirmed')">✓ Confirm</button>
           <button class="btn btn-sm btn-danger" onclick="updatePublicBooking('${b.id}','cancelled')">✗ Cancel</button>
@@ -2015,7 +2050,7 @@ function renderAdminBookings() {
         ${b.status === 'cancelled' ? `
           <button class="btn btn-sm btn-success" onclick="updatePublicBooking('${b.id}','pending')">↩ Restore</button>
         ` : ''}
-        <button class="btn btn-sm btn-wa" onclick="window.open('https://wa.me/91${b.phone ? b.phone.replace(/\D/g,'') : ''}?text=${encodeURIComponent('Hi '+( b.name||'there')+'! Your booking for '+(b.serviceName||b.service)+' on '+(b.date||'')+' at '+(b.slot||'')+' has been confirmed. See you at RSB Sports Academy! 🏆')}')">💬 WhatsApp</button>
+        <button class="btn btn-sm btn-wa" onclick="window.open('https://wa.me/91${b.phone ? b.phone.replace(/\D/g,'') : ''}?text=${encodeURIComponent('Hi '+(b.name||'there')+'! Your booking for '+(b.serviceName||b.service)+' on '+(b.date||'')+' at '+(b.slot||'')+' has been confirmed. See you at RSB Sports Academy! 🏆')}')">💬 WhatsApp</button>
       </div>
     </div>`;
   }).join('');
@@ -2029,6 +2064,41 @@ window.updatePublicBooking = async function(id, status) {
     setSyncStatus('live');
     const label = status === 'confirmed' ? 'Booking confirmed ✅' : status === 'cancelled' ? 'Booking cancelled' : 'Booking restored';
     toast(label, status === 'confirmed' ? '#1DB954' : status === 'cancelled' ? '#f05252' : undefined);
+  } catch(e) {
+    setSyncStatus('live');
+    toast('Error: ' + e.message, '#f05252');
+  }
+};
+
+// ── Admin: Confirm payment after verifying UTR ──
+window.confirmBookingPayment = async function(id, name, phone, service, date, slot) {
+  if (!confirm(`Confirm payment for ${name}?\nUTR verified — this will mark booking as CONFIRMED.`)) return;
+  try {
+    setSyncStatus('syncing');
+    await updateDoc(doc(db, 'public_bookings', id), {
+      status: 'confirmed',
+      advancePaid: true,
+      confirmedAt: serverTimestamp()
+    });
+    setSyncStatus('live');
+    toast('Payment verified & booking confirmed! ✅');
+    // Optionally open WhatsApp to notify customer
+    const msg = `Hi ${name}! 🎉 Your advance payment has been verified.\n✅ *${service}* booking confirmed!\n📅 Date: ${date} at ${slot}\nSee you at RSB Sports Academy! 🏆`;
+    setTimeout(() => window.open(`https://wa.me/91${phone.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`), 800);
+  } catch(e) {
+    setSyncStatus('live');
+    toast('Error: ' + e.message, '#f05252');
+  }
+};
+
+// ── Admin: Reject payment (e.g. wrong UTR) ──
+window.rejectBookingPayment = async function(id) {
+  if (!confirm('Reject this booking? (UTR not matching or payment not received)')) return;
+  try {
+    setSyncStatus('syncing');
+    await updateDoc(doc(db, 'public_bookings', id), { status: 'cancelled' });
+    setSyncStatus('live');
+    toast('Booking rejected — payment not verified', '#f05252');
   } catch(e) {
     setSyncStatus('live');
     toast('Error: ' + e.message, '#f05252');
@@ -2172,13 +2242,21 @@ window.openBooking = function(service) {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('book-date').value = today;
   renderSlots(service, today);
-  // Show/hide cricket advance UPI payment section
-  const cricketUpi = document.getElementById('cricket-upi-section');
+  // Reset 2-step payment UI
+  document.getElementById('cricket-upi-section').style.display = 'none';
+  const proceedBtn = document.getElementById('proceed-to-pay-btn');
   if (service === 'cricket') {
-    cricketUpi.style.display = 'block';
+    proceedBtn.style.display = 'block';
+    proceedBtn.textContent = '💳 Proceed to Pay Advance →';
     updateCricketAdvance();
   } else {
-    cricketUpi.style.display = 'none';
+    // Non-cricket: show confirm button directly (no advance required)
+    proceedBtn.style.display = 'block';
+    proceedBtn.textContent = 'Confirm Booking →';
+    proceedBtn.onclick = function() {
+      // Direct booking for non-cricket services
+      confirmNonCricketBooking();
+    };
   }
   document.getElementById('booking-page').style.display = 'block';
 };
@@ -2204,9 +2282,6 @@ function updateCricketAdvance() {
   // Regenerate QR with updated amount
   const qrBox = document.getElementById('cricket-upi-qr');
   qrBox.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('upi://pay?pa='+upiId+'&pn=RSB+Sports+Academy&am='+advance+'&tn=Cricket+Turf+Advance')}" style="width:150px;height:150px;" onerror="this.outerHTML='<div style=\'font-size:12px;color:#555;\'>UPI: '+upiId+'</div>'"/>`;
-  // Reset checkbox when duration changes
-  const cb = document.getElementById('advance-paid-check');
-  if (cb) cb.checked = false;
 }
 
 function renderSlots(service, date) {
@@ -2245,42 +2320,101 @@ window.closeBooking = function() {
   document.getElementById('book-people').value = '1';
   document.getElementById('book-duration').value = '1 hour';
   document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
-  const cb = document.getElementById('advance-paid-check');
-  if (cb) cb.checked = false;
+  // Reset 2-step payment UI
+  document.getElementById('cricket-upi-section').style.display = 'none';
+  const utrField = document.getElementById('book-utr');
+  if (utrField) utrField.value = '';
+  const proceedBtn = document.getElementById('proceed-to-pay-btn');
+  if (proceedBtn) { proceedBtn.style.display = 'block'; proceedBtn.textContent = '💳 Proceed to Pay Advance →'; proceedBtn.onclick = proceedToPayment; }
 };
 
+// ── STEP 1: Validate form, then show payment section (cricket) or book directly (others) ──
+window.proceedToPayment = function() {
+  const name = document.getElementById('book-name').value.trim();
+  const phone = document.getElementById('book-phone').value.trim();
+  const date = document.getElementById('book-date').value;
+  if (!name) { toast('Please enter your name', '#f05252'); return; }
+  if (!phone || phone.replace(/\D/g,'').length < 10) { toast('Please enter a valid 10-digit phone number', '#f05252'); return; }
+  if (!date) { toast('Please select a date', '#f05252'); return; }
+  if (!selectedSlot) { toast('Please select a time slot', '#f05252'); return; }
+
+  if (currentBookingService === 'cricket') {
+    // Show payment section, hide step-1 button
+    document.getElementById('proceed-to-pay-btn').style.display = 'none';
+    updateCricketAdvance();
+    document.getElementById('cricket-upi-section').style.display = 'block';
+    document.getElementById('cricket-upi-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    confirmNonCricketBooking();
+  }
+};
+
+// ── Back button inside payment section ──
+window.backToBookingForm = function() {
+  document.getElementById('cricket-upi-section').style.display = 'none';
+  document.getElementById('proceed-to-pay-btn').style.display = 'block';
+  const utrField = document.getElementById('book-utr');
+  if (utrField) utrField.value = '';
+};
+
+// ── STEP 2 (Cricket): Submit booking only after UTR entered ──
 window.confirmPublicBooking = async function() {
+  const utr = document.getElementById('book-utr').value.trim();
+  if (!utr) { toast('Please enter your UTR / UPI reference number 💳', '#f05252'); return; }
+  if (utr.length < 6) { toast('UTR number looks too short — please check', '#f05252'); return; }
+
   const name = document.getElementById('book-name').value.trim();
   const phone = document.getElementById('book-phone').value.trim();
   const date = document.getElementById('book-date').value;
   const people = document.getElementById('book-people').value;
   const duration = document.getElementById('book-duration').value;
-  if (!name) { toast('Please enter your name', '#f05252'); return; }
-  if (!phone) { toast('Please enter your phone number', '#f05252'); return; }
-  if (!date) { toast('Please select a date', '#f05252'); return; }
-  if (!selectedSlot) { toast('Please select a time slot', '#f05252'); return; }
-  // Check advance payment for cricket
-  if (currentBookingService === 'cricket') {
-    const paid = document.getElementById('advance-paid-check').checked;
-    if (!paid) { toast('Please pay the advance and check the box to confirm! 💳', '#f05252'); return; }
-  }
   const hours = parseInt(duration) || 1;
-  const advance = currentBookingService === 'cricket' ? hours * 200 : 0;
+  const advance = hours * 200;
   const s = serviceSlots[currentBookingService];
+
   if (db) {
     try {
       await setDoc(doc(db, 'public_bookings', Date.now().toString()), {
         service: currentBookingService, serviceName: s.name,
         name, phone, date, slot: selectedSlot, people, duration,
-        advance: advance, advancePaid: currentBookingService === 'cricket',
-        status: 'pending', ts: serverTimestamp()
+        advance: advance,
+        utr: utr,               // ← UTR stored for admin verification
+        advancePaid: false,     // ← false until admin confirms
+        status: 'payment_pending',  // ← new status: awaiting admin verification
+        ts: serverTimestamp()
+      });
+    } catch(e) { toast('Save error: ' + e.message, '#f05252'); return; }
+  }
+
+  const msg = `Hi RSB Sports Academy! 🙏\nI've paid the advance of ₹${advance} for *${s.name}* on *${date}* at *${selectedSlot}* for *${duration}*.\nName: ${name} | Phone: ${phone}\nUTR: ${utr}\nPlease confirm my booking. 🙏`;
+  closeBooking();
+  toast(`Booking submitted! Admin will verify payment & confirm. ✅`);
+  setTimeout(() => window.open(`https://wa.me/917391926006?text=${encodeURIComponent(msg)}`), 1200);
+};
+
+// ── Non-cricket: direct booking (no advance needed) ──
+window.confirmNonCricketBooking = async function() {
+  const name = document.getElementById('book-name').value.trim();
+  const phone = document.getElementById('book-phone').value.trim();
+  const date = document.getElementById('book-date').value;
+  const people = document.getElementById('book-people').value;
+  const duration = document.getElementById('book-duration').value;
+  const s = serviceSlots[currentBookingService];
+
+  if (db) {
+    try {
+      await setDoc(doc(db, 'public_bookings', Date.now().toString()), {
+        service: currentBookingService, serviceName: s.name,
+        name, phone, date, slot: selectedSlot, people, duration,
+        advance: 0, advancePaid: false,
+        status: 'pending',
+        ts: serverTimestamp()
       });
     } catch(e) {}
   }
-  // Build WhatsApp message BEFORE closeBooking() clears selectedSlot
   const msg = `Hi RSB Sports Academy! 🙏\nI've booked *${s.name}* on *${date}* at *${selectedSlot}* for *${duration}* for *${people} person(s)*.\nName: ${name}\nPhone: ${phone}`;
   closeBooking();
-  toast(`Booking confirmed! ${s.icon} We'll contact you on WhatsApp!`);
+  toast(`Booking submitted! ${s.icon} We'll contact you on WhatsApp!`);
   setTimeout(() => window.open(`https://wa.me/917391926006?text=${encodeURIComponent(msg)}`), 1000);
 };
 
