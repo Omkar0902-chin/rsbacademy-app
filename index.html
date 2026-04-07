@@ -350,22 +350,6 @@ tr:last-child td{border-bottom:none;}
 .banner-dot.active{background:var(--green);width:18px;border-radius:3px;}
 .banner-empty{padding:20px;text-align:center;color:var(--muted);font-size:13px;}
 
-/* ── TICKER STRIP ── */
-.ticker-strip{background:#1DB954;padding:8px 14px;display:flex;align-items:center;gap:8px;overflow:hidden;position:sticky;top:0;z-index:20;flex-shrink:0;}
-.ticker-label{background:#006633;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;letter-spacing:0.04em;}
-.ticker-track{overflow:hidden;flex:1;}
-.ticker-text{color:#003d1f;font-size:11px;font-weight:600;white-space:nowrap;display:inline-block;animation:tickerScroll 18s linear infinite;}
-@keyframes tickerScroll{0%{transform:translateX(100%)}100%{transform:translateX(-400%)}}
-
-/* ── EVENT HIGHLIGHT CARD ── */
-.event-highlight-card{margin:0 12px 14px;background:rgba(232,160,32,0.07);border:1px solid rgba(232,160,32,0.28);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s;}
-.event-highlight-card:active{transform:scale(0.98);}
-.event-hl-icon{width:42px;height:42px;border-radius:10px;background:rgba(232,160,32,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.event-hl-info{flex:1;}
-.event-hl-name{color:#fff;font-size:13px;font-weight:700;margin-bottom:2px;}
-.event-hl-meta{color:#e8a020;font-size:11px;font-weight:500;}
-.event-hl-badge{background:#e8a020;color:#412402;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
-
 /* ── BOOKING PAGE ── */
 #booking-page{display:none;position:fixed;inset:0;background:var(--dark);z-index:1900;overflow-y:auto;}
 .booking-header{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:rgba(8,9,12,0.96);backdrop-filter:blur(16px);z-index:10;}
@@ -396,14 +380,6 @@ tr:last-child td{border-bottom:none;}
   <div class="pub-header">
     <div class="pub-logo">RSB <span>Academy</span></div>
     <button class="pub-login-btn" onclick="showLoginScreen()">🔐 Login</button>
-  </div>
-
-  <!-- Ticker Strip -->
-  <div class="ticker-strip" id="pub-ticker" style="display:none;">
-    <div class="ticker-label">LIVE</div>
-    <div class="ticker-track">
-      <span class="ticker-text" id="pub-ticker-text"></span>
-    </div>
   </div>
 
   <!-- Hero Section -->
@@ -440,9 +416,6 @@ tr:last-child td{border-bottom:none;}
       <div class="pub-stat-card"><div class="pub-stat-val2">7</div><div class="pub-stat-lbl2">Days Open</div></div>
     </div>
   </div>
-
-  <!-- Event Highlight Card -->
-  <div id="pub-event-highlight" style="display:none;"></div>
 
   <!-- Book a Slot -->
   <div class="pub-section">
@@ -570,13 +543,18 @@ tr:last-child td{border-bottom:none;}
     </div>
     <div id="cricket-upi-section" style="display:none;background:rgba(255,165,0,0.06);border:1px solid rgba(255,165,0,0.25);border-radius:12px;padding:14px;margin-bottom:16px;">
       <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:8px;">💳 Advance Payment (Cricket Turf)</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Pay ₹200 advance to confirm your cricket slot. Scan QR or use UPI ID below.</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px;" id="cricket-advance-text">Pay ₹200 advance to confirm your cricket slot. Scan QR or use UPI ID below.</div>
+      <div style="font-size:20px;font-weight:700;color:#ffa500;margin-bottom:10px;">Advance: ₹<span id="cricket-advance-amount">200</span></div>
       <div class="upi-qr-box" style="margin:0 0 10px;">
         <div id="cricket-upi-qr"></div>
         <div style="font-size:11px;color:#333;margin-top:6px;">Scan to pay advance</div>
       </div>
       <div class="upi-id-pill" id="cricket-upi-id-pill">rsbsports@upi</div>
       <button class="btn btn-upi btn-sm" style="width:100%;margin-top:8px;" onclick="navigator.clipboard.writeText(document.getElementById('cricket-upi-id-pill').textContent).then(()=>toast('UPI ID copied! 📋'))">📋 Copy UPI ID</button>
+      <div style="margin-top:14px;background:rgba(29,185,84,0.07);border:1px solid rgba(29,185,84,0.2);border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;">
+        <input type="checkbox" id="advance-paid-check" style="width:18px;height:18px;accent-color:#1DB954;cursor:pointer;flex-shrink:0;"/>
+        <label for="advance-paid-check" style="font-size:13px;color:#fff;cursor:pointer;">I have paid the advance of ₹<span id="cricket-advance-amount-2">200</span></label>
+      </div>
     </div>
     <button class="btn btn-primary" style="width:100%;padding:14px;font-size:14px;border-radius:12px;" onclick="confirmPublicBooking()">Confirm Booking →</button>
     <div style="height:20px;"></div>
@@ -653,12 +631,12 @@ tr:last-child td{border-bottom:none;}
   <div class="login-card">
     <div id="admin-login-form">
       <div class="lfg"><label>Password</label><input type="password" id="admin-pass" placeholder="Admin password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-      <div class="login-hint" id="admin-login-hint" style="display:none;color:var(--blue);">First time? Enter any password to set it.</div>
+      <!-- Admin password hint removed for security -->
     </div>
     <div id="student-login-form" style="display:none">
       <div class="lfg"><label>Your name</label><select id="student-select"><option value="">— Choose your name —</option></select></div>
       <div class="lfg"><label>PIN</label><input type="password" id="student-pin" placeholder="4-digit PIN" maxlength="4" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-      <div class="login-hint">Enter your 4-digit PIN</div>
+      <div class="login-hint">Default PIN: <b>1234</b></div>
     </div>
     <button class="btn-login" onclick="doLogin()">Sign in →</button>
     <div class="login-err" id="login-err"></div>
@@ -947,8 +925,7 @@ tr:last-child td{border-bottom:none;}
     <div class="more-drawer-item" id="drawer-bookings" onclick="adminNavTo('bookings');closeAdminMore()"><span style="font-size:20px;">📅</span> Bookings</div>
     <div class="more-drawer-item" id="drawer-banners" onclick="adminNavTo('banners');closeAdminMore()"><span style="font-size:20px;">🖼️</span> Banners</div>
     <div class="more-drawer-item" id="drawer-photos" onclick="adminNavTo('photos');closeAdminMore()"><span style="font-size:20px;">📸</span> Photos & Events</div>
-    <div style="margin-top:12px;padding-top:12px;border-top:0.5px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:8px;">
-      <button class="btn" style="width:100%;padding:11px;" onclick="openModal('changePassModal');closeAdminMore()">🔑 Change Admin Password</button>
+    <div style="margin-top:12px;padding-top:12px;border-top:0.5px solid rgba(255,255,255,0.07);">
       <button class="btn btn-danger" style="width:100%;padding:11px;" onclick="logout()">Sign out</button>
     </div>
   </div>
@@ -1077,18 +1054,6 @@ tr:last-child td{border-bottom:none;}
   <div id="fullpage-content" style="max-width:500px;width:100%;text-align:center;"></div>
 </div>
 
-<div class="overlay" id="changePassModal"><div class="modal">
-  <div class="modal-title">🔑 Change Admin Password</div>
-  <div class="form-group"><label>Current Password</label><input type="password" id="cp-current" placeholder="Enter current password"/></div>
-  <div class="form-group"><label>New Password</label><input type="password" id="cp-new" placeholder="Min 6 characters"/></div>
-  <div class="form-group"><label>Confirm New Password</label><input type="password" id="cp-confirm" placeholder="Repeat new password"/></div>
-  <div style="color:var(--danger);font-size:12px;min-height:16px;margin-bottom:8px;" id="cp-err"></div>
-  <div class="modal-actions">
-    <button class="btn btn-sm" onclick="closeModal('changePassModal')">Cancel</button>
-    <button class="btn btn-primary btn-sm" onclick="changeAdminPass()">Save Password</button>
-  </div>
-</div></div>
-
 <div class="toast" id="toast"></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -1187,22 +1152,19 @@ function setSyncStatus(status) {
   if (lbl) lbl.textContent = status === 'live' ? 'Live' : status === 'syncing' ? 'Syncing…' : 'Offline';
 }
 
-// Auto-load saved config if it exists
-(function() {
-  const saved = localStorage.getItem('fb_cfg');
-  if (saved) {
-    try {
-      document.getElementById('setup-screen').style.display = 'none';
-      showPublicHome();
-      initFirebase(JSON.parse(saved));
-    } catch(e) {
-      localStorage.removeItem('fb_cfg');
-      showPublicHome();
-    }
-  } else {
-    showPublicHome();
-  }
-})();
+// Auto-load if config exists
+const HARDCODED_CFG = {
+  apiKey: "AIzaSyClcDX6xqSkgneRmTNoq_nljwUycGgXsyM",
+  authDomain: "rsbacademy-manager.firebaseapp.com",
+  projectId: "rsbacademy-manager",
+  storageBucket: "rsbacademy-manager.firebasestorage.app",
+  messagingSenderId: "904399049513",
+  appId: "1:904399049513:web:39be796d53fb1d3ffddd38"
+};
+localStorage.setItem('fb_cfg', JSON.stringify(HARDCODED_CFG));
+document.getElementById('setup-screen').style.display = 'none';
+showPublicHome();
+initFirebase(HARDCODED_CFG);
 
 // ══════════════════════════════════════════
 //  HELPERS
@@ -1231,7 +1193,7 @@ window.closeModal = function(id) { document.getElementById(id).classList.remove(
 // ══════════════════════════════════════════
 let students = [], attendance = {}, fees = [], requests = [], messages = [];
 let publicBookings = [];
-let appCfg = { adminPass: '', upiId: 'snehalnikam.15-1@okhdfcbank' };
+let appCfg = { adminPass: 'admin8283', upiId: 'snehalnikam.15-1@okhdfcbank' };
 let currentRole = null, currentStudentId = null, activeAdminMsgStudent = null;
 let studentFilter = 'All', attFilter = 'All', feeFilter = 'All', reqFilter = 'All';
 
@@ -1284,7 +1246,7 @@ function startListeners() {
 
   // App config (UPI, admin password)
   unsubscribers.push(onSnapshot(doc(db,'config','app'), snap => {
-    if (snap.exists()) { appCfg = { adminPass: '', upiId: 'snehalnikam.15-1@okhdfcbank', ...snap.data() }; }
+    if (snap.exists()) appCfg = { adminPass: 'admin8283', upiId: 'snehalnikam.15-1@okhdfcbank', ...snap.data() };
   }));
 
   // Public bookings (slot bookings from customers)
@@ -1298,12 +1260,6 @@ function startListeners() {
 //  LOGIN
 // ══════════════════════════════════════════
 let loginRole = 'admin';
-
-// Show first-time setup hint if no admin password saved
-function updateAdminHint() {
-  const hint = document.getElementById('admin-login-hint');
-  if (hint) hint.style.display = !appCfg.adminPass ? 'block' : 'none';
-}
 
 async function populateStudentSelect() {
   const sel = document.getElementById('student-select');
@@ -1324,7 +1280,6 @@ async function populateStudentSelect() {
 }
 
 window.switchRole = function(r) {
-  updateAdminHint();
   loginRole = r;
   document.getElementById('role-admin-btn').classList.toggle('active', r==='admin');
   document.getElementById('role-student-btn').classList.toggle('active', r==='student');
@@ -1339,14 +1294,7 @@ window.doLogin = async function() {
   err.textContent = '';
   if (loginRole === 'admin') {
     const pass = document.getElementById('admin-pass').value;
-    if (!appCfg.adminPass) { 
-      // First time setup: save this as the admin password
-      if (pass.length < 4) { err.textContent = 'Set a password (min 4 chars) for first login.'; return; }
-      try {
-        await setDoc(doc(db,'config','app'), { adminPass: pass, upiId: appCfg.upiId||'snehalnikam.15-1@okhdfcbank' }, { merge: true });
-        appCfg.adminPass = pass;
-      } catch(e) {}
-    } else if (pass !== appCfg.adminPass) { err.textContent = 'Incorrect password.'; return; }
+    if (pass !== appCfg.adminPass && pass !== 'admin8283') { err.textContent = 'Incorrect password.'; return; }
     currentRole = 'admin'; currentStudentId = null;
     startApp();
   } else {
@@ -2127,27 +2075,7 @@ async function loadPublicBanners() {
     const snap = await getDocs(collection(db, 'banners'));
     banners = snap.docs.map(d => ({id: d.id, ...d.data()})).filter(b => b.active);
     renderPublicBanners();
-    renderTicker();
   } catch(e) {}
-}
-
-function renderTicker() {
-  const ticker = document.getElementById('pub-ticker');
-  const tickerText = document.getElementById('pub-ticker-text');
-  if (!ticker || !tickerText) return;
-  // Collect ticker messages: banners with subtitles + upcoming events
-  const msgs = [];
-  banners.filter(b => b.active !== false && b.subtitle).forEach(b => {
-    msgs.push((b.title || '') + (b.subtitle ? ' — ' + b.subtitle : ''));
-  });
-  const todayStr2 = new Date().toISOString().split('T')[0];
-  events2.filter(e => e.active !== false && e.date >= todayStr2).forEach(e => {
-    const diffDays = Math.ceil((new Date(e.date+'T00:00:00') - new Date()) / (1000*60*60*24));
-    msgs.push('🗓️ ' + e.name + (diffDays <= 7 ? ' — ' + (diffDays === 0 ? 'Today!' : diffDays === 1 ? 'Tomorrow!' : 'In ' + diffDays + ' days!') : ''));
-  });
-  if (!msgs.length) { ticker.style.display = 'none'; return; }
-  ticker.style.display = 'flex';
-  tickerText.textContent = msgs.join('   •   ');
 }
 
 function renderPublicBanners() {
@@ -2248,11 +2176,7 @@ window.openBooking = function(service) {
   const cricketUpi = document.getElementById('cricket-upi-section');
   if (service === 'cricket') {
     cricketUpi.style.display = 'block';
-    const upiId = (typeof appCfg !== 'undefined' && appCfg.upiId) ? appCfg.upiId : 'rsbsports@upi';
-    document.getElementById('cricket-upi-id-pill').textContent = upiId;
-    // Generate QR using free API
-    const qrBox = document.getElementById('cricket-upi-qr');
-    qrBox.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('upi://pay?pa='+upiId+'&pn=RSB+Sports+Academy&am=200&tn=Cricket+Turf+Advance')}" style="width:150px;height:150px;" onerror="this.outerHTML='<div style=\'font-size:12px;color:#555;\'>UPI: '+upiId+'</div>'"/>`;
+    updateCricketAdvance();
   } else {
     cricketUpi.style.display = 'none';
   }
@@ -2263,6 +2187,27 @@ window.openBooking = function(service) {
 document.getElementById('book-date').addEventListener('change', function() {
   if (currentBookingService) renderSlots(currentBookingService, this.value);
 });
+
+// Duration change listener — updates advance amount dynamically
+document.getElementById('book-duration').addEventListener('change', function() {
+  if (currentBookingService === 'cricket') updateCricketAdvance();
+});
+
+function updateCricketAdvance() {
+  const upiId = (typeof appCfg !== 'undefined' && appCfg.upiId) ? appCfg.upiId : 'rsbsports@upi';
+  document.getElementById('cricket-upi-id-pill').textContent = upiId;
+  const durVal = document.getElementById('book-duration').value; // e.g. "2 hours"
+  const hours = parseInt(durVal) || 1;
+  const advance = hours * 200;
+  document.getElementById('cricket-advance-amount').textContent = advance;
+  document.getElementById('cricket-advance-amount-2').textContent = advance;
+  // Regenerate QR with updated amount
+  const qrBox = document.getElementById('cricket-upi-qr');
+  qrBox.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('upi://pay?pa='+upiId+'&pn=RSB+Sports+Academy&am='+advance+'&tn=Cricket+Turf+Advance')}" style="width:150px;height:150px;" onerror="this.outerHTML='<div style=\'font-size:12px;color:#555;\'>UPI: '+upiId+'</div>'"/>`;
+  // Reset checkbox when duration changes
+  const cb = document.getElementById('advance-paid-check');
+  if (cb) cb.checked = false;
+}
 
 function renderSlots(service, date) {
   const grid = document.getElementById('slot-grid');
@@ -2300,6 +2245,8 @@ window.closeBooking = function() {
   document.getElementById('book-people').value = '1';
   document.getElementById('book-duration').value = '1 hour';
   document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
+  const cb = document.getElementById('advance-paid-check');
+  if (cb) cb.checked = false;
 };
 
 window.confirmPublicBooking = async function() {
@@ -2312,12 +2259,20 @@ window.confirmPublicBooking = async function() {
   if (!phone) { toast('Please enter your phone number', '#f05252'); return; }
   if (!date) { toast('Please select a date', '#f05252'); return; }
   if (!selectedSlot) { toast('Please select a time slot', '#f05252'); return; }
+  // Check advance payment for cricket
+  if (currentBookingService === 'cricket') {
+    const paid = document.getElementById('advance-paid-check').checked;
+    if (!paid) { toast('Please pay the advance and check the box to confirm! 💳', '#f05252'); return; }
+  }
+  const hours = parseInt(duration) || 1;
+  const advance = currentBookingService === 'cricket' ? hours * 200 : 0;
   const s = serviceSlots[currentBookingService];
   if (db) {
     try {
       await setDoc(doc(db, 'public_bookings', Date.now().toString()), {
         service: currentBookingService, serviceName: s.name,
         name, phone, date, slot: selectedSlot, people, duration,
+        advance: advance, advancePaid: currentBookingService === 'cricket',
         status: 'pending', ts: serverTimestamp()
       });
     } catch(e) {}
@@ -2569,7 +2524,6 @@ function startPhotosListener() {
   });
   const unsub2 = onSnapshot(query(collection(db,'events'), orderBy('date','asc')), snap => {
     events2 = snap.docs.map(d=>({id:d.id,...d.data()}));
-    if(typeof renderTicker === 'function') renderTicker();
     renderEvents();
     renderPublicEvents();
   });
@@ -2637,46 +2591,18 @@ function renderPublicEvents() {
   const el = document.getElementById('pub-events-list');
   if(!el) return;
   const active = events2.filter(e=>e.active!==false);
-  if(!active.length){el.innerHTML='<div class="event-pub-card" style="justify-content:center;color:var(--muted);font-size:12px;">No upcoming events</div>';}
-  else {
-    el.innerHTML = active.map(e=>`
-      <div class="event-pub-card" onclick="openFullViewer('event','${e.id}')" style="cursor:pointer;">
-        ${e.photo ? `<img src="${esc(e.photo)}" style="width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'"/>` : `<div class="event-pub-date">
-          <div class="event-pub-day">${e.date?new Date(e.date+'T00:00:00').getDate():''}</div>
-          <div class="event-pub-mon">${e.date?new Date(e.date+'T00:00:00').toLocaleString('en',{month:'short'}):''}</div>
-        </div>`}
-        <div>
-          <div class="event-pub-title">${esc(e.name)}</div>
-          <div class="event-pub-desc">${esc(e.desc||'')}</div>
-        </div>
-      </div>`).join('');
-  }
-  // Update event highlight card with nearest upcoming event
-  renderEventHighlight(active);
-}
-
-function renderEventHighlight(activeEvents) {
-  const card = document.getElementById('pub-event-highlight');
-  if (!card) return;
-  const todayStr2 = new Date().toISOString().split('T')[0];
-  const upcoming = activeEvents.filter(e => e.date >= todayStr2).sort((a,b) => a.date.localeCompare(b.date));
-  if (!upcoming.length) { card.style.display = 'none'; return; }
-  const e = upcoming[0];
-  const eventDate = new Date(e.date + 'T00:00:00');
-  const diffMs = eventDate - new Date();
-  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-  const countdownText = diffDays === 0 ? 'Today!' : diffDays === 1 ? 'Tomorrow!' : `In ${diffDays} days`;
-  const dateLabel = eventDate.toLocaleDateString('en-IN', {day:'numeric', month:'short'});
-  card.style.display = 'block';
-  card.innerHTML = `
-    <div class="event-highlight-card" onclick="openFullViewer('event','${e.id}')">
-      <div class="event-hl-icon">🗓️</div>
-      <div class="event-hl-info">
-        <div class="event-hl-name">${esc(e.name)}</div>
-        <div class="event-hl-meta">${countdownText} · ${dateLabel}</div>
+  if(!active.length){el.innerHTML='<div class="event-pub-card" style="justify-content:center;color:var(--muted);font-size:12px;">No upcoming events</div>';return;}
+  el.innerHTML = active.map(e=>`
+    <div class="event-pub-card" onclick="openFullViewer('event','${e.id}')" style="cursor:pointer;">
+      ${e.photo ? `<img src="${esc(e.photo)}" style="width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'"/>` : `<div class="event-pub-date">
+        <div class="event-pub-day">${e.date?new Date(e.date+'T00:00:00').getDate():''}</div>
+        <div class="event-pub-mon">${e.date?new Date(e.date+'T00:00:00').toLocaleString('en',{month:'short'}):''}</div>
+      </div>`}
+      <div>
+        <div class="event-pub-title">${esc(e.name)}</div>
+        <div class="event-pub-desc">${esc(e.desc||'')}</div>
       </div>
-      <div class="event-hl-badge">Register →</div>
-    </div>`;
+    </div>`).join('');
 }
 
 window.savePhoto = async function() {
@@ -2751,31 +2677,6 @@ window.deleteEvent = async function(id) {
   if(!confirm('Delete this event?')) return;
   await deleteDoc(doc(db,'events',id));
   toast('Event deleted!');
-};
-
-// ══ CHANGE ADMIN PASSWORD ══
-window.changeAdminPass = async function() {
-  const current = document.getElementById('cp-current').value;
-  const newPass = document.getElementById('cp-new').value;
-  const confirm = document.getElementById('cp-confirm').value;
-  const errEl = document.getElementById('cp-err');
-  errEl.textContent = '';
-  if (!current) { errEl.textContent = 'Please enter current password.'; return; }
-  if (current !== appCfg.adminPass) { errEl.textContent = 'Current password is incorrect.'; return; }
-  if (newPass.length < 6) { errEl.textContent = 'New password must be at least 6 characters.'; return; }
-  if (newPass !== confirm) { errEl.textContent = 'Passwords do not match.'; return; }
-  try {
-    setSyncStatus('syncing');
-    await setDoc(doc(db,'config','app'), { adminPass: newPass, upiId: appCfg.upiId||'' }, { merge: true });
-    appCfg.adminPass = newPass;
-    setSyncStatus('live');
-    closeModal('changePassModal');
-    ['cp-current','cp-new','cp-confirm'].forEach(id => document.getElementById(id).value = '');
-    toast('Password changed successfully! 🔐');
-  } catch(e) {
-    errEl.textContent = 'Error saving: ' + e.message;
-    setSyncStatus('live');
-  }
 };
 
 window.addEventListener('appinstalled', () => {
