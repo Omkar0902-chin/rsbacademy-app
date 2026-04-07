@@ -91,7 +91,7 @@ html,body{background:var(--dark);color:var(--text);font-family:'DM Sans',system-
 #app{display:none;min-height:100vh;padding-bottom:70px;}
 
 /* ── MOBILE BOTTOM NAV ── */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(8,9,12,0.97);backdrop-filter:blur(16px);border-top:0.5px solid var(--border);display:flex;height:76px;padding-bottom:env(safe-area-inset-bottom);}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(8,9,12,0.97);backdrop-filter:blur(16px);border-top:0.5px solid var(--border);display:none;height:76px;padding-bottom:env(safe-area-inset-bottom);}
 .bottom-nav.admin-nav{display:none;}
 /* Admin bottom nav */
 #admin-bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(8,9,12,0.97);backdrop-filter:blur(16px);border-top:0.5px solid var(--border);display:none;height:76px;padding-bottom:env(safe-area-inset-bottom);}
@@ -2116,6 +2116,10 @@ let currentBookingService = null;
 // Show public home on load (before firebase setup)
 function showPublicHome() {
   document.getElementById('public-home').style.display = 'flex';
+  document.getElementById('public-home').style.zIndex = '1800';
+  // Hide bottom navs so they don't intercept taps on the public home
+  document.getElementById('bottom-nav').style.display = 'none';
+  document.getElementById('admin-bottom-nav').style.display = 'none';
   loadPublicBanners();
 }
 
@@ -2125,8 +2129,11 @@ function goBackToHome() {
   const pubHome = document.getElementById('public-home');
   if(pubHome){
     pubHome.style.display = 'flex';
-    pubHome.style.zIndex = '2500';
+    pubHome.style.zIndex = '1800';
   }
+  // Hide bottom navs so they don't intercept taps on the public home
+  document.getElementById('bottom-nav').style.display = 'none';
+  document.getElementById('admin-bottom-nav').style.display = 'none';
   if(typeof loadPublicBanners === 'function') loadPublicBanners();
 }
 window.goBackToHome = goBackToHome;
