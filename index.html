@@ -38,7 +38,7 @@
 html,body{background:var(--dark);color:var(--text);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.5;min-height:100vh;overflow-x:hidden;}
 
 /* ── FIREBASE SETUP SCREEN ── */
-#setup-screen{position:fixed;inset:0;background:var(--dark);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px;background-image:radial-gradient(ellipse 80% 40% at 50% 0%,rgba(29,185,84,0.1) 0%,transparent 60%);}
+#setup-screen{position:fixed;inset:0;background:var(--dark);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;background-image:radial-gradient(ellipse 80% 40% at 50% 0%,rgba(29,185,84,0.1) 0%,transparent 60%);}
 .setup-wrap{width:100%;max-width:480px;}
 .setup-brand{text-align:center;margin-bottom:28px;}
 .setup-icon{width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,rgba(29,185,84,0.25),rgba(29,185,84,0.06));border:1px solid rgba(29,185,84,0.25);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:24px;}
@@ -91,7 +91,7 @@ html,body{background:var(--dark);color:var(--text);font-family:'DM Sans',system-
 #app{display:none;min-height:100vh;padding-bottom:70px;}
 
 /* ── MOBILE BOTTOM NAV ── */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(8,9,12,0.97);backdrop-filter:blur(16px);border-top:0.5px solid var(--border);display:none;height:76px;padding-bottom:env(safe-area-inset-bottom);}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(8,9,12,0.97);backdrop-filter:blur(16px);border-top:0.5px solid var(--border);display:flex;height:76px;padding-bottom:env(safe-area-inset-bottom);}
 .bottom-nav.admin-nav{display:none;}
 /* Admin bottom nav */
 #admin-bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(8,9,12,0.97);backdrop-filter:blur(16px);border-top:0.5px solid var(--border);display:none;height:76px;padding-bottom:env(safe-area-inset-bottom);}
@@ -305,7 +305,8 @@ tr:last-child td{border-bottom:none;}
 
 /* ── PUBLIC HOME PAGE ── */
 #public-home{position:fixed;inset:0;background:var(--dark);z-index:1800;display:flex;flex-direction:column;overflow-y:auto;background-image:radial-gradient(ellipse 80% 40% at 50% 0%,rgba(29,185,84,0.12) 0%,transparent 60%);}
-.pub-header{padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(8,9,12,0.95);backdrop-filter:blur(16px);z-index:10;border-bottom:0.5px solid var(--border);}
+.pub-header{padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:34px;background:rgba(8,9,12,0.95);backdrop-filter:blur(16px);z-index:10;border-bottom:0.5px solid var(--border);}
+.pub-header.no-ticker{top:0;}
 .pub-logo{font-size:18px;font-weight:700;color:#fff;}
 .pub-logo span{color:var(--green);}
 .pub-login-btn{background:var(--green);color:#000;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
@@ -350,8 +351,24 @@ tr:last-child td{border-bottom:none;}
 .banner-dot.active{background:var(--green);width:18px;border-radius:3px;}
 .banner-empty{padding:20px;text-align:center;color:var(--muted);font-size:13px;}
 
+/* ── TICKER STRIP ── */
+.ticker-strip{background:#1DB954;padding:8px 14px;display:flex;align-items:center;gap:8px;overflow:hidden;}
+.ticker-label{background:#006633;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;letter-spacing:0.04em;}
+.ticker-track{overflow:hidden;flex:1;}
+.ticker-text{color:#003d1f;font-size:11px;font-weight:600;white-space:nowrap;display:inline-block;animation:tickerScroll 18s linear infinite;}
+@keyframes tickerScroll{0%{transform:translateX(100%)}100%{transform:translateX(-400%)}}
+
+/* ── EVENT HIGHLIGHT CARD ── */
+.event-highlight-card{margin:0 12px 14px;background:rgba(232,160,32,0.07);border:1px solid rgba(232,160,32,0.28);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s;}
+.event-highlight-card:active{transform:scale(0.98);}
+.event-hl-icon{width:42px;height:42px;border-radius:10px;background:rgba(232,160,32,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.event-hl-info{flex:1;}
+.event-hl-name{color:#fff;font-size:13px;font-weight:700;margin-bottom:2px;}
+.event-hl-meta{color:#e8a020;font-size:11px;font-weight:500;}
+.event-hl-badge{background:#e8a020;color:#412402;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+
 /* ── BOOKING PAGE ── */
-#booking-page{display:none;position:fixed;inset:0;background:var(--dark);z-index:3100;overflow-y:auto;}
+#booking-page{display:none;position:fixed;inset:0;background:var(--dark);z-index:1900;overflow-y:auto;}
 .booking-header{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:rgba(8,9,12,0.96);backdrop-filter:blur(16px);z-index:10;}
 .booking-back{background:rgba(255,255,255,0.06);border:0.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;color:#fff;cursor:pointer;font-family:inherit;}
 .booking-title{font-size:16px;font-weight:700;color:#fff;}
@@ -375,9 +392,17 @@ tr:last-child td{border-bottom:none;}
 </head>
 <body>
 
+<!-- ══ TICKER STRIP ══ -->
+<div class="ticker-strip" id="pub-ticker" style="display:none;position:fixed;top:0;left:0;right:0;z-index:1850;">
+  <div class="ticker-label">LIVE</div>
+  <div class="ticker-track">
+    <span class="ticker-text" id="pub-ticker-text"></span>
+  </div>
+</div>
+
 <!-- ══ PUBLIC HOME PAGE ══ -->
 <div id="public-home">
-  <div class="pub-header">
+  <div class="pub-header" id="pub-header-bar">
     <div class="pub-logo">RSB <span>Academy</span></div>
     <button class="pub-login-btn" onclick="showLoginScreen()">🔐 Login</button>
   </div>
@@ -416,6 +441,9 @@ tr:last-child td{border-bottom:none;}
       <div class="pub-stat-card"><div class="pub-stat-val2">7</div><div class="pub-stat-lbl2">Days Open</div></div>
     </div>
   </div>
+
+  <!-- Event Highlight Card -->
+  <div id="pub-event-highlight"></div>
 
   <!-- Book a Slot -->
   <div class="pub-section">
@@ -541,45 +569,17 @@ tr:last-child td{border-bottom:none;}
     <div class="form-group"><label>Select Time Slot *</label>
       <div class="slot-grid" id="slot-grid"></div>
     </div>
-    <!-- STEP 1 BUTTON: shown first -->
-    <button id="proceed-to-pay-btn" class="btn btn-primary" style="width:100%;padding:14px;font-size:14px;border-radius:12px;" onclick="proceedToPayment()">💳 Proceed to Pay Advance →</button>
-
-    <!-- STEP 2: Payment section — hidden until Step 1 is clicked -->
-    <div id="cricket-upi-section" style="display:none;">
-
-      <!-- Advance amount banner -->
-      <div style="background:rgba(255,165,0,0.08);border:1px solid rgba(255,165,0,0.3);border-radius:12px;padding:14px;margin-bottom:12px;text-align:center;">
-        <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:4px;">💳 Pay Advance to Confirm Slot</div>
-        <div style="font-size:26px;font-weight:700;color:#ffa500;">₹<span id="cricket-advance-amount">200</span></div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px;" id="cricket-advance-text">Advance for cricket turf · remaining payable at venue</div>
-      </div>
-
-      <!-- QR Code -->
+    <div id="cricket-upi-section" style="display:none;background:rgba(255,165,0,0.06);border:1px solid rgba(255,165,0,0.25);border-radius:12px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:8px;">💳 Advance Payment (Cricket Turf)</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Pay ₹200 advance to confirm your cricket slot. Scan QR or use UPI ID below.</div>
       <div class="upi-qr-box" style="margin:0 0 10px;">
         <div id="cricket-upi-qr"></div>
         <div style="font-size:11px;color:#333;margin-top:6px;">Scan to pay advance</div>
       </div>
-
-      <!-- UPI ID copy -->
       <div class="upi-id-pill" id="cricket-upi-id-pill">rsbsports@upi</div>
       <button class="btn btn-upi btn-sm" style="width:100%;margin-top:8px;" onclick="navigator.clipboard.writeText(document.getElementById('cricket-upi-id-pill').textContent).then(()=>toast('UPI ID copied! 📋'))">📋 Copy UPI ID</button>
-
-      <!-- UTR input — required -->
-      <div style="margin-top:14px;">
-        <label style="display:block;font-size:10px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.07em;">UTR / UPI Reference Number *</label>
-        <input type="text" id="book-utr" placeholder="Enter 12-digit UTR from your UPI app"
-          style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,165,0,0.3);border-radius:8px;padding:11px 14px;color:#fff;font-size:13px;font-family:inherit;outline:none;"/>
-        <div style="font-size:11px;color:var(--muted);margin-top:5px;">📱 Open any UPI app → Transaction History → Copy the UTR/Ref number</div>
-      </div>
-
-      <!-- Submit booking button -->
-      <button class="btn btn-primary" style="width:100%;padding:14px;font-size:14px;border-radius:12px;margin-top:14px;background:#ffa500;border-color:#ffa500;color:#000;" onclick="confirmPublicBooking()">✅ I've Paid — Submit Booking</button>
-
-      <!-- Back link -->
-      <div style="text-align:center;margin-top:10px;">
-        <button onclick="backToBookingForm()" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:inherit;">← Back to form</button>
-      </div>
     </div>
+    <button class="btn btn-primary" style="width:100%;padding:14px;font-size:14px;border-radius:12px;" onclick="confirmPublicBooking()">Confirm Booking →</button>
     <div style="height:20px;"></div>
   </div>
 </div>
@@ -1356,6 +1356,11 @@ function startApp() {
   startListeners();
   if(typeof startPhotosListener === 'function') startPhotosListener();
   buildNav();
+  // Hide ticker when logged in
+  const t = document.getElementById('pub-ticker');
+  if(t) t.style.display = 'none';
+  const ph = document.getElementById('pub-header-bar');
+  if(ph) ph.style.marginTop = '';
   if (currentRole === 'admin') {
     document.getElementById('admin-mini-header').style.display = 'flex';
     document.getElementById('admin-bottom-nav').style.display = 'flex';
@@ -1381,7 +1386,7 @@ function buildNav() {
   if (currentRole === 'admin') {
     const pendingReqs = requests.filter(r=>r.status==='pending').length;
     const unreadMsgs = messages.filter(m=>m.from==='student'&&!m.read).length;
-    const pendingBookings = publicBookings.filter(b=>b.status==='pending'||b.status==='payment_pending').length;
+    const pendingBookings = publicBookings.filter(b=>b.status==='pending').length;
     // Update badges on bottom nav
     const reqBtn = document.getElementById('abn-requests');
     if(reqBtn){
@@ -1977,13 +1982,9 @@ function renderAdminBookings() {
 
   let list = publicBookings.slice();
 
-  // Filter by status — treat payment_pending as a sub-type of pending filter
+  // Filter by status
   if (bookingStatusFilter !== 'all') {
-    if (bookingStatusFilter === 'pending') {
-      list = list.filter(b => b.status === 'pending' || b.status === 'payment_pending');
-    } else {
-      list = list.filter(b => b.status === bookingStatusFilter);
-    }
+    list = list.filter(b => b.status === bookingStatusFilter);
   }
 
   // Filter by service
@@ -2008,15 +2009,13 @@ function renderAdminBookings() {
   el.innerHTML = list.map(b => {
     const isToday = b.date === todayStr2;
     const isPast = b.date < todayStr2;
-    const isPaymentPending = b.status === 'payment_pending';
-    const statusColor = b.status === 'confirmed' ? 'var(--success)' : b.status === 'cancelled' ? 'var(--danger)' : isPaymentPending ? '#a070ff' : 'var(--warning)';
+    const statusColor = b.status === 'confirmed' ? 'var(--success)' : b.status === 'cancelled' ? 'var(--danger)' : 'var(--warning)';
     const statusBadge = b.status === 'confirmed' ? 'badge-approved' : b.status === 'cancelled' ? 'badge-rejected' : 'badge-pending';
-    const statusLabel = b.status === 'confirmed' ? '✅ Confirmed' : b.status === 'cancelled' ? '✗ Cancelled' : isPaymentPending ? '💳 Verify Payment' : 'Pending';
     const serviceIcon = {cricket:'🏏',yoga:'🧘',zumba:'💃',dance:'🎵',swimming:'🏊'}[b.service] || '📅';
-    const dateLabel = isToday ? '📍 Today' : fmt(b.date);
+    const dateLabel = isToday ? '📍 Today' : isPast ? fmt(b.date) : fmt(b.date);
 
     return `
-    <div class="req-item" style="${isPaymentPending ? 'border-color:rgba(160,112,255,0.4);background:rgba(160,112,255,0.04);' : isToday && b.status==='pending' ? 'border-color:rgba(29,185,84,0.35);background:rgba(29,185,84,0.03);' : ''}">
+    <div class="req-item" style="${isToday && b.status==='pending' ? 'border-color:rgba(29,185,84,0.35);background:rgba(29,185,84,0.03);' : ''}">
       <div class="req-item-header">
         <div>
           <div style="font-size:13px;font-weight:600;color:#fff;">${serviceIcon} ${esc(b.serviceName||b.service)}</div>
@@ -2027,19 +2026,13 @@ function renderAdminBookings() {
             · ${esc(b.people||'1')} person(s)
           </div>
         </div>
-        <span class="badge ${statusBadge}" style="${isPaymentPending?'background:rgba(160,112,255,0.15);color:#a070ff;':''}">${statusLabel}</span>
+        <span class="badge ${statusBadge}">${b.status}</span>
       </div>
       <div class="req-item-body">
         👤 <b>${esc(b.name||'—')}</b> &nbsp;|&nbsp; 📞 ${esc(b.phone||'—')}
-        ${b.advance ? `<br/><span style="font-size:11px;color:#ffa500;">💰 Advance: ₹${b.advance}</span>` : ''}
-        ${b.utr ? `<br/><span style="font-size:11px;color:var(--muted);">UTR / Ref: </span><span style="font-size:12px;font-weight:600;color:#b090ff;font-family:monospace;">${esc(b.utr)}</span>` : ''}
         ${b.ts ? `<br/><span style="font-size:10px;color:var(--muted);">Booked: ${fmtTs(b.ts)}</span>` : ''}
       </div>
       <div class="req-actions" style="flex-wrap:wrap;gap:6px;">
-        ${isPaymentPending ? `
-          <button class="btn btn-sm btn-success" onclick="confirmBookingPayment('${b.id}','${esc(b.name||'')}','${esc(b.phone||'')}','${esc(b.serviceName||b.service||'')}','${esc(b.date||'')}','${esc(b.slot||'')}')">✅ Confirm Payment</button>
-          <button class="btn btn-sm btn-danger" onclick="rejectBookingPayment('${b.id}')">✗ Reject</button>
-        ` : ''}
         ${b.status === 'pending' ? `
           <button class="btn btn-sm btn-success" onclick="updatePublicBooking('${b.id}','confirmed')">✓ Confirm</button>
           <button class="btn btn-sm btn-danger" onclick="updatePublicBooking('${b.id}','cancelled')">✗ Cancel</button>
@@ -2050,7 +2043,7 @@ function renderAdminBookings() {
         ${b.status === 'cancelled' ? `
           <button class="btn btn-sm btn-success" onclick="updatePublicBooking('${b.id}','pending')">↩ Restore</button>
         ` : ''}
-        <button class="btn btn-sm btn-wa" onclick="window.open('https://wa.me/91${b.phone ? b.phone.replace(/\D/g,'') : ''}?text=${encodeURIComponent('Hi '+(b.name||'there')+'! Your booking for '+(b.serviceName||b.service)+' on '+(b.date||'')+' at '+(b.slot||'')+' has been confirmed. See you at RSB Sports Academy! 🏆')}')">💬 WhatsApp</button>
+        <button class="btn btn-sm btn-wa" onclick="window.open('https://wa.me/91${b.phone ? b.phone.replace(/\D/g,'') : ''}?text=${encodeURIComponent('Hi '+( b.name||'there')+'! Your booking for '+(b.serviceName||b.service)+' on '+(b.date||'')+' at '+(b.slot||'')+' has been confirmed. See you at RSB Sports Academy! 🏆')}')">💬 WhatsApp</button>
       </div>
     </div>`;
   }).join('');
@@ -2070,41 +2063,6 @@ window.updatePublicBooking = async function(id, status) {
   }
 };
 
-// ── Admin: Confirm payment after verifying UTR ──
-window.confirmBookingPayment = async function(id, name, phone, service, date, slot) {
-  if (!confirm(`Confirm payment for ${name}?\nUTR verified — this will mark booking as CONFIRMED.`)) return;
-  try {
-    setSyncStatus('syncing');
-    await updateDoc(doc(db, 'public_bookings', id), {
-      status: 'confirmed',
-      advancePaid: true,
-      confirmedAt: serverTimestamp()
-    });
-    setSyncStatus('live');
-    toast('Payment verified & booking confirmed! ✅');
-    // Optionally open WhatsApp to notify customer
-    const msg = `Hi ${name}! 🎉 Your advance payment has been verified.\n✅ *${service}* booking confirmed!\n📅 Date: ${date} at ${slot}\nSee you at RSB Sports Academy! 🏆`;
-    setTimeout(() => window.open(`https://wa.me/91${phone.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`), 800);
-  } catch(e) {
-    setSyncStatus('live');
-    toast('Error: ' + e.message, '#f05252');
-  }
-};
-
-// ── Admin: Reject payment (e.g. wrong UTR) ──
-window.rejectBookingPayment = async function(id) {
-  if (!confirm('Reject this booking? (UTR not matching or payment not received)')) return;
-  try {
-    setSyncStatus('syncing');
-    await updateDoc(doc(db, 'public_bookings', id), { status: 'cancelled' });
-    setSyncStatus('live');
-    toast('Booking rejected — payment not verified', '#f05252');
-  } catch(e) {
-    setSyncStatus('live');
-    toast('Error: ' + e.message, '#f05252');
-  }
-};
-
 // ══════════════════════════════════════════
 //  PUBLIC HOME PAGE
 // ══════════════════════════════════════════
@@ -2116,10 +2074,6 @@ let currentBookingService = null;
 // Show public home on load (before firebase setup)
 function showPublicHome() {
   document.getElementById('public-home').style.display = 'flex';
-  document.getElementById('public-home').style.zIndex = '1800';
-  // Hide bottom navs so they don't intercept taps on the public home
-  document.getElementById('bottom-nav').style.display = 'none';
-  document.getElementById('admin-bottom-nav').style.display = 'none';
   loadPublicBanners();
 }
 
@@ -2129,11 +2083,8 @@ function goBackToHome() {
   const pubHome = document.getElementById('public-home');
   if(pubHome){
     pubHome.style.display = 'flex';
-    pubHome.style.zIndex = '1800';
+    pubHome.style.zIndex = '2500';
   }
-  // Hide bottom navs so they don't intercept taps on the public home
-  document.getElementById('bottom-nav').style.display = 'none';
-  document.getElementById('admin-bottom-nav').style.display = 'none';
   if(typeof loadPublicBanners === 'function') loadPublicBanners();
 }
 window.goBackToHome = goBackToHome;
@@ -2152,7 +2103,52 @@ async function loadPublicBanners() {
     const snap = await getDocs(collection(db, 'banners'));
     banners = snap.docs.map(d => ({id: d.id, ...d.data()})).filter(b => b.active);
     renderPublicBanners();
+    renderTicker();
   } catch(e) {}
+}
+
+function renderTicker() {
+  const ticker = document.getElementById('pub-ticker');
+  const tickerText = document.getElementById('pub-ticker-text');
+  const pubHeader = document.querySelector('.pub-header');
+  if (!ticker || !tickerText) return;
+  const msgs = [];
+  banners.filter(b => b.active !== false && b.subtitle).forEach(b => {
+    msgs.push((b.title||'') + (b.subtitle ? ' — ' + b.subtitle : ''));
+  });
+  const todayStr2 = new Date().toISOString().split('T')[0];
+  events2.filter(e => e.active !== false && e.date >= todayStr2).forEach(e => {
+    const diffDays = Math.ceil((new Date(e.date+'T00:00:00') - new Date()) / (1000*60*60*24));
+    msgs.push('🗓️ ' + e.name + (diffDays <= 7 ? ' — ' + (diffDays===0?'Today!':diffDays===1?'Tomorrow!':'In '+diffDays+' days!') : ''));
+  });
+  if (!msgs.length) {
+    ticker.style.display = 'none';
+    if(pubHeader) pubHeader.style.top = '0';
+    return;
+  }
+  ticker.style.display = 'flex';
+  tickerText.textContent = msgs.join('   •   ');
+  if(pubHeader) pubHeader.style.top = '34px';
+}
+
+function renderEventHighlight(activeEvents) {
+  const card = document.getElementById('pub-event-highlight');
+  if (!card) return;
+  const todayStr2 = new Date().toISOString().split('T')[0];
+  const upcoming = activeEvents.filter(e => e.date >= todayStr2).sort((a,b) => a.date.localeCompare(b.date));
+  if (!upcoming.length) { card.innerHTML = ''; return; }
+  const e = upcoming[0];
+  const diffDays = Math.ceil((new Date(e.date+'T00:00:00') - new Date()) / (1000*60*60*24));
+  const countdownText = diffDays===0?'Today!':diffDays===1?'Tomorrow!':'In '+diffDays+' days';
+  const dateLabel = new Date(e.date+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+  card.innerHTML = `<div class="event-highlight-card" onclick="openFullViewer('event','${e.id}')">
+    <div class="event-hl-icon">🗓️</div>
+    <div class="event-hl-info">
+      <div class="event-hl-name">${esc(e.name)}</div>
+      <div class="event-hl-meta">${countdownText} · ${dateLabel}</div>
+    </div>
+    <div class="event-hl-badge">Register →</div>
+  </div>`;
 }
 
 function renderPublicBanners() {
@@ -2249,25 +2245,18 @@ window.openBooking = function(service) {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('book-date').value = today;
   renderSlots(service, today);
-  // Reset 2-step payment UI
-  document.getElementById('cricket-upi-section').style.display = 'none';
-  const proceedBtn = document.getElementById('proceed-to-pay-btn');
+  // Show/hide cricket advance UPI payment section
+  const cricketUpi = document.getElementById('cricket-upi-section');
   if (service === 'cricket') {
-    proceedBtn.style.display = 'block';
-    proceedBtn.textContent = '💳 Proceed to Pay Advance →';
-    updateCricketAdvance();
+    cricketUpi.style.display = 'block';
+    const upiId = (typeof appCfg !== 'undefined' && appCfg.upiId) ? appCfg.upiId : 'rsbsports@upi';
+    document.getElementById('cricket-upi-id-pill').textContent = upiId;
+    // Generate QR using free API
+    const qrBox = document.getElementById('cricket-upi-qr');
+    qrBox.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('upi://pay?pa='+upiId+'&pn=RSB+Sports+Academy&am=200&tn=Cricket+Turf+Advance')}" style="width:150px;height:150px;" onerror="this.outerHTML='<div style=\'font-size:12px;color:#555;\'>UPI: '+upiId+'</div>'"/>`;
   } else {
-    // Non-cricket: show confirm button directly (no advance required)
-    proceedBtn.style.display = 'block';
-    proceedBtn.textContent = 'Confirm Booking →';
-    proceedBtn.onclick = function() {
-      // Direct booking for non-cricket services
-      confirmNonCricketBooking();
-    };
+    cricketUpi.style.display = 'none';
   }
-  // Hide public-home completely so nothing can block the booking page
-  const pubHome = document.getElementById('public-home');
-  if (pubHome) pubHome.style.display = 'none';
   document.getElementById('booking-page').style.display = 'block';
 };
 
@@ -2275,24 +2264,6 @@ window.openBooking = function(service) {
 document.getElementById('book-date').addEventListener('change', function() {
   if (currentBookingService) renderSlots(currentBookingService, this.value);
 });
-
-// Duration change listener — updates advance amount dynamically
-document.getElementById('book-duration').addEventListener('change', function() {
-  if (currentBookingService === 'cricket') updateCricketAdvance();
-});
-
-function updateCricketAdvance() {
-  const upiId = (typeof appCfg !== 'undefined' && appCfg.upiId) ? appCfg.upiId : 'rsbsports@upi';
-  document.getElementById('cricket-upi-id-pill').textContent = upiId;
-  const durVal = document.getElementById('book-duration').value; // e.g. "2 hours"
-  const hours = parseInt(durVal) || 1;
-  const advance = hours * 200;
-  document.getElementById('cricket-advance-amount').textContent = advance;
-  document.getElementById('cricket-advance-amount-2').textContent = advance;
-  // Regenerate QR with updated amount
-  const qrBox = document.getElementById('cricket-upi-qr');
-  qrBox.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('upi://pay?pa='+upiId+'&pn=RSB+Sports+Academy&am='+advance+'&tn=Cricket+Turf+Advance')}" style="width:150px;height:150px;" onerror="this.outerHTML='<div style=\'font-size:12px;color:#555;\'>UPI: '+upiId+'</div>'"/>`;
-}
 
 function renderSlots(service, date) {
   const grid = document.getElementById('slot-grid');
@@ -2323,9 +2294,6 @@ window.selectSlot = function(btn, slot) {
 
 window.closeBooking = function() {
   document.getElementById('booking-page').style.display = 'none';
-  // Restore public-home
-  const pubHome = document.getElementById('public-home');
-  if (pubHome) { pubHome.style.display = 'flex'; pubHome.style.zIndex = '1800'; }
   selectedSlot = null;
   // Clear form fields so next customer starts fresh
   document.getElementById('book-name').value = '';
@@ -2333,101 +2301,32 @@ window.closeBooking = function() {
   document.getElementById('book-people').value = '1';
   document.getElementById('book-duration').value = '1 hour';
   document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
-  // Reset 2-step payment UI
-  document.getElementById('cricket-upi-section').style.display = 'none';
-  const utrField = document.getElementById('book-utr');
-  if (utrField) utrField.value = '';
-  const proceedBtn = document.getElementById('proceed-to-pay-btn');
-  if (proceedBtn) { proceedBtn.style.display = 'block'; proceedBtn.textContent = '💳 Proceed to Pay Advance →'; proceedBtn.onclick = proceedToPayment; }
 };
 
-// ── STEP 1: Validate form, then show payment section (cricket) or book directly (others) ──
-window.proceedToPayment = function() {
+window.confirmPublicBooking = async function() {
   const name = document.getElementById('book-name').value.trim();
   const phone = document.getElementById('book-phone').value.trim();
   const date = document.getElementById('book-date').value;
+  const people = document.getElementById('book-people').value;
+  const duration = document.getElementById('book-duration').value;
   if (!name) { toast('Please enter your name', '#f05252'); return; }
-  if (!phone || phone.replace(/\D/g,'').length < 10) { toast('Please enter a valid 10-digit phone number', '#f05252'); return; }
+  if (!phone) { toast('Please enter your phone number', '#f05252'); return; }
   if (!date) { toast('Please select a date', '#f05252'); return; }
   if (!selectedSlot) { toast('Please select a time slot', '#f05252'); return; }
-
-  if (currentBookingService === 'cricket') {
-    // Show payment section, hide step-1 button
-    document.getElementById('proceed-to-pay-btn').style.display = 'none';
-    updateCricketAdvance();
-    document.getElementById('cricket-upi-section').style.display = 'block';
-    document.getElementById('cricket-upi-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  } else {
-    confirmNonCricketBooking();
-  }
-};
-
-// ── Back button inside payment section ──
-window.backToBookingForm = function() {
-  document.getElementById('cricket-upi-section').style.display = 'none';
-  document.getElementById('proceed-to-pay-btn').style.display = 'block';
-  const utrField = document.getElementById('book-utr');
-  if (utrField) utrField.value = '';
-};
-
-// ── STEP 2 (Cricket): Submit booking only after UTR entered ──
-window.confirmPublicBooking = async function() {
-  const utr = document.getElementById('book-utr').value.trim();
-  if (!utr) { toast('Please enter your UTR / UPI reference number 💳', '#f05252'); return; }
-  if (utr.length < 6) { toast('UTR number looks too short — please check', '#f05252'); return; }
-
-  const name = document.getElementById('book-name').value.trim();
-  const phone = document.getElementById('book-phone').value.trim();
-  const date = document.getElementById('book-date').value;
-  const people = document.getElementById('book-people').value;
-  const duration = document.getElementById('book-duration').value;
-  const hours = parseInt(duration) || 1;
-  const advance = hours * 200;
   const s = serviceSlots[currentBookingService];
-
   if (db) {
     try {
       await setDoc(doc(db, 'public_bookings', Date.now().toString()), {
         service: currentBookingService, serviceName: s.name,
         name, phone, date, slot: selectedSlot, people, duration,
-        advance: advance,
-        utr: utr,               // ← UTR stored for admin verification
-        advancePaid: false,     // ← false until admin confirms
-        status: 'payment_pending',  // ← new status: awaiting admin verification
-        ts: serverTimestamp()
-      });
-    } catch(e) { toast('Save error: ' + e.message, '#f05252'); return; }
-  }
-
-  const msg = `Hi RSB Sports Academy! 🙏\nI've paid the advance of ₹${advance} for *${s.name}* on *${date}* at *${selectedSlot}* for *${duration}*.\nName: ${name} | Phone: ${phone}\nUTR: ${utr}\nPlease confirm my booking. 🙏`;
-  closeBooking();
-  toast(`Booking submitted! Admin will verify payment & confirm. ✅`);
-  setTimeout(() => window.open(`https://wa.me/917391926006?text=${encodeURIComponent(msg)}`), 1200);
-};
-
-// ── Non-cricket: direct booking (no advance needed) ──
-window.confirmNonCricketBooking = async function() {
-  const name = document.getElementById('book-name').value.trim();
-  const phone = document.getElementById('book-phone').value.trim();
-  const date = document.getElementById('book-date').value;
-  const people = document.getElementById('book-people').value;
-  const duration = document.getElementById('book-duration').value;
-  const s = serviceSlots[currentBookingService];
-
-  if (db) {
-    try {
-      await setDoc(doc(db, 'public_bookings', Date.now().toString()), {
-        service: currentBookingService, serviceName: s.name,
-        name, phone, date, slot: selectedSlot, people, duration,
-        advance: 0, advancePaid: false,
-        status: 'pending',
-        ts: serverTimestamp()
+        status: 'pending', ts: serverTimestamp()
       });
     } catch(e) {}
   }
+  // Build WhatsApp message BEFORE closeBooking() clears selectedSlot
   const msg = `Hi RSB Sports Academy! 🙏\nI've booked *${s.name}* on *${date}* at *${selectedSlot}* for *${duration}* for *${people} person(s)*.\nName: ${name}\nPhone: ${phone}`;
   closeBooking();
-  toast(`Booking submitted! ${s.icon} We'll contact you on WhatsApp!`);
+  toast(`Booking confirmed! ${s.icon} We'll contact you on WhatsApp!`);
   setTimeout(() => window.open(`https://wa.me/917391926006?text=${encodeURIComponent(msg)}`), 1000);
 };
 
@@ -2738,8 +2637,8 @@ function renderPublicEvents() {
   const el = document.getElementById('pub-events-list');
   if(!el) return;
   const active = events2.filter(e=>e.active!==false);
-  if(!active.length){el.innerHTML='<div class="event-pub-card" style="justify-content:center;color:var(--muted);font-size:12px;">No upcoming events</div>';return;}
-  el.innerHTML = active.map(e=>`
+  if(!active.length){el.innerHTML='<div class="event-pub-card" style="justify-content:center;color:var(--muted);font-size:12px;">No upcoming events</div>';}
+  else { el.innerHTML = active.map(e=>`
     <div class="event-pub-card" onclick="openFullViewer('event','${e.id}')" style="cursor:pointer;">
       ${e.photo ? `<img src="${esc(e.photo)}" style="width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'"/>` : `<div class="event-pub-date">
         <div class="event-pub-day">${e.date?new Date(e.date+'T00:00:00').getDate():''}</div>
@@ -2749,7 +2648,9 @@ function renderPublicEvents() {
         <div class="event-pub-title">${esc(e.name)}</div>
         <div class="event-pub-desc">${esc(e.desc||'')}</div>
       </div>
-    </div>`).join('');
+    </div>`).join('');}
+  renderEventHighlight(active);
+  if(typeof renderTicker === 'function') renderTicker();
 }
 
 window.savePhoto = async function() {
