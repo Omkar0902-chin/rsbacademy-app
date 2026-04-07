@@ -26,7 +26,7 @@
 <link rel="icon" type="image/png" sizes="96x96"   href="icons/icon-96.png"/>
 
 <!-- ══ SEO / Description ══ -->
-<meta name="description" content="Academy Manager — Yoga, Zumba & Dance class management for students and admin."/>
+<meta name="description" content="Academy Manager — Yoga, Zumba, Dance, Swimming & Cricket class management for students and admin."/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap');
 :root{
@@ -135,6 +135,8 @@ html,body{background:var(--dark);color:var(--text);font-family:'DM Sans',system-
 .badge-yoga{background:rgba(29,185,84,0.12);color:#1DB954;}
 .badge-zumba{background:rgba(255,96,150,0.12);color:#ff6096;}
 .badge-dance{background:rgba(160,144,255,0.12);color:#a090ff;}
+.badge-swimming{background:rgba(77,166,255,0.12);color:#4da6ff;}
+.badge-cricket{background:rgba(255,165,0,0.12);color:#ffa500;}
 .badge-active{background:rgba(29,185,84,0.12);color:#1DB954;}
 .badge-expired{background:rgba(240,82,82,0.12);color:var(--danger);}
 .badge-expiring{background:rgba(232,160,32,0.12);color:var(--warning);}
@@ -155,6 +157,8 @@ tr:last-child td{border-bottom:none;}
 .av-yoga{background:rgba(29,185,84,0.18);color:#1DB954;}
 .av-zumba{background:rgba(255,96,150,0.18);color:#ff6096;}
 .av-dance{background:rgba(160,144,255,0.18);color:#a090ff;}
+.av-swimming{background:rgba(77,166,255,0.18);color:#4da6ff;}
+.av-cricket{background:rgba(255,165,0,0.18);color:#ffa500;}
 .name-cell{display:flex;align-items:center;gap:10px;}
 .search-input{width:100%;background:rgba(255,255,255,0.04);border:0.5px solid var(--border);border-radius:8px;padding:9px 14px;color:#fff;font-size:13px;font-family:inherit;outline:none;margin-bottom:12px;}
 .search-input::placeholder{color:#2a2f38;}
@@ -668,6 +672,8 @@ tr:last-child td{border-bottom:none;}
           <button class="filter-btn" onclick="setSFilter('Yoga',this)">Yoga</button>
           <button class="filter-btn" onclick="setSFilter('Zumba',this)">Zumba</button>
           <button class="filter-btn" onclick="setSFilter('Dance',this)">Dance</button>
+          <button class="filter-btn" onclick="setSFilter('Swimming',this)">Swimming</button>
+          <button class="filter-btn" onclick="setSFilter('Cricket',this)">Cricket</button>
         </div>
         <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Class</th><th>Fee</th><th>Sub</th><th></th></tr></thead><tbody id="student-table"></tbody></table></div>
       </div>
@@ -938,7 +944,7 @@ tr:last-child td{border-bottom:none;}
 <div class="overlay" id="addStudentModal"><div class="modal">
   <div class="modal-title">Add student</div>
   <div class="form-row"><div class="form-group"><label>Full name *</label><input type="text" id="ns-name" placeholder="Priya Sharma"/></div><div class="form-group"><label>Phone *</label><input type="tel" id="ns-phone" placeholder="9876543210"/></div></div>
-  <div class="form-row"><div class="form-group"><label>Class *</label><select id="ns-class"><option value="Yoga">🧘 Yoga</option><option value="Zumba">💃 Zumba</option><option value="Dance">🎵 Dance</option></select></div><div class="form-group"><label>Monthly fee (₹)</label><input type="number" id="ns-fee" placeholder="1500"/></div></div>
+  <div class="form-row"><div class="form-group"><label>Class *</label><select id="ns-class"><option value="Yoga">🧘 Yoga</option><option value="Zumba">💃 Zumba</option><option value="Dance">🎵 Dance</option><option value="Swimming">🏊 Swimming</option><option value="Cricket">🏏 Cricket</option></select></div><div class="form-group"><label>Monthly fee (₹)</label><input type="number" id="ns-fee" placeholder="1500"/></div></div>
   <div class="form-row"><div class="form-group"><label>Join date</label><input type="date" id="ns-join"/></div><div class="form-group"><label>Sub ends</label><input type="date" id="ns-sub"/></div></div>
   <div class="form-row"><div class="form-group"><label>Login PIN</label><input type="text" id="ns-pin" placeholder="1234" maxlength="4"/></div><div class="form-group"><label>Notes</label><input type="text" id="ns-notes" placeholder="Morning batch…"/></div></div>
   <div class="modal-actions"><button class="btn btn-sm" onclick="closeModal('addStudentModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="addStudent()">Add student</button></div>
@@ -948,7 +954,7 @@ tr:last-child td{border-bottom:none;}
   <div class="modal-title">Edit student</div>
   <input type="hidden" id="es-id"/>
   <div class="form-row"><div class="form-group"><label>Full name</label><input type="text" id="es-name"/></div><div class="form-group"><label>Phone</label><input type="tel" id="es-phone"/></div></div>
-  <div class="form-row"><div class="form-group"><label>Class</label><select id="es-class"><option value="Yoga">🧘 Yoga</option><option value="Zumba">💃 Zumba</option><option value="Dance">🎵 Dance</option></select></div><div class="form-group"><label>Monthly fee (₹)</label><input type="number" id="es-fee"/></div></div>
+  <div class="form-row"><div class="form-group"><label>Class</label><select id="es-class"><option value="Yoga">🧘 Yoga</option><option value="Zumba">💃 Zumba</option><option value="Dance">🎵 Dance</option><option value="Swimming">🏊 Swimming</option><option value="Cricket">🏏 Cricket</option></select></div><div class="form-group"><label>Monthly fee (₹)</label><input type="number" id="es-fee"/></div></div>
   <div class="form-row"><div class="form-group"><label>Join date</label><input type="date" id="es-join"/></div><div class="form-group"><label>Sub ends</label><input type="date" id="es-sub"/></div></div>
   <div class="form-row"><div class="form-group"><label>Login PIN</label><input type="text" id="es-pin" maxlength="4"/></div><div class="form-group"><label>Notes</label><input type="text" id="es-notes"/></div></div>
   <div class="modal-actions"><button class="btn btn-sm btn-danger" onclick="deleteStudent()">Delete</button><button class="btn btn-sm" onclick="closeModal('editStudentModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="saveStudent()">Save</button></div>
@@ -1177,8 +1183,8 @@ const todayStr = today.toISOString().split('T')[0];
 function fmt(d) { if (!d) return '—'; return new Date(d + 'T00:00:00').toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'}); }
 function fmtTs(ts) { if (!ts) return ''; const d = ts.toDate ? ts.toDate() : new Date(ts); return d.toLocaleDateString('en-IN',{day:'numeric',month:'short'}) + ' ' + d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}); }
 function initials(n) { return (n||'').split(' ').map(x=>x[0]||'').join('').toUpperCase().slice(0,2); }
-function avCls(c) { return c==='Yoga'?'av-yoga':c==='Zumba'?'av-zumba':'av-dance'; }
-function badgeCls(c) { return c==='Yoga'?'badge-yoga':c==='Zumba'?'badge-zumba':'badge-dance'; }
+function avCls(c) { return c==='Yoga'?'av-yoga':c==='Zumba'?'av-zumba':c==='Swimming'?'av-swimming':c==='Cricket'?'av-cricket':'av-dance'; }
+function badgeCls(c) { return c==='Yoga'?'badge-yoga':c==='Zumba'?'badge-zumba':c==='Swimming'?'badge-swimming':c==='Cricket'?'badge-cricket':'badge-dance'; }
 function subStatus(s) { const e=new Date(s.subEnd);if(e<today)return'expired';if(e<new Date(Date.now()+7*864e5))return'expiring';return'active'; }
 function feeStatus(f) { if(f.paid)return'paid';if(new Date(f.due)<today)return'overdue';return'due'; }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -1533,7 +1539,7 @@ window.deleteStudent = async function() {
 // ══════════════════════════════════════════
 function renderAttendance() {
   document.getElementById('att-date-lbl').textContent = today.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'});
-  document.getElementById('att-filters').innerHTML = ['All','Yoga','Zumba','Dance'].map(c=>`<button class="filter-btn${attFilter===c?' active':''}" onclick="setAttFilter('${c}',this)">${c}</button>`).join('');
+  document.getElementById('att-filters').innerHTML = ['All','Yoga','Zumba','Dance','Swimming','Cricket'].map(c=>`<button class="filter-btn${attFilter===c?' active':''}" onclick="setAttFilter('${c}',this)">${c}</button>`).join('');
   const filtered = attFilter==='All'?students:students.filter(s=>s.cls===attFilter);
   document.getElementById('att-table').innerHTML = filtered.map(s => {
     const key=`${todayStr}_${s.id}`; const st=attendance[key]?.status||'';
