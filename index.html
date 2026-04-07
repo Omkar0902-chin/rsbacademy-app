@@ -844,79 +844,21 @@ tr:last-child td{border-bottom:none;}
         <div class="card-header"><div class="card-title">💳 Pay via UPI</div></div>
         <div class="info-banner">Scan the QR below to pay instantly via any UPI app. After payment tap <b>I've paid</b>.</div>
 
-        <!-- QR Scanner Section -->
-        <div style="background:rgba(29,185,84,0.06);border:1px solid rgba(29,185,84,0.2);border-radius:12px;padding:14px;margin-bottom:12px;">
-          <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:10px;">📷 Scan Academy UPI QR</div>
-          <div id="qr-scanner-container" style="display:none;">
-            <video id="qr-video" style="width:100%;border-radius:10px;max-height:260px;object-fit:cover;"></video>
-            <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:6px;">Point camera at UPI QR code</div>
-            <button class="btn btn-danger btn-sm" style="width:100%;margin-top:8px;" onclick="stopQRScanner()">✕ Close Scanner</button>
-          </div>
-          <div id="qr-scanner-result" style="display:none;background:rgba(29,185,84,0.1);border-radius:8px;padding:10px;margin-bottom:8px;">
-            <div style="font-size:11px;color:var(--muted);">UPI ID detected:</div>
-            <div id="qr-result-text" style="font-size:13px;font-weight:600;color:#1DB954;word-break:break-all;"></div>
-          </div>
-          <div style="display:flex;gap:8px;">
-            <button class="btn btn-primary btn-sm" style="flex:1;" onclick="startQRScanner()">📷 Open Camera to Scan QR</button>
-          </div>
-        </div>
-
+        <!-- Academy QR Code - static image from API -->
         <div class="upi-qr-box" id="academy-qr-box">
-          <div id="academy-upi-qr"></div>
-          <div style="font-size:11px;color:#333;margin-top:6px;">Academy payment QR — scan to pay</div>
+          <img id="academy-upi-qr-img"
+            src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=snehalnikam.15-1@okhdfcbank"
+            style="width:200px;height:200px;"
+            onerror="this.outerHTML='<div style=\'font-size:12px;color:#555;\'>QR unavailable — use UPI ID below</div>'"
+            alt="Pay via UPI"/>
+          <div style="font-size:12px;color:#333;margin-top:8px;font-weight:600;">Snehal Nikam</div>
+          <div style="font-size:11px;color:#555;margin-top:2px;">Scan to pay via any UPI app</div>
         </div>
-        <div class="upi-id-pill" id="s-upi-id">academy@upi</div>
+        <div class="upi-id-pill" id="s-upi-id">snehalnikam.15-1@okhdfcbank</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
-          <button class="btn btn-upi btn-sm" onclick="copyUPI()">📋 Copy UPI ID</button>
-          <button class="btn btn-primary btn-sm" onclick="openModal('payNotifyModal')">✅ I've paid — notify admin</button>
+          <button class="btn btn-upi btn-sm" style="flex:1;" onclick="copyUPI()">📋 Copy UPI ID</button>
+          <button class="btn btn-primary btn-sm" style="flex:1;" onclick="openModal('payNotifyModal')">✅ I've paid — notify admin</button>
         </div>
-
-        <!-- QR Scanner Scripts -->
-        <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
-        <script>
-        let qrStream = null;
-        let qrInterval = null;
-
-        window.startQRScanner = async function() {
-          document.getElementById('qr-scanner-container').style.display = 'block';
-          document.getElementById('qr-scanner-result').style.display = 'none';
-          try {
-            qrStream = await navigator.mediaDevices.getUserMedia({
-              video: { facingMode: 'environment' }
-            });
-            const video = document.getElementById('qr-video');
-            video.srcObject = qrStream;
-            video.play();
-            qrInterval = setInterval(() => {
-              if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const code = jsQR(imageData.data, imageData.width, imageData.height);
-                if (code) {
-                  const result = code.data;
-                  document.getElementById('qr-result-text').textContent = result;
-                  document.getElementById('qr-scanner-result').style.display = 'block';
-                  stopQRScanner();
-                  toast('QR Scanned! ✅');
-                }
-              }
-            }, 300);
-          } catch(e) {
-            toast('Camera access denied. Please allow camera permission.', '#f05252');
-            document.getElementById('qr-scanner-container').style.display = 'none';
-          }
-        };
-
-        window.stopQRScanner = function() {
-          if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
-          if (qrInterval) { clearInterval(qrInterval); qrInterval = null; }
-          document.getElementById('qr-scanner-container').style.display = 'none';
-        };
-        </script>
       </div>
       <div class="card"><div class="card-header"><div class="card-title">Fee history</div></div><div id="s-fee-list"></div></div>
     </div>
@@ -1246,7 +1188,7 @@ window.closeModal = function(id) { document.getElementById(id).classList.remove(
 // ══════════════════════════════════════════
 let students = [], attendance = {}, fees = [], requests = [], messages = [];
 let publicBookings = [];
-let appCfg = { adminPass: 'admin8283', upiId: 'academy@upi' };
+let appCfg = { adminPass: 'admin8283', upiId: 'snehalnikam.15-1@okhdfcbank' };
 let currentRole = null, currentStudentId = null, activeAdminMsgStudent = null;
 let studentFilter = 'All', attFilter = 'All', feeFilter = 'All', reqFilter = 'All';
 
@@ -1299,7 +1241,7 @@ function startListeners() {
 
   // App config (UPI, admin password)
   unsubscribers.push(onSnapshot(doc(db,'config','app'), snap => {
-    if (snap.exists()) appCfg = { adminPass: 'admin8283', upiId: 'academy@upi', ...snap.data() };
+    if (snap.exists()) appCfg = { adminPass: 'admin8283', upiId: 'snehalnikam.15-1@okhdfcbank', ...snap.data() };
   }));
 
   // Public bookings (slot bookings from customers)
@@ -1891,14 +1833,33 @@ function renderStudentFees(){
     <div class="metric"><div class="metric-val" style="color:var(--green)">₹${paid.toLocaleString('en-IN')}</div><div class="metric-lbl">Total paid</div></div>
     <div class="metric"><div class="metric-val" style="color:${pending?'var(--warning)':'var(--green)'}">₹${pending.toLocaleString('en-IN')}</div><div class="metric-lbl">Pending</div></div>
   `;
-  document.getElementById('s-upi-id').textContent=appCfg.upiId||'academy@upi';
+  document.getElementById('s-upi-id').textContent=appCfg.upiId||'snehalnikam.15-1@okhdfcbank';
   document.getElementById('pay-date').value=todayStr;
   document.getElementById('s-fee-list').innerHTML=myFees.length===0?'<div class="empty">No fee records yet</div>':myFees.slice().reverse().map(f=>`<div class="fee-item"><div><div style="font-size:13px;font-weight:500">₹${(f.amount||0).toLocaleString('en-IN')}</div><div style="font-size:11px;color:var(--muted)">${fmt(f.date)} · ${esc(f.notes)||'—'}</div></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;color:var(--muted)">Due ${fmt(f.due)}</span><span class="badge badge-${feeStatus(f)}">${feeStatus(f)==='paid'?'Paid':feeStatus(f)==='overdue'?'Overdue':'Due'}</span></div></div>`).join('');
 }
 
 window.copyUPI=function(){
-  navigator.clipboard.writeText(appCfg.upiId||'academy@upi').then(()=>toast('UPI ID copied! 📋')).catch(()=>toast('UPI: '+(appCfg.upiId||'academy@upi')));
+  const upiId = appCfg.upiId || 'snehalnikam.15-1@okhdfcbank';
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(upiId).then(()=>toast('UPI ID copied! 📋')).catch(()=>{
+      fallbackCopy(upiId);
+    });
+  } else {
+    fallbackCopy(upiId);
+  }
 };
+function fallbackCopy(text) {
+  const el = document.createElement('textarea');
+  el.value = text;
+  el.style.position = 'fixed';
+  el.style.opacity = '0';
+  document.body.appendChild(el);
+  el.focus();
+  el.select();
+  try { document.execCommand('copy'); toast('UPI ID copied! 📋'); }
+  catch(e) { toast('UPI: ' + text); }
+  document.body.removeChild(el);
+}
 
 window.submitPayNotify=async function(){
   const amount=parseInt(document.getElementById('pay-amount').value)||0;
