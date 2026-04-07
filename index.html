@@ -351,7 +351,7 @@ tr:last-child td{border-bottom:none;}
 .banner-empty{padding:20px;text-align:center;color:var(--muted);font-size:13px;}
 
 /* ── BOOKING PAGE ── */
-#booking-page{display:none;position:fixed;inset:0;background:var(--dark);z-index:1900;overflow-y:auto;}
+#booking-page{display:none;position:fixed;inset:0;background:var(--dark);z-index:3100;overflow-y:auto;}
 .booking-header{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:rgba(8,9,12,0.96);backdrop-filter:blur(16px);z-index:10;}
 .booking-back{background:rgba(255,255,255,0.06);border:0.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;color:#fff;cursor:pointer;font-family:inherit;}
 .booking-title{font-size:16px;font-weight:700;color:#fff;}
@@ -2258,6 +2258,9 @@ window.openBooking = function(service) {
       confirmNonCricketBooking();
     };
   }
+  // Reset public-home z-index so it never overlaps the booking page
+  const pubHome = document.getElementById('public-home');
+  if (pubHome) pubHome.style.zIndex = '1800';
   document.getElementById('booking-page').style.display = 'block';
 };
 
