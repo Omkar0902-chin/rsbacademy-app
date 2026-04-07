@@ -93,6 +93,23 @@ html,body{background:var(--dark);color:var(--text);font-family:'DM Sans',system-
 /* ── MOBILE BOTTOM NAV ── */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(8,9,12,0.97);backdrop-filter:blur(16px);border-top:0.5px solid var(--border);display:flex;height:76px;padding-bottom:env(safe-area-inset-bottom);}
 .bottom-nav.admin-nav{display:none;}
+/* Admin bottom nav */
+#admin-bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(8,9,12,0.97);backdrop-filter:blur(16px);border-top:0.5px solid var(--border);display:none;height:76px;padding-bottom:env(safe-area-inset-bottom);}
+#admin-bottom-nav .abn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:transparent;color:var(--muted);font-size:10px;font-weight:500;font-family:inherit;cursor:pointer;position:relative;padding:0;transition:color 0.15s;}
+#admin-bottom-nav .abn-item.active{color:#1DB954;}
+#admin-bottom-nav .abn-icon{font-size:24px;line-height:1;}
+#admin-bottom-nav .abn-badge{position:absolute;top:4px;right:calc(50% - 18px);background:var(--danger);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;min-width:16px;text-align:center;}
+/* Admin top mini-header */
+#admin-mini-header{position:sticky;top:0;z-index:100;background:rgba(8,9,12,0.96);backdrop-filter:blur(16px);border-bottom:0.5px solid var(--border);padding:0 14px;display:none;align-items:center;justify-content:space-between;height:52px;}
+/* More drawer */
+#admin-more-drawer{position:fixed;bottom:76px;left:0;right:0;z-index:200;background:#101318;border:0.5px solid rgba(255,255,255,0.1);border-radius:18px 18px 0 0;padding:16px;display:none;max-height:60vh;overflow-y:auto;}
+#admin-more-drawer.open{display:block;}
+.more-drawer-item{display:flex;align-items:center;gap:14px;padding:13px 4px;border-bottom:0.5px solid rgba(255,255,255,0.05);cursor:pointer;font-size:14px;color:var(--text);}
+.more-drawer-item:last-child{border-bottom:none;}
+.more-drawer-item.active{color:#1DB954;}
+.more-drawer-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;}
+.more-drawer-overlay{position:fixed;inset:0;z-index:199;display:none;}
+.more-drawer-overlay.open{display:block;}
 .bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:none;background:transparent;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;position:relative;padding:0;transition:color 0.15s;}
 .bn-item.active{color:#1DB954;}
 .bn-icon{font-size:26px;line-height:1;}
@@ -629,14 +646,17 @@ tr:last-child td{border-bottom:none;}
 <div id="app">
 <button id="back-btn" onclick="goBack()">←</button>
 
-  <!-- Admin top bar (shown for admin on larger screens, and always on mobile as a header) -->
-  <div class="topbar" id="admin-topbar">
+  <!-- Admin mini header -->
+  <div id="admin-mini-header">
     <div class="logo">RSB <span>Academy</span></div>
-    <div class="admin-tabs" id="admin-tabs"></div>
-    <div class="topbar-right">
+    <div style="display:flex;align-items:center;gap:8px;">
       <div class="sync-indicator"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Live</span></div>
       <button class="btn btn-sm btn-logout" onclick="logout()">Sign out</button>
     </div>
+  </div>
+  <!-- Keep old topbar hidden (used by buildNav to check active tab) -->
+  <div class="topbar" id="admin-topbar" style="display:none!important;">
+    <div class="admin-tabs" id="admin-tabs"></div>
   </div>
 
   <!-- Student mobile header -->
@@ -937,6 +957,31 @@ tr:last-child td{border-bottom:none;}
     <button class="bn-item" onclick="showPage('student-book')" id="bn-book"><div class="bn-icon">📅</div><span>Book</span></button>
     <button class="bn-item" onclick="showPage('student-messages')" id="bn-msgs"><div class="bn-icon">💬</div><span>Messages</span></button>
   </nav>
+
+  <!-- Admin bottom nav -->
+  <nav id="admin-bottom-nav">
+    <button class="abn-item active" id="abn-dashboard" onclick="adminNavTo('dashboard')"><div class="abn-icon">📊</div>Dashboard</button>
+    <button class="abn-item" id="abn-students" onclick="adminNavTo('students')"><div class="abn-icon">👥</div>Students</button>
+    <button class="abn-item" id="abn-attendance" onclick="adminNavTo('attendance')"><div class="abn-icon">✅</div>Attend.</button>
+    <button class="abn-item" id="abn-fees" onclick="adminNavTo('fees')"><div class="abn-icon">💰</div>Fees</button>
+    <button class="abn-item" id="abn-requests" onclick="adminNavTo('requests')"><div class="abn-icon">📥</div>Requests</button>
+    <button class="abn-item" id="abn-more" onclick="openAdminMore()"><div class="abn-icon">☰</div>More</button>
+  </nav>
+
+  <!-- More drawer overlay -->
+  <div class="more-drawer-overlay" id="more-drawer-overlay" onclick="closeAdminMore()"></div>
+
+  <!-- More drawer -->
+  <div id="admin-more-drawer">
+    <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">More options</div>
+    <div class="more-drawer-item" id="drawer-messages" onclick="adminNavTo('messages');closeAdminMore()"><span style="font-size:20px;">💬</span> Messages</div>
+    <div class="more-drawer-item" id="drawer-bookings" onclick="adminNavTo('bookings');closeAdminMore()"><span style="font-size:20px;">📅</span> Bookings</div>
+    <div class="more-drawer-item" id="drawer-banners" onclick="adminNavTo('banners');closeAdminMore()"><span style="font-size:20px;">🖼️</span> Banners</div>
+    <div class="more-drawer-item" id="drawer-photos" onclick="adminNavTo('photos');closeAdminMore()"><span style="font-size:20px;">📸</span> Photos & Events</div>
+    <div style="margin-top:12px;padding-top:12px;border-top:0.5px solid rgba(255,255,255,0.07);">
+      <button class="btn btn-danger" style="width:100%;padding:11px;" onclick="logout()">Sign out</button>
+    </div>
+  </div>
 
 </div><!-- /app -->
 
@@ -1342,17 +1387,21 @@ function startApp() {
   if(typeof startPhotosListener === 'function') startPhotosListener();
   buildNav();
   if (currentRole === 'admin') {
-    document.getElementById('admin-topbar').style.display = 'flex';
+    document.getElementById('admin-mini-header').style.display = 'flex';
+    document.getElementById('admin-bottom-nav').style.display = 'flex';
     document.getElementById('bottom-nav').style.display = 'none';
     document.getElementById('student-header').style.display = 'none';
     document.getElementById('main-content').classList.add('admin-content');
+    document.getElementById('main-content').style.paddingBottom = '90px';
     showPage('dashboard');
     setTimeout(() => renderDashboard(), 1000);
   } else {
-    document.getElementById('admin-topbar').style.display = 'none';
+    document.getElementById('admin-mini-header').style.display = 'none';
+    document.getElementById('admin-bottom-nav').style.display = 'none';
     document.getElementById('bottom-nav').style.display = 'flex';
     document.getElementById('student-header').style.display = 'flex';
     document.getElementById('main-content').classList.remove('admin-content');
+    document.getElementById('main-content').style.paddingBottom = '';
     showPage('student-home');
     setTimeout(() => renderStudentHome(), 1000);
   }
@@ -1362,16 +1411,24 @@ function buildNav() {
   if (currentRole === 'admin') {
     const pendingReqs = requests.filter(r=>r.status==='pending').length;
     const unreadMsgs = messages.filter(m=>m.from==='student'&&!m.read).length;
+    const pendingBookings = publicBookings.filter(b=>b.status==='pending').length;
+    // Update badges on bottom nav
+    const reqBtn = document.getElementById('abn-requests');
+    if(reqBtn){
+      const existing = reqBtn.querySelector('.abn-badge');
+      if(existing) existing.remove();
+      if(pendingReqs>0){ const badge=document.createElement('div'); badge.className='abn-badge'; badge.textContent=pendingReqs; reqBtn.appendChild(badge); }
+    }
+    // Update drawer badges
+    const msgDrawer = document.getElementById('drawer-messages');
+    if(msgDrawer){ const eb=msgDrawer.querySelector('.more-drawer-badge'); if(eb)eb.remove(); if(unreadMsgs>0){const b=document.createElement('span');b.className='more-drawer-badge';b.textContent=unreadMsgs;msgDrawer.appendChild(b);} }
+    const bookDrawer = document.getElementById('drawer-bookings');
+    if(bookDrawer){ const eb=bookDrawer.querySelector('.more-drawer-badge'); if(eb)eb.remove(); if(pendingBookings>0){const b=document.createElement('span');b.className='more-drawer-badge';b.textContent=pendingBookings;bookDrawer.appendChild(b);} }
+    // Keep hidden admin-tabs updated for showPage highlight logic
     document.getElementById('admin-tabs').innerHTML = [
-      {id:'dashboard',label:'📊 Dashboard'},
-      {id:'students',label:'👥 Students'},
-      {id:'attendance',label:'✅ Attendance'},
-      {id:'fees',label:'💰 Fees'},
-      {id:'requests',label:'📥 Requests'+(pendingReqs>0?` (${pendingReqs})`:'')},
-      {id:'messages',label:'💬 Messages'+(unreadMsgs>0?` (${unreadMsgs})`:'')},
-      {id:'banners',label:'🖼️ Banners'},{id:'photos',label:'📸 Photos & Events'},
-      {id:'bookings',label:'📅 Bookings'+(publicBookings.filter(b=>b.status==='pending').length>0?` (${publicBookings.filter(b=>b.status==='pending').length})`:'')},
-    ].map(t=>`<button class="admin-tab${document.getElementById('page-'+t.id)?.classList.contains('active')?' active':''}" onclick="showPage('${t.id}')">${t.label}</button>`).join('');
+      {id:'dashboard'},{id:'students'},{id:'attendance'},{id:'fees'},
+      {id:'requests'},{id:'messages'},{id:'banners'},{id:'photos'},{id:'bookings'}
+    ].map(t=>`<button class="admin-tab${document.getElementById('page-'+t.id)?.classList.contains('active')?' active':''}" onclick="showPage('${t.id}')"></button>`).join('');
   } else {
     // Update notification dots on bottom nav
     const unread = messages.filter(m=>m.studentId===currentStudentId&&m.from==='admin'&&!m.read).length;
@@ -1380,6 +1437,20 @@ function buildNav() {
     document.getElementById('bn-fees').innerHTML = `<div class="bn-icon">💳</div><span>Fees</span>${pendingFee?'<div class="notif-dot"></div>':''}`;
   }
 }
+
+window.adminNavTo = function(page) {
+  showPage(page);
+};
+
+window.openAdminMore = function() {
+  document.getElementById('admin-more-drawer').classList.add('open');
+  document.getElementById('more-drawer-overlay').classList.add('open');
+};
+
+window.closeAdminMore = function() {
+  document.getElementById('admin-more-drawer').classList.remove('open');
+  document.getElementById('more-drawer-overlay').classList.remove('open');
+};
 
 const _pageHistory = [];
 
@@ -1414,6 +1485,13 @@ window.showPage = function(p) {
   document.querySelectorAll('.admin-tab').forEach(b=>{
     b.classList.toggle('active', b.getAttribute('onclick')===`showPage('${p}')`);
   });
+  // Highlight admin bottom nav
+  ['abn-dashboard','abn-students','abn-attendance','abn-fees','abn-requests','abn-more'].forEach(id=>document.getElementById(id)?.classList.remove('active'));
+  const adminNavMap = {dashboard:'abn-dashboard',students:'abn-students',attendance:'abn-attendance',fees:'abn-fees',requests:'abn-requests'};
+  const morePages = ['messages','bookings','banners','photos'];
+  if(adminNavMap[p]) document.getElementById(adminNavMap[p])?.classList.add('active');
+  if(morePages.includes(p)) document.getElementById('abn-more')?.classList.add('active');
+  // Highlight student bottom nav
   ['bn-home','bn-att','bn-fees','bn-book','bn-msgs'].forEach(id=>document.getElementById(id)?.classList.remove('active'));
   const map = {'student-home':'bn-home','student-attendance':'bn-att','student-fees':'bn-fees','student-book':'bn-book','student-messages':'bn-msgs'};
   if (map[p]) document.getElementById(map[p])?.classList.add('active');
