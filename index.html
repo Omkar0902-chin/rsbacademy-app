@@ -1304,7 +1304,7 @@ function startListeners() {
 
   // App config (UPI, admin password)
   unsubscribers.push(onSnapshot(doc(db,'config','app'), snap => {
-    if (snap.exists()) appCfg = { adminPass: '', upiId: 'snehalnikam.15-1@okhdfcbank', ...snap.data() };
+    if (snap.exists()) { const d = snap.data(); appCfg = { adminPass: d.adminpass || d.adminPass || '', upiId: d.upiId || 'snehalnikam.15-1@okhdfcbank', ...d }; }
       if (currentRole === 'admin' && typeof renderTickerPreview === 'function') renderTickerPreview();
   }));
 
