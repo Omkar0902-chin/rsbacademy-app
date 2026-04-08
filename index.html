@@ -1148,9 +1148,13 @@ function initFirebase(cfg) {
   try {
     const app = initializeApp(cfg);
     db = getFirestore(app);
-    // Test connection by reading config doc
-    getDoc(doc(db, 'config', 'app')).then(async () => {
+    // Test connection AND load config (adminPass) before showing login
+    getDoc(doc(db, 'config', 'app')).then(async (configSnap) => {
       setSyncStatus('live');
+      // Load admin password and UPI from Firestore config immediately
+      if (configSnap.exists()) {
+        appCfg = { adminPass: '', upiId: 'snehalnikam.15-1@okhdfcbank', ...configSnap.data() };
+      }
       // Pre-load students so login dropdown works immediately
       try {
         const snap = await getDocs(collection(db, 'students'));
@@ -1327,7 +1331,18 @@ window.doLogin = async function() {
   err.textContent = '';
   if (loginRole === 'admin') {
     const pass = document.getElementById('admin-pass').value;
-    if (!appCfg.adminPass) { err.textContent = 'Admin password not set. Please contact support.'; return; }
+    if (!pass) { err.textContent = 'Please enter your password.'; return; }
+    // Re-fetch config from Firestore in case it loaded late
+    if (!appCfg.adminPass) {
+      try {
+        const cfgSnap = await getDoc(doc(db, 'config', 'app'));
+        if (cfgSnap.exists()) appCfg = { adminPass: '', upiId: appCfg.upiId, ...cfgSnap.data() };
+      } catch(e) {}
+    }
+    if (!appCfg.adminPass) {
+      err.textContent = 'Password not found in Firebase. Go to Firestore → config → app → check adminPass field exists.';
+      return;
+    }
     if (pass !== appCfg.adminPass) { err.textContent = 'Incorrect password.'; return; }
     currentRole = 'admin'; currentStudentId = null;
     startApp();
