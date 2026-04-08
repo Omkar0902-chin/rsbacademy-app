@@ -1105,10 +1105,8 @@ const doc = (db, col, id) => id ? db.collection(col).doc(id) : db.collection(col
 const setDoc = (ref, data, opts) => opts && opts.merge ? ref.set(data,{merge:true}) : ref.set(data);
 // Wrap getDoc so .exists works as both property AND function (compat SDK uses property)
 const getDoc = (ref) => ref.get().then(snap => {
-  if (typeof snap.exists !== 'function') {
-    const origExists = snap.exists;
-    snap.exists = () => origExists;
-  }
+  const ev = snap.exists;
+  snap.exists = typeof ev === 'function' ? ev.bind(snap) : () => !!ev;
   return snap;
 });
 const getDocs = (ref) => ref.get();
