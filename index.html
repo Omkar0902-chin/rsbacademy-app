@@ -1336,8 +1336,8 @@ window.doLogin = async function() {
     if (!appCfg.adminPass) {
       try {
         const snap = await getDoc(doc(db, 'config', 'app'));
-        if (snap.exists()) {
-          const d = snap.data();
+        const d = snap.data();
+        if (d) {
           const pw = d.adminPass || d.adminpass || d.Adminpass || d.AdminPass || d.ADMINPASS || d.password || '';
           appCfg = { ...appCfg, adminPass: pw };
         }
