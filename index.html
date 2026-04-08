@@ -1088,38 +1088,17 @@ tr:last-child td{border-bottom:none;}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-// Safe init — prevents "App already exists" crash on re-load
-const initializeApp = (cfg) => {
-  try {
-    if (firebase.apps && firebase.apps.length > 0) {
-      return firebase.apps[0];
-    }
-    return firebase.initializeApp(cfg);
-  } catch(e) {
-    return firebase.apps[0];
-  }
-};
+const initializeApp = (cfg) => firebase.initializeApp(cfg);
 const getFirestore = () => firebase.firestore();
 const collection = (db, col) => db.collection(col);
 const doc = (db, col, id) => id ? db.collection(col).doc(id) : db.collection(col).doc();
 const setDoc = (ref, data, opts) => opts && opts.merge ? ref.set(data,{merge:true}) : ref.set(data);
-// Wrap getDoc so .exists works as both property AND function (compat SDK uses property)
-const getDoc = (ref) => ref.get().then(snap => {
-  const ev = snap.exists;
-  snap.exists = typeof ev === 'function' ? ev.bind(snap) : () => !!ev;
-  return snap;
-});
+const getDoc = (ref) => ref.get();
 const getDocs = (ref) => ref.get();
 const deleteDoc = (ref) => ref.delete();
 const updateDoc = (ref, data) => ref.update(data);
 const serverTimestamp = () => firebase.firestore.FieldValue.serverTimestamp();
-// Wrap onSnapshot so snap.exists() works in listeners too
-const onSnapshot = (ref, cb, errCb) => ref.onSnapshot(snap => {
-  if (snap && snap.exists !== undefined && typeof snap.exists !== 'function') {
-    const v = snap.exists; snap.exists = () => v;
-  }
-  cb(snap);
-}, errCb);
+const onSnapshot = (ref, cb, err) => ref.onSnapshot(cb, err);
 const orderBy = (field, dir) => (ref) => ref.orderBy(field, dir||'asc');
 const query = (ref, ...fns) => { let q=ref; fns.forEach(fn=>{ q=fn(q); }); return q; };
 </script>
@@ -1169,14 +1148,9 @@ function initFirebase(cfg) {
   try {
     const app = initializeApp(cfg);
     db = getFirestore(app);
-    // Test connection AND load config (adminPass) before showing login
-    getDoc(doc(db, 'config', 'app')).then(async (configSnap) => {
+    // Test connection by reading config doc
+    getDoc(doc(db, 'config', 'app')).then(async () => {
       setSyncStatus('live');
-      // Load admin password and UPI from Firestore config immediately
-      if (configSnap.exists()) {
-        const d = configSnap.data();
-        appCfg = { adminPass: d.adminpass || d.adminPass || '', upiId: d.upiId || 'snehalnikam.15-1@okhdfcbank', ...d };
-      }
       // Pre-load students so login dropdown works immediately
       try {
         const snap = await getDocs(collection(db, 'students'));
@@ -1304,7 +1278,7 @@ function startListeners() {
 
   // App config (UPI, admin password)
   unsubscribers.push(onSnapshot(doc(db,'config','app'), snap => {
-    if (snap.exists()) { const d = snap.data(); appCfg = { adminPass: d.adminpass || d.adminPass || '', upiId: d.upiId || 'snehalnikam.15-1@okhdfcbank', ...d }; }
+    if (snap.exists()) appCfg = { adminPass: '', upiId: 'snehalnikam.15-1@okhdfcbank', ...snap.data() };
       if (currentRole === 'admin' && typeof renderTickerPreview === 'function') renderTickerPreview();
   }));
 
@@ -1353,18 +1327,7 @@ window.doLogin = async function() {
   err.textContent = '';
   if (loginRole === 'admin') {
     const pass = document.getElementById('admin-pass').value;
-    if (!pass) { err.textContent = 'Please enter your password.'; return; }
-    // Re-fetch config from Firestore in case it loaded late
-    if (!appCfg.adminPass) {
-      try {
-        const cfgSnap = await getDoc(doc(db, 'config', 'app'));
-        if (cfgSnap.exists()) { const d = cfgSnap.data(); appCfg = { adminPass: d.adminpass || d.adminPass || '', upiId: d.upiId || appCfg.upiId, ...d }; }
-      } catch(e) {}
-    }
-    if (!appCfg.adminPass) {
-      err.textContent = 'Password not found in Firebase. Go to Firestore → config → app → check adminPass field exists.';
-      return;
-    }
+    if (!appCfg.adminPass) { err.textContent = 'Admin password not set. Please contact support.'; return; }
     if (pass !== appCfg.adminPass) { err.textContent = 'Incorrect password.'; return; }
     currentRole = 'admin'; currentStudentId = null;
     startApp();
