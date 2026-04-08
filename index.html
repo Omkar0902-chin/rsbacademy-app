@@ -1294,7 +1294,8 @@ function startListeners() {
   // App config (UPI, admin password)
   unsubscribers.push(onSnapshot(doc(db,'config','app'), snap => {
     if (snap.exists()) appCfg = { adminPass: 'admin8283', upiId: 'snehalnikam.15-1@okhdfcbank', ...snap.data() };
-      if (currentRole === 'admin' && typeof renderTickerPreview === 'function') renderTickerPreview();
+    if (typeof renderTicker === 'function') renderTicker();
+    if (currentRole === 'admin' && typeof renderTickerPreview === 'function') renderTickerPreview();
   }));
 
   // Public bookings (slot bookings from customers)
@@ -1498,7 +1499,8 @@ window.showPage = function(p) {
     fees:renderFees, requests:renderRequests, messages:renderAdminMessages,
     'student-home':renderStudentHome, 'student-attendance':renderStudentAttendance,
     'student-fees':renderStudentFees, 'student-book':renderStudentBook, 'student-messages':renderStudentMessages,
-    bookings: renderAdminBookings
+    bookings: renderAdminBookings,
+    banners: () => { renderBanners(); renderTickerPreview(); }
   };
   if (renders[p]) renders[p]();
 };
@@ -2100,8 +2102,8 @@ let currentBookingService = null;
 // Show public home on load (before firebase setup)
 function showPublicHome() {
   document.getElementById('public-home').style.display = 'flex';
-  if (false) 
   loadPublicBanners();
+  if (typeof renderTicker === 'function') renderTicker();
 }
 
 function goBackToHome() {
@@ -2138,18 +2140,10 @@ function renderTicker() {
   const wrap = document.getElementById('pub-ticker');
   const textEl = document.getElementById('pub-ticker-text');
   if (!wrap || !textEl) return;
-  const msgs = [];
-  banners.filter(b => b.active !== false && b.subtitle).forEach(b => {
-    msgs.push((b.title || '') + (b.subtitle ? ' — ' + b.subtitle : ''));
-  });
-  const todayStr2 = new Date().toISOString().split('T')[0];
-  (typeof events2 !== 'undefined' ? events2 : [])
-    .filter(e => e.active !== false && e.date && e.date >= todayStr2)
-    .forEach(e => {
-      const diff = Math.ceil((new Date(e.date+'T00:00:00') - new Date()) / 86400000);
-      const when = diff === 0 ? 'Today!' : diff === 1 ? 'Tomorrow!' : 'In ' + diff + ' days!';
-      msgs.push('📅 ' + e.name + ' — ' + when);
-    });
+  // Read from admin-configured ticker messages
+  const msgs = (typeof appCfg !== 'undefined' && appCfg.tickerMessages && appCfg.tickerMessages.length)
+    ? appCfg.tickerMessages.filter(m => m && m.trim())
+    : ["Welcome to RSB Sports Academy!", "Cricket Turf Rs.800-900/hr - Yoga & Swimming Rs.100/hr - Open 7 days!", "Call +91 73919 26006"];
   if (!msgs.length) { wrap.classList.remove('active'); return; }
   textEl.textContent = msgs.join('   •   ');
   wrap.classList.add('active');
