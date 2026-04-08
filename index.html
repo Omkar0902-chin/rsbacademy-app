@@ -1188,10 +1188,10 @@ function initFirebase(cfg) {
         students = snap.docs.map(d => ({id: d.id, ...d.data()}));
       } catch(e) {}
       document.getElementById('loading-screen').style.display = 'none';
-      // Hide public-home so it doesn't block login screen clicks
+      // Show public home page after Firebase connects
       const ph = document.getElementById('public-home');
-      if(ph){ ph.style.display = 'none'; ph.style.zIndex = '-999'; }
-      document.getElementById('login-screen').style.display = 'flex';
+      if(ph){ ph.style.display = 'flex'; ph.style.zIndex = '1800'; }
+      document.getElementById('login-screen').style.display = 'none';
       populateStudentSelect();
       loadPublicBanners();
     }).catch(err => {
