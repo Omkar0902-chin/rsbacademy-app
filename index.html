@@ -2424,25 +2424,38 @@ window.renderBanners = async function() {
 }
 
 window.saveBanner = async function() {
-  const id = document.getElementById('banner-edit-id').value;
-  const data = {
-    title: document.getElementById('banner-title').value.trim(),
-    subtitle: document.getElementById('banner-subtitle').value.trim(),
-    image: document.getElementById('banner-image').value.trim(),
-    color: document.getElementById('banner-color').value,
-    active: document.getElementById('banner-active').value === 'true',
-  };
-  if (!data.title) { toast('Please enter a title', '#f05252'); return; }
-  setSyncStatus('syncing');
-  const docId = id || Date.now().toString();
-  await setDoc(doc(db, 'banners', docId), data);
-  setSyncStatus('live');
-  closeModal('addBannerModal');
-  document.getElementById('banner-edit-id').value = '';
-  ['banner-title','banner-subtitle','banner-image'].forEach(i => document.getElementById(i).value = '');
-  toast('Banner saved! 🖼️');
-  renderBanners();
-  loadPublicBanners();
+  try {
+    const id = document.getElementById('banner-edit-id').value;
+    const titleEl = document.getElementById('banner-title');
+    const subtitleEl = document.getElementById('banner-subtitle');
+    const imageEl = document.getElementById('banner-image');
+    const colorEl = document.getElementById('banner-color');
+    const activeEl = document.getElementById('banner-active');
+    if (!titleEl || !titleEl.value.trim()) { toast('Please enter a title', '#f05252'); return; }
+    const data = {
+      title: titleEl.value.trim(),
+      subtitle: subtitleEl ? subtitleEl.value.trim() : '',
+      image: imageEl ? imageEl.value.trim() : '',
+      color: colorEl ? colorEl.value : 'green',
+      active: activeEl ? activeEl.value === 'true' : true,
+    };
+    if (!db) { toast('Firebase not connected!', '#f05252'); return; }
+    setSyncStatus('syncing');
+    const docId = id || Date.now().toString();
+    const ref = db.collection('banners').doc(docId);
+    await ref.set(data);
+    setSyncStatus('live');
+    closeModal('addBannerModal');
+    document.getElementById('banner-edit-id').value = '';
+    ['banner-title','banner-subtitle','banner-image'].forEach(i => { const el=document.getElementById(i); if(el) el.value=''; });
+    toast('Banner saved! ✅');
+    window.renderBanners();
+    window.loadPublicBanners();
+  } catch(e) {
+    setSyncStatus('live');
+    toast('Error saving: ' + e.message, '#f05252');
+    console.error('saveBanner error:', e);
+  }
 };
 
 window.editBanner = function(id) {
