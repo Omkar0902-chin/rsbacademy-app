@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
 <title>RSB Sports Academy</title>
 
 <!-- ══ PWA — Manifest & Theme ══ -->
@@ -2602,11 +2605,23 @@ if(window.innerWidth>=700){
 </div>
 
 <script>
+// ══ FORCE CLEAR OLD SERVICE WORKER CACHES ══
+// This runs first to bust any stale cached version of the app
+if ('serviceWorker' in navigator) {
+  // Unregister ALL old service workers so stale cache is cleared
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(reg => reg.unregister());
+  });
+  // Also clear all caches
+  if (window.caches) {
+    caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+  }
+}
+
 // ══ SERVICE WORKER REGISTRATION (Inline SW for PWA) ══
 if ('serviceWorker' in navigator) {
-  // Build inline service worker as blob
   const swCode = `
-    const CACHE_NAME = 'rsb-cache-v1';
+    const CACHE_NAME = 'rsb-cache-v9';
     const urlsToCache = ['/rsbacademy-app/', '/rsbacademy-app/index.html'];
     self.addEventListener('install', event => {
       event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache).catch(()=>{})));
