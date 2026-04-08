@@ -1174,7 +1174,8 @@ function initFirebase(cfg) {
       setSyncStatus('live');
       // Load admin password and UPI from Firestore config immediately
       if (configSnap.exists()) {
-        appCfg = { adminPass: '', upiId: 'snehalnikam.15-1@okhdfcbank', ...configSnap.data() };
+        const d = configSnap.data();
+        appCfg = { adminPass: d.adminpass || d.adminPass || '', upiId: d.upiId || 'snehalnikam.15-1@okhdfcbank', ...d };
       }
       // Pre-load students so login dropdown works immediately
       try {
@@ -1357,7 +1358,7 @@ window.doLogin = async function() {
     if (!appCfg.adminPass) {
       try {
         const cfgSnap = await getDoc(doc(db, 'config', 'app'));
-        if (cfgSnap.exists()) appCfg = { adminPass: '', upiId: appCfg.upiId, ...cfgSnap.data() };
+        if (cfgSnap.exists()) { const d = cfgSnap.data(); appCfg = { adminPass: d.adminpass || d.adminPass || '', upiId: d.upiId || appCfg.upiId, ...d }; }
       } catch(e) {}
     }
     if (!appCfg.adminPass) {
