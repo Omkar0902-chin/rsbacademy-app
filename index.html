@@ -2360,7 +2360,7 @@ window.confirmPublicBooking = async function() {
 
 // ══ ADMIN BANNERS MANAGEMENT ══
 // ══ TICKER MANAGEMENT ══
-async function renderTickerPreview() {
+window.renderTickerPreview = async function() {
   const el = document.getElementById('ticker-preview');
   if (!el) return;
   const msgs = (typeof appCfg !== 'undefined' && appCfg.tickerMessages) ? appCfg.tickerMessages : [];
@@ -2393,7 +2393,7 @@ window.saveTicker = async function() {
   }
 };
 
-async function renderBanners() {
+window.renderBanners = async function() {
   if (!db) return;
   try {
     const snap = await getDocs(collection(db, 'banners'));
