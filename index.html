@@ -1188,7 +1188,7 @@ function initFirebase(cfg) {
         students = snap.docs.map(d => ({id: d.id, ...d.data()}));
       } catch(e) {}
       document.getElementById('loading-screen').style.display = 'none';
-      // Show public home page after Firebase connects
+      // Show public home page after Firebase loads
       const ph = document.getElementById('public-home');
       if(ph){ ph.style.display = 'flex'; ph.style.zIndex = '1800'; }
       document.getElementById('login-screen').style.display = 'none';
