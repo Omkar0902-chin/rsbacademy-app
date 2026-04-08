@@ -1088,17 +1088,40 @@ tr:last-child td{border-bottom:none;}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-const initializeApp = (cfg) => firebase.initializeApp(cfg);
+// Safe init — prevents "App already exists" crash on re-load
+const initializeApp = (cfg) => {
+  try {
+    if (firebase.apps && firebase.apps.length > 0) {
+      return firebase.apps[0];
+    }
+    return firebase.initializeApp(cfg);
+  } catch(e) {
+    return firebase.apps[0];
+  }
+};
 const getFirestore = () => firebase.firestore();
 const collection = (db, col) => db.collection(col);
 const doc = (db, col, id) => id ? db.collection(col).doc(id) : db.collection(col).doc();
 const setDoc = (ref, data, opts) => opts && opts.merge ? ref.set(data,{merge:true}) : ref.set(data);
-const getDoc = (ref) => ref.get();
+// Wrap getDoc so .exists works as both property AND function (compat SDK uses property)
+const getDoc = (ref) => ref.get().then(snap => {
+  if (typeof snap.exists !== 'function') {
+    const origExists = snap.exists;
+    snap.exists = () => origExists;
+  }
+  return snap;
+});
 const getDocs = (ref) => ref.get();
 const deleteDoc = (ref) => ref.delete();
 const updateDoc = (ref, data) => ref.update(data);
 const serverTimestamp = () => firebase.firestore.FieldValue.serverTimestamp();
-const onSnapshot = (ref, cb, err) => ref.onSnapshot(cb, err);
+// Wrap onSnapshot so snap.exists() works in listeners too
+const onSnapshot = (ref, cb, errCb) => ref.onSnapshot(snap => {
+  if (snap && snap.exists !== undefined && typeof snap.exists !== 'function') {
+    const v = snap.exists; snap.exists = () => v;
+  }
+  cb(snap);
+}, errCb);
 const orderBy = (field, dir) => (ref) => ref.orderBy(field, dir||'asc');
 const query = (ref, ...fns) => { let q=ref; fns.forEach(fn=>{ q=fn(q); }); return q; };
 </script>
