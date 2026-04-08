@@ -352,14 +352,6 @@ tr:last-child td{border-bottom:none;}
 
 
 
-/* ── TICKER STRIP ── */
-.ticker-wrap{background:#1DB954;overflow:hidden;height:30px;display:none;align-items:center;}
-.ticker-wrap.active{display:flex;}
-.ticker-label{background:#006633;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;white-space:nowrap;flex-shrink:0;margin:0 8px;letter-spacing:0.04em;}
-.ticker-inner{flex:1;overflow:hidden;position:relative;}
-.ticker-text{color:#003d1f;font-size:11px;font-weight:600;white-space:nowrap;position:absolute;animation:tickerMove 20s linear infinite;}
-@keyframes tickerMove{0%{left:100%}100%{left:-300%}}
-
 /* ── BOOKING PAGE ── */
 #booking-page{display:none;position:fixed;inset:0;background:var(--dark);z-index:1900;overflow-y:auto;}
 .booking-header{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:rgba(8,9,12,0.96);backdrop-filter:blur(16px);z-index:10;}
@@ -387,13 +379,6 @@ tr:last-child td{border-bottom:none;}
 
 <!-- ══ PUBLIC HOME PAGE ══ -->
 <div id="public-home">
-  <!-- Ticker Strip -->
-  <div class="ticker-wrap" id="pub-ticker">
-    <div class="ticker-label">LIVE</div>
-    <div class="ticker-inner">
-      <span class="ticker-text" id="pub-ticker-text"></span>
-    </div>
-  </div>
 
   <div class="pub-header" id="pub-header-bar">
     <div class="pub-logo">RSB <span>Academy</span></div>
@@ -1294,8 +1279,7 @@ function startListeners() {
   // App config (UPI, admin password)
   unsubscribers.push(onSnapshot(doc(db,'config','app'), snap => {
     if (snap.exists()) appCfg = { adminPass: 'admin8283', upiId: 'snehalnikam.15-1@okhdfcbank', ...snap.data() };
-    if (typeof renderTicker === 'function') renderTicker();
-    if (currentRole === 'admin' && typeof renderTickerPreview === 'function') renderTickerPreview();
+      if (currentRole === 'admin' && typeof renderTickerPreview === 'function') renderTickerPreview();
   }));
 
   // Public bookings (slot bookings from customers)
@@ -1382,9 +1366,6 @@ function startApp() {
   startListeners();
   if(typeof startPhotosListener === 'function') startPhotosListener();
   buildNav();
-  // Hide ticker when logged in
-  const tickerEl = document.getElementById('pub-ticker');
-  if (tickerEl) tickerEl.classList.remove('active');
   if (currentRole === 'admin') {
     document.getElementById('admin-mini-header').style.display = 'flex';
     document.getElementById('admin-bottom-nav').style.display = 'flex';
@@ -1499,8 +1480,7 @@ window.showPage = function(p) {
     fees:renderFees, requests:renderRequests, messages:renderAdminMessages,
     'student-home':renderStudentHome, 'student-attendance':renderStudentAttendance,
     'student-fees':renderStudentFees, 'student-book':renderStudentBook, 'student-messages':renderStudentMessages,
-    bookings: renderAdminBookings,
-    banners: () => { renderBanners(); renderTickerPreview(); }
+    bookings: renderAdminBookings
   };
   if (renders[p]) renders[p]();
 };
@@ -2102,8 +2082,8 @@ let currentBookingService = null;
 // Show public home on load (before firebase setup)
 function showPublicHome() {
   document.getElementById('public-home').style.display = 'flex';
+  if (false) 
   loadPublicBanners();
-  if (typeof renderTicker === 'function') renderTicker();
 }
 
 function goBackToHome() {
@@ -2132,21 +2112,7 @@ async function loadPublicBanners() {
     const snap = await getDocs(collection(db, 'banners'));
     banners = snap.docs.map(d => ({id: d.id, ...d.data()})).filter(b => b.active);
     renderPublicBanners();
-    renderTicker();
-  } catch(e) {}
-}
-
-function renderTicker() {
-  const wrap = document.getElementById('pub-ticker');
-  const textEl = document.getElementById('pub-ticker-text');
-  if (!wrap || !textEl) return;
-  // Read from admin-configured ticker messages
-  const msgs = (typeof appCfg !== 'undefined' && appCfg.tickerMessages && appCfg.tickerMessages.length)
-    ? appCfg.tickerMessages.filter(m => m && m.trim())
-    : ["Welcome to RSB Sports Academy!", "Cricket Turf Rs.800-900/hr - Yoga & Swimming Rs.100/hr - Open 7 days!", "Call +91 73919 26006"];
-  if (!msgs.length) { wrap.classList.remove('active'); return; }
-  textEl.textContent = msgs.join('   •   ');
-  wrap.classList.add('active');
+    } catch(e) {}
 }
 
 
@@ -2678,7 +2644,6 @@ function startPhotosListener() {
   });
   const unsub2 = onSnapshot(query(collection(db,'events'), orderBy('date','asc')), snap => {
     events2 = snap.docs.map(d=>({id:d.id,...d.data()}));
-    if (typeof renderTicker === 'function') renderTicker();
     renderEvents();
     renderPublicEvents();
     });
