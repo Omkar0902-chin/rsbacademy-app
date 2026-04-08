@@ -1225,7 +1225,7 @@ window.closeModal = function(id) { document.getElementById(id).classList.remove(
 // ══════════════════════════════════════════
 let students = [], attendance = {}, fees = [], requests = [], messages = [];
 let publicBookings = [];
-let appCfg = { adminPass: 'admin8283', upiId: 'snehalnikam.15-1@okhdfcbank' };
+let appCfg = { adminPass: '', upiId: 'snehalnikam.15-1@okhdfcbank' };
 let currentRole = null, currentStudentId = null, activeAdminMsgStudent = null;
 let studentFilter = 'All', attFilter = 'All', feeFilter = 'All', reqFilter = 'All';
 
@@ -1278,7 +1278,7 @@ function startListeners() {
 
   // App config (UPI, admin password)
   unsubscribers.push(onSnapshot(doc(db,'config','app'), snap => {
-    if (snap.exists()) appCfg = { adminPass: 'admin8283', upiId: 'snehalnikam.15-1@okhdfcbank', ...snap.data() };
+    if (snap.exists()) appCfg = { adminPass: '', upiId: 'snehalnikam.15-1@okhdfcbank', ...snap.data() };
       if (currentRole === 'admin' && typeof renderTickerPreview === 'function') renderTickerPreview();
   }));
 
@@ -1327,7 +1327,8 @@ window.doLogin = async function() {
   err.textContent = '';
   if (loginRole === 'admin') {
     const pass = document.getElementById('admin-pass').value;
-    if (pass !== appCfg.adminPass && pass !== 'admin8283') { err.textContent = 'Incorrect password.'; return; }
+    if (!appCfg.adminPass) { err.textContent = 'Admin password not set. Please contact support.'; return; }
+    if (pass !== appCfg.adminPass) { err.textContent = 'Incorrect password.'; return; }
     currentRole = 'admin'; currentStudentId = null;
     startApp();
   } else {
