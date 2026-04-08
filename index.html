@@ -1306,7 +1306,7 @@ function startListeners() {
   unsubscribers.push(onSnapshot(doc(db,'config','app'), snap => {
     if (snap.exists()) appCfg = { adminPass: 'admin8283', upiId: 'snehalnikam.15-1@okhdfcbank', ...snap.data() };
     renderTicker();
-    if (currentRole === 'admin') renderTickerPreview();
+    if (currentRole === 'admin' && typeof renderTickerPreview === 'function') renderTickerPreview();
   }));
 
   // Public bookings (slot bookings from customers)
@@ -2114,7 +2114,7 @@ let currentBookingService = null;
 // Show public home on load (before firebase setup)
 function showPublicHome() {
   document.getElementById('public-home').style.display = 'flex';
-  renderTicker();
+  if (typeof renderTicker === 'function') renderTicker();
   loadPublicBanners();
 }
 
