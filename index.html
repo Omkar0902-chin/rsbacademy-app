@@ -354,8 +354,8 @@ tr:last-child td{border-bottom:none;}
 .ticker-strip{background:#1DB954;padding:8px 14px;display:flex;align-items:center;gap:8px;overflow:hidden;}
 .ticker-label{background:#006633;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;letter-spacing:0.04em;}
 .ticker-track{overflow:hidden;flex:1;}
-.ticker-text{color:#003d1f;font-size:11px;font-weight:600;white-space:nowrap;display:inline-block;animation:tickerScroll 18s linear infinite;}
-@keyframes tickerScroll{0%{transform:translateX(100%)}100%{transform:translateX(-400%)}}
+.ticker-text{color:#003d1f;font-size:11px;font-weight:600;white-space:nowrap;display:inline-block;animation:tickerScroll 28s linear infinite;}
+@keyframes tickerScroll{0%{transform:translateX(0%)}100%{transform:translateX(-50%)}}
 
 /* ── EVENT HIGHLIGHT CARD ── */
 .event-highlight-card{margin:0 12px 14px;background:rgba(232,160,32,0.07);border:1px solid rgba(232,160,32,0.28);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s;}
@@ -404,7 +404,7 @@ tr:last-child td{border-bottom:none;}
 
   <div class="pub-header" id="pub-header-bar">
     <div class="pub-logo" style="display:flex;align-items:center;gap:8px;">
-      <img src="icons/icon-192.png" style="width:30px;height:30px;border-radius:8px;object-fit:cover;" onerror="this.style.display='none'"/>
+      <img src="rsb_logo.jpeg" style="width:30px;height:30px;border-radius:8px;object-fit:cover;" onerror="this.style.display='none'"/>
       RSB <span>Academy</span>
     </div>
     <button class="pub-login-btn" onclick="showLoginScreen()">🔐 Login</button>
@@ -600,7 +600,7 @@ tr:last-child td{border-bottom:none;}
 <div id="setup-screen">
 <div class="setup-wrap">
   <div class="setup-brand">
-    <div class="setup-icon">🔥</div>
+    <div class="setup-icon" style="padding:0;overflow:hidden;"><img src="rsb_logo.jpeg" style="width:100%;height:100%;object-fit:cover;border-radius:16px;" onerror="this.outerHTML='🔥'"/></div>
     <h1>Connect to Firebase</h1>
     <p>One-time setup — data will sync across all phones</p>
   </div>
@@ -655,7 +655,7 @@ tr:last-child td{border-bottom:none;}
     <button onclick="goBackToHome()" style="background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);border-radius:8px;padding:9px 16px;color:#d8dde6;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;">← Back to Home</button>
   </div>
   <div class="login-brand">
-    <div class="login-icon">🏆</div>
+    <div class="login-icon" style="padding:0;overflow:hidden;"><img src="rsb_logo.jpeg" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" onerror="this.outerHTML='🏆'"/></div>
     <h1>RSB Academy</h1>
     <p>Turf · Pool · Café · Dehuroad, Pune</p>
   </div>
@@ -796,6 +796,14 @@ tr:last-child td{border-bottom:none;}
 
     <!-- Admin Banners -->
     <div class="page" id="page-banners">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📢 Ticker Messages</div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('addTickerModal')">+ Edit Ticker</button>
+        </div>
+        <div class="info-banner" style="margin-bottom:12px;">The green scrolling bar at the top of the home page. Add your own custom messages — offers, timings, announcements.</div>
+        <div id="ticker-preview" style="background:rgba(29,185,84,0.08);border:0.5px solid rgba(29,185,84,0.2);border-radius:8px;padding:10px 12px;font-size:12px;color:#1DB954;margin-bottom:8px;">Loading ticker messages...</div>
+      </div>
       <div class="card">
         <div class="card-header">
           <div class="card-title">🖼️ Manage Banners</div>
@@ -1013,6 +1021,21 @@ tr:last-child td{border-bottom:none;}
 </div></div>
 
 <!-- Add Banner Modal -->
+<!-- Add Ticker Modal -->
+<div class="overlay" id="addTickerModal"><div class="modal">
+  <div class="modal-title">📢 Edit Ticker Messages</div>
+  <div class="info-banner" style="margin-bottom:12px;">Enter one message per line. These scroll across the green bar at the top of your app's home page.</div>
+  <div class="form-group">
+    <label>Ticker Messages (one per line)</label>
+    <textarea id="ticker-messages-input" rows="6" placeholder="🏏 Cricket Turf open 6AM–11PM — Book now!&#10;🏊 Swimming Pool open 6AM–8PM&#10;💃 Zumba every evening at 5:30 PM&#10;🎉 Summer camp registrations open!" style="width:100%;background:rgba(255,255,255,0.05);border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;color:#fff;font-size:13px;font-family:inherit;outline:none;resize:vertical;"></textarea>
+  </div>
+  <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">💡 These show alongside banner subtitles and upcoming events automatically.</div>
+  <div class="modal-actions">
+    <button class="btn btn-sm" onclick="closeModal('addTickerModal')">Cancel</button>
+    <button class="btn btn-primary btn-sm" onclick="saveTicker()">Save Ticker</button>
+  </div>
+</div></div>
+
 <div class="overlay" id="addBannerModal"><div class="modal">
   <div class="modal-title">🖼️ Add Banner</div>
   <input type="hidden" id="banner-edit-id"/>
@@ -1282,6 +1305,8 @@ function startListeners() {
   // App config (UPI, admin password)
   unsubscribers.push(onSnapshot(doc(db,'config','app'), snap => {
     if (snap.exists()) appCfg = { adminPass: 'admin8283', upiId: 'snehalnikam.15-1@okhdfcbank', ...snap.data() };
+    renderTicker();
+    if (currentRole === 'admin') renderTickerPreview();
   }));
 
   // Public bookings (slot bookings from customers)
@@ -1797,7 +1822,7 @@ function renderStudentHome(){
   const unread=messages.filter(m=>m.studentId===s.id&&m.from==='admin'&&!m.read).length;
   document.getElementById('s-hero').innerHTML=`
     <div style="width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid rgba(29,185,84,0.4);background:rgba(29,185,84,0.1);display:flex;align-items:center;justify-content:center;">
-      <img src="icons/icon-192.png" style="width:100%;height:100%;object-fit:cover;" onerror="this.outerHTML='<div style=\'width:52px;height:52px;border-radius:50%;background:rgba(29,185,84,0.2);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#1DB954;\'>RSB</div>'"/>
+      <img src="rsb_logo.jpeg" style="width:100%;height:100%;object-fit:cover;" onerror="this.outerHTML='<div style=\'width:52px;height:52px;border-radius:50%;background:rgba(29,185,84,0.2);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#1DB954;\'>RSB</div>'"/>
     </div>
     <div><div style="font-size:18px;font-weight:700;color:#fff">Hi, ${esc(s.name.split(' ')[0])}! 👋</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${s.cls} class · ${s.phone}</div>
     <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;"><span class="badge ${badgeCls(s.cls)}">${s.cls}</span><span class="badge badge-${st}">${st==='active'?'✅ Active':st==='expired'?'❌ Expired':'⚠️ Expiring'}</span>${pendingFee?`<span class="badge badge-overdue">₹${(pendingFee.amount||0).toLocaleString('en-IN')} due</span>`:''}</div></div>
@@ -2089,6 +2114,7 @@ let currentBookingService = null;
 // Show public home on load (before firebase setup)
 function showPublicHome() {
   document.getElementById('public-home').style.display = 'flex';
+  renderTicker();
   loadPublicBanners();
 }
 
@@ -2125,23 +2151,35 @@ async function loadPublicBanners() {
 function renderTicker() {
   const ticker = document.getElementById('pub-ticker');
   const tickerText = document.getElementById('pub-ticker-text');
-  const pubHeader = document.querySelector('.pub-header');
   if (!ticker || !tickerText) return;
   const msgs = [];
+
+  // Custom ticker messages from admin (stored in appCfg)
+  if (typeof appCfg !== 'undefined' && appCfg.tickerMessages && appCfg.tickerMessages.length) {
+    appCfg.tickerMessages.forEach(m => { if(m && m.trim()) msgs.push(m.trim()); });
+  }
+
+  // Banner subtitles
   banners.filter(b => b.active !== false && b.subtitle).forEach(b => {
     msgs.push((b.title||'') + (b.subtitle ? ' — ' + b.subtitle : ''));
   });
+
+  // Upcoming events
   const todayStr2 = new Date().toISOString().split('T')[0];
   events2.filter(e => e.active !== false && e.date >= todayStr2).forEach(e => {
     const diffDays = Math.ceil((new Date(e.date+'T00:00:00') - new Date()) / (1000*60*60*24));
     msgs.push('🗓️ ' + e.name + (diffDays <= 7 ? ' — ' + (diffDays===0?'Today!':diffDays===1?'Tomorrow!':'In '+diffDays+' days!') : ''));
   });
+
+  // Always show default if nothing else
   if (!msgs.length) {
-    ticker.style.display = 'none';
-    return;
+    msgs.push('🏏 Cricket Turf · 🧘 Yoga · 💃 Zumba · 🏊 Swimming · 🎵 Dance — Book your slot now!');
   }
+
   ticker.style.display = 'flex';
-  tickerText.textContent = msgs.join('   •   ');
+  // Duplicate text for seamless loop
+  const fullText = msgs.join('   •   ');
+  tickerText.textContent = fullText + '     •     ' + fullText;
 }
 
 function renderEventHighlight(activeEvents) {
@@ -2406,6 +2444,41 @@ window.confirmPublicBooking = async function() {
 };
 
 // ══ ADMIN BANNERS MANAGEMENT ══
+// ══ TICKER MANAGEMENT ══
+async function renderTickerPreview() {
+  const el = document.getElementById('ticker-preview');
+  if (!el) return;
+  const msgs = (typeof appCfg !== 'undefined' && appCfg.tickerMessages) ? appCfg.tickerMessages : [];
+  if (!msgs.length) {
+    el.textContent = 'No custom messages yet — default RSB message is showing.';
+  } else {
+    el.textContent = '▶ ' + msgs.join('   •   ');
+  }
+}
+
+window.openTickerModal = function() {
+  const msgs = (typeof appCfg !== 'undefined' && appCfg.tickerMessages) ? appCfg.tickerMessages : [];
+  document.getElementById('ticker-messages-input').value = msgs.join('\n');
+  openModal('addTickerModal');
+};
+
+window.saveTicker = async function() {
+  const raw = document.getElementById('ticker-messages-input').value;
+  const tickerMessages = raw.split('\n').map(s => s.trim()).filter(Boolean);
+  try {
+    setSyncStatus('syncing');
+    await setDoc(doc(db, 'config', 'app'), { tickerMessages }, { merge: true });
+    setSyncStatus('live');
+    closeModal('addTickerModal');
+    toast('Ticker updated! 📢');
+    renderTicker();
+    renderTickerPreview();
+  } catch(e) {
+    setSyncStatus('live');
+    toast('Error: ' + e.message, '#f05252');
+  }
+};
+
 async function renderBanners() {
   if (!db) return;
   try {
@@ -2490,7 +2563,7 @@ const _origRenders = {
 const _origShowPageFn = window.showPage;
 const _extendedShowPage = function(p) {
   _origShowPageFn(p);
-  if (p === 'banners') renderBanners();
+  if (p === 'banners') { renderBanners(); renderTickerPreview(); }
 };
 window.showPage = _extendedShowPage;
 
@@ -2647,6 +2720,7 @@ function startPhotosListener() {
     events2 = snap.docs.map(d=>({id:d.id,...d.data()}));
     renderEvents();
     renderPublicEvents();
+    if(typeof renderTicker === 'function') renderTicker();
   });
   unsubscribers.push(unsub1, unsub2);
 }
