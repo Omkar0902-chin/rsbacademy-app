@@ -1174,7 +1174,7 @@ function initFirebase(cfg) {
   }
 }
 
-function setSyncStatus(status) {
+window.setSyncStatus = function(status) {
   ['sync-dot','sync-dot-s'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -2106,7 +2106,7 @@ function showLoginScreen() {
 }
 
 // Load banners from Firestore for public page
-async function loadPublicBanners() {
+window.loadPublicBanners = async function() {
   if (!db) return;
   try {
     const snap = await getDocs(collection(db, 'banners'));
@@ -2117,7 +2117,7 @@ async function loadPublicBanners() {
 
 
 
-function renderPublicBanners() {
+window.renderPublicBanners = function() {
   const slider = document.getElementById('pub-banner-slider');
   const dots = document.getElementById('pub-banner-dots');
   if (!slider) return;
@@ -2161,7 +2161,7 @@ function renderPublicBanners() {
 }
 
 // Also render banners on student home page
-function renderStudentBanners() {
+window.renderStudentBanners = function() {
   const container = document.getElementById('student-banner-container');
   if (!container) return;
   const activeBanners = banners.filter(b => b.active !== false);
