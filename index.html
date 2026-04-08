@@ -1188,6 +1188,9 @@ function initFirebase(cfg) {
         students = snap.docs.map(d => ({id: d.id, ...d.data()}));
       } catch(e) {}
       document.getElementById('loading-screen').style.display = 'none';
+      // Hide public-home so it doesn't block login screen clicks
+      const ph = document.getElementById('public-home');
+      if(ph){ ph.style.display = 'none'; ph.style.zIndex = '-999'; }
       document.getElementById('login-screen').style.display = 'flex';
       populateStudentSelect();
       loadPublicBanners();
