@@ -1281,7 +1281,7 @@ function startListeners() {
     if (snap.exists()) {
       const d = snap.data();
       // Support both adminPass and adminpass field names
-      const pw = d.adminPass || d.adminpass || d.password || '';
+      const pw = d.adminPass || d.adminpass || d.Adminpass || d.AdminPass || d.ADMINPASS || d.password || '';
       appCfg = { adminPass: pw, upiId: 'snehalnikam.15-1@okhdfcbank', ...d, adminPass: pw };
     }
       if (currentRole === 'admin' && typeof renderTickerPreview === 'function') renderTickerPreview();
