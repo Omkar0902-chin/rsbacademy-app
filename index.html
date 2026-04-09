@@ -643,12 +643,10 @@ tr:last-child td{border-bottom:none;}
     <div id="student-login-form" style="display:none">
       <div class="lfg"><label>Your name</label><select id="student-select"><option value="">— Choose your name —</option></select></div>
       <div class="lfg"><label>PIN</label><input type="password" id="student-pin" placeholder="4-digit PIN" maxlength="4" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-      <div class="login-hint">Default PIN: <b>1234</b></div>
     </div>
     <button class="btn-login" onclick="doLogin()">Sign in →</button>
     <div class="login-err" id="login-err"></div>
     <div style="text-align:center;margin-top:12px;">
-      <button style="background:transparent;border:none;color:var(--muted);font-size:11px;cursor:pointer;font-family:inherit;" onclick="reconfigure()">⚙️ Change Firebase config</button>
     </div>
   </div>
 </div>
