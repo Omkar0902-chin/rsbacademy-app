@@ -2104,10 +2104,13 @@ function showPublicHome() {
 function goBackToHome() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('booking-page').style.display = 'none';
   const pubHome = document.getElementById('public-home');
   if(pubHome){
-    pubHome.style.display = 'flex';
-    pubHome.style.zIndex = '2500';
+    pubHome.style.display = 'block';
+    pubHome.style.zIndex = '1';
+    pubHome.style.position = 'relative';
   }
   if(typeof loadPublicBanners === 'function') loadPublicBanners();
 }
