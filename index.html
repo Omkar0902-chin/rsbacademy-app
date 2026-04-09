@@ -1276,13 +1276,12 @@ function startListeners() {
 
   // App config (UPI, admin password)
   unsubscribers.push(onSnapshot(doc(db,'config','app'), snap => {
-    if (snap.exists()) {
-      const d = snap.data();
-      // Support both adminPass and adminpass field names
+    const d = snap.data();
+    if (d) {
       const pw = d.adminPass || d.adminpass || d.Adminpass || d.AdminPass || d.ADMINPASS || d.password || '';
       appCfg = { adminPass: pw, upiId: 'snehalnikam.15-1@okhdfcbank', ...d, adminPass: pw };
     }
-      if (currentRole === 'admin' && typeof renderTickerPreview === 'function') renderTickerPreview();
+    if (currentRole === 'admin' && typeof renderTickerPreview === 'function') renderTickerPreview();
   }));
 
   // Public bookings (slot bookings from customers)
