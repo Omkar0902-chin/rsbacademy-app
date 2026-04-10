@@ -2279,16 +2279,18 @@ window.openBooking = function(service) {
   } else {
     cricketUpi.style.display = 'none';
   }
-  // Show time picker for cricket, duration dropdown for others
+  // Show time picker for cricket, duration dropdown + slot grid for others
   if (service === 'cricket') {
     document.getElementById('duration-dropdown-wrap').style.display = 'none';
     document.getElementById('time-picker-wrap').style.display = 'block';
     document.getElementById('book-start-time').value = '';
     document.getElementById('book-end-time').value = '';
     document.getElementById('duration-display').style.display = 'none';
+    document.getElementById('slot-grid').parentElement.style.display = 'none';
   } else {
     document.getElementById('duration-dropdown-wrap').style.display = 'block';
     document.getElementById('time-picker-wrap').style.display = 'none';
+    document.getElementById('slot-grid').parentElement.style.display = 'block';
   }
   document.getElementById('booking-page').style.display = 'block';
 };
@@ -2439,7 +2441,7 @@ window.confirmPublicBooking = async function() {
   if (!name) { toast('Please enter your name', '#f05252'); return; }
   if (!phone) { toast('Please enter your phone number', '#f05252'); return; }
   if (!date) { toast('Please select a date', '#f05252'); return; }
-  if (!selectedSlot) { toast('Please select a time slot', '#f05252'); return; }
+  if (currentBookingService !== 'cricket' && !selectedSlot) { toast('Please select a time slot', '#f05252'); return; }
 
   // Cricket: require UTR before booking
   let advanceAmount = 0;
