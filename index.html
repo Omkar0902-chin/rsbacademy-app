@@ -446,6 +446,9 @@ tr:last-child td{border-bottom:none;}
   <div class="pub-section">
     <div class="pub-section-title">🎓 Academy Classes</div>
     <div class="pub-services">
+      <div class="pub-service" style="border-color:rgba(255,69,0,0.3);cursor:pointer;" onclick="window.open('https://wa.me/917391926006?text=Hi RSB Sports Academy, I want to join Tabata + Yoga class (6AM-7AM). Please share details.')">
+        <div class="pub-service-icon">🔥</div><div class="pub-service-name">Tabata + Yoga</div><div class="pub-service-price">6AM – 7AM</div>
+      </div>
       <div class="pub-service" style="border-color:rgba(29,185,84,0.2);cursor:pointer;" onclick="openBooking('yoga')">
         <div class="pub-service-icon">🧘</div><div class="pub-service-name">Yoga</div><div class="pub-service-price">4PM – 5PM</div>
       </div>
@@ -456,7 +459,7 @@ tr:last-child td{border-bottom:none;}
         <div class="pub-service-icon">🎵</div><div class="pub-service-name">Dance</div><div class="pub-service-price">5PM & 8PM</div>
       </div>
     </div>
-    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:6px;">Tap a class to book a slot</div>
+    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:6px;">Tap a class to enquire or book</div>
   </div>
 
   <!-- Photos & Events -->
@@ -532,14 +535,52 @@ tr:last-child td{border-bottom:none;}
         <option value="10+">10+ People</option>
       </select>
     </div>
-    <div class="form-group"><label>Duration</label>
+    <div id="duration-dropdown-wrap" class="form-group"><label>Duration</label>
       <select id="book-duration">
         <option value="1 hour">1 Hour</option>
+        <option value="1.5 hours">1.5 Hours</option>
         <option value="2 hours">2 Hours</option>
+        <option value="2.5 hours">2.5 Hours</option>
         <option value="3 hours">3 Hours</option>
+        <option value="3.5 hours">3.5 Hours</option>
         <option value="4 hours">4 Hours</option>
+        <option value="4.5 hours">4.5 Hours</option>
         <option value="5 hours">5 Hours</option>
       </select>
+    </div>
+    <div id="time-picker-wrap" style="display:none;">
+      <div class="form-group"><label>Start Time *</label>
+        <select id="book-start-time">
+          <option value="">-- Select start time --</option>
+          <option>6:00 AM</option><option>6:30 AM</option><option>7:00 AM</option><option>7:30 AM</option>
+          <option>8:00 AM</option><option>8:30 AM</option><option>9:00 AM</option><option>9:30 AM</option>
+          <option>10:00 AM</option><option>10:30 AM</option><option>11:00 AM</option><option>11:30 AM</option>
+          <option>12:00 PM</option><option>12:30 PM</option><option>1:00 PM</option><option>1:30 PM</option>
+          <option>2:00 PM</option><option>2:30 PM</option><option>3:00 PM</option><option>3:30 PM</option>
+          <option>4:00 PM</option><option>4:30 PM</option><option>5:00 PM</option><option>5:30 PM</option>
+          <option>6:00 PM</option><option>6:30 PM</option><option>7:00 PM</option><option>7:30 PM</option>
+          <option>8:00 PM</option><option>8:30 PM</option><option>9:00 PM</option><option>9:30 PM</option>
+          <option>10:00 PM</option><option>10:30 PM</option>
+        </select>
+      </div>
+      <div class="form-group"><label>End Time *</label>
+        <select id="book-end-time">
+          <option value="">-- Select end time --</option>
+          <option>6:30 AM</option><option>7:00 AM</option><option>7:30 AM</option><option>8:00 AM</option>
+          <option>8:30 AM</option><option>9:00 AM</option><option>9:30 AM</option><option>10:00 AM</option>
+          <option>10:30 AM</option><option>11:00 AM</option><option>11:30 AM</option><option>12:00 PM</option>
+          <option>12:30 PM</option><option>1:00 PM</option><option>1:30 PM</option><option>2:00 PM</option>
+          <option>2:30 PM</option><option>3:00 PM</option><option>3:30 PM</option><option>4:00 PM</option>
+          <option>4:30 PM</option><option>5:00 PM</option><option>5:30 PM</option><option>6:00 PM</option>
+          <option>6:30 PM</option><option>7:00 PM</option><option>7:30 PM</option><option>8:00 PM</option>
+          <option>8:30 PM</option><option>9:00 PM</option><option>9:30 PM</option><option>10:00 PM</option>
+          <option>10:30 PM</option><option>11:00 PM</option>
+        </select>
+      </div>
+      <div id="duration-display" style="background:rgba(255,165,0,0.08);border:1px solid rgba(255,165,0,0.25);border-radius:8px;padding:10px 14px;margin-bottom:12px;display:none;justify-content:space-between;align-items:center;">
+        <div style="font-size:12px;color:var(--muted);">Duration</div>
+        <div id="duration-calc" style="font-size:16px;font-weight:700;color:#ffa500;"></div>
+      </div>
     </div>
     <div class="form-group"><label>Select Time Slot *</label>
       <div class="slot-grid" id="slot-grid"></div>
@@ -2238,6 +2279,17 @@ window.openBooking = function(service) {
   } else {
     cricketUpi.style.display = 'none';
   }
+  // Show time picker for cricket, duration dropdown for others
+  if (service === 'cricket') {
+    document.getElementById('duration-dropdown-wrap').style.display = 'none';
+    document.getElementById('time-picker-wrap').style.display = 'block';
+    document.getElementById('book-start-time').value = '';
+    document.getElementById('book-end-time').value = '';
+    document.getElementById('duration-display').style.display = 'none';
+  } else {
+    document.getElementById('duration-dropdown-wrap').style.display = 'block';
+    document.getElementById('time-picker-wrap').style.display = 'none';
+  }
   document.getElementById('booking-page').style.display = 'block';
 };
 
@@ -2251,9 +2303,50 @@ document.getElementById('book-duration').addEventListener('change', function() {
   if (currentBookingService === 'cricket') updateCricketAdvance();
 });
 
+function timeToMinutes(t) {
+  if (!t) return 0;
+  const [time, period] = t.split(' ');
+  let [h, m] = time.split(':').map(Number);
+  if (period === 'PM' && h !== 12) h += 12;
+  if (period === 'AM' && h === 12) h = 0;
+  return h * 60 + m;
+}
+
+function getCricketDurationFromPicker() {
+  const start = document.getElementById('book-start-time') ? document.getElementById('book-start-time').value : '';
+  const end = document.getElementById('book-end-time') ? document.getElementById('book-end-time').value : '';
+  if (!start || !end) return 0;
+  const mins = timeToMinutes(end) - timeToMinutes(start);
+  return mins > 0 ? mins / 60 : 0;
+}
+
+function updateTimePicker() {
+  const hours = getCricketDurationFromPicker();
+  const display = document.getElementById('duration-display');
+  const calc = document.getElementById('duration-calc');
+  if (hours > 0) {
+    display.style.display = 'flex';
+    const label = hours % 1 === 0 ? hours + ' hour' + (hours > 1 ? 's' : '') : hours + ' hours';
+    calc.textContent = label + ' — Advance: ₹' + (hours * 200);
+    updateCricketAdvance();
+  } else {
+    display.style.display = 'none';
+  }
+}
+
+document.addEventListener('change', function(e) {
+  if (e.target.id === 'book-start-time' || e.target.id === 'book-end-time') {
+    updateTimePicker();
+  }
+});
+
 function getAdvanceAmount() {
+  if (currentBookingService === 'cricket') {
+    const hours = getCricketDurationFromPicker();
+    return hours > 0 ? hours * 200 : 200;
+  }
   const dur = document.getElementById('book-duration').value || '1 hour';
-  const hours = parseInt(dur) || 1;
+  const hours = parseFloat(dur) || 1;
   return hours * 200;
 }
 
@@ -2263,8 +2356,9 @@ function updateCricketAdvance() {
   const amount = getAdvanceAmount();
   document.getElementById('advance-amount-display').textContent = '₹' + amount;
   const qrBox = document.getElementById('cricket-upi-qr');
-  const dur = document.getElementById('book-duration').value || '1 hour';
-  const note = 'Cricket+Turf+Advance+' + dur.replace(/ /g,'+');
+  const hours = currentBookingService === 'cricket' ? getCricketDurationFromPicker() : parseFloat(document.getElementById('book-duration').value) || 1;
+  const durLabel = hours % 1 === 0 ? hours + '-hour' : hours + '-hours';
+  const note = 'Cricket+Turf+Advance+' + durLabel;
   qrBox.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('upi://pay?pa='+upiId+'&pn=RSB+Sports+Academy&am='+amount+'&tn='+note)}" style="width:150px;height:150px;" onerror="this.outerHTML='<div style=\'font-size:12px;color:var(--muted);\'>UPI: '+upiId+'</div>'"/>`;
 }
 
@@ -2322,6 +2416,9 @@ window.closeBooking = function() {
   document.getElementById('book-people').value = '1';
   document.getElementById('book-duration').value = '1 hour';
   document.getElementById('book-utr').value = '';
+  if (document.getElementById('book-start-time')) document.getElementById('book-start-time').value = '';
+  if (document.getElementById('book-end-time')) document.getElementById('book-end-time').value = '';
+  if (document.getElementById('duration-display')) document.getElementById('duration-display').style.display = 'none';
   document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
 };
 
@@ -2330,7 +2427,15 @@ window.confirmPublicBooking = async function() {
   const phone = document.getElementById('book-phone').value.trim();
   const date = document.getElementById('book-date').value;
   const people = document.getElementById('book-people').value;
-  const duration = document.getElementById('book-duration').value;
+  let duration = document.getElementById('book-duration').value;
+  if (currentBookingService === 'cricket') {
+    const startT = document.getElementById('book-start-time').value;
+    const endT = document.getElementById('book-end-time').value;
+    if (!startT || !endT) { toast('Please select start and end time', '#f05252'); return; }
+    const hrs = getCricketDurationFromPicker();
+    if (hrs <= 0) { toast('End time must be after start time', '#f05252'); return; }
+    duration = hrs % 1 === 0 ? hrs + ' hour' + (hrs > 1 ? 's' : '') : hrs + ' hours';
+  }
   if (!name) { toast('Please enter your name', '#f05252'); return; }
   if (!phone) { toast('Please enter your phone number', '#f05252'); return; }
   if (!date) { toast('Please select a date', '#f05252'); return; }
@@ -2366,7 +2471,13 @@ window.confirmPublicBooking = async function() {
     } catch(e) {}
   }
   // Build WhatsApp message BEFORE closeBooking() clears selectedSlot
-  let msg = `Hi RSB Sports Academy! 🙏\nI've booked *${s.name}* on *${date}* at *${selectedSlot}* for *${duration}* for *${people} person(s)*.\nName: ${name}\nPhone: ${phone}`;
+  let slotInfo = selectedSlot || '';
+  if (currentBookingService === 'cricket') {
+    const startT = document.getElementById('book-start-time').value;
+    const endT = document.getElementById('book-end-time').value;
+    slotInfo = startT + ' to ' + endT;
+  }
+  let msg = `Hi RSB Sports Academy! 🙏\nI've booked *${s.name}* on *${date}* at *${slotInfo}* for *${duration}* for *${people} person(s)*.\nName: ${name}\nPhone: ${phone}`;
   if (currentBookingService === 'cricket') {
     msg += `\n💳 Advance Paid: ₹${advanceAmount}\nUTR: ${utr}`;
   }
